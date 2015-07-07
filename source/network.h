@@ -20,8 +20,8 @@ namespace ESN {
         std::vector< float > mResistance;
         std::vector< float > mTimeConstant;
         std::vector< float > mOutputCurrent;
-        std::vector< std::vector< unsigned > > mInputNeurons;
-        std::vector< std::vector< float > > mInputWeights;
+        std::vector< std::vector< unsigned > > mConnection;
+        std::vector< std::vector< float > > mConnectionWeight;
     };
 
 } // namespace ESN
