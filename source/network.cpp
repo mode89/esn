@@ -26,8 +26,11 @@ namespace ESN {
         {
             float inputCurrent = 0.0f;
             for ( int j = 0, nj = mConnection[i].size(); j < nj; ++ j )
-                inputCurrent +=
-                    mConnection[i][j] * mConnectionWeight[i][j];
+            {
+                int inputNeuron = mConnection[i][j];
+                inputCurrent += mOutputCurrent[ inputNeuron ] *
+                    mConnectionWeight[i][j];
+            }
 
             float delta = step * ( inputCurrent * mResistance[i] -
                 mPotential[i] ) / mTimeConstant[i];
