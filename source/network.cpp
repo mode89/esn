@@ -7,7 +7,7 @@ namespace ESN {
         : mPotential( neuronCount )
         , mThreshold( neuronCount )
         , mResistance( neuronCount )
-        , mTimeConstant( neuronCount )
+        , mMebraneTimeConstant( neuronCount )
         , mSpikeCurrent( neuronCount )
         , mSpikeTime( neuronCount )
         , mConnection( neuronCount )
@@ -33,7 +33,7 @@ namespace ESN {
             }
 
             float delta = step * ( inputCurrent * mResistance[i] -
-                mPotential[i] ) / mTimeConstant[i];
+                mPotential[i] ) / mMebraneTimeConstant[i];
             mPotential[i] += delta;
         }
 
