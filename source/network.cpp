@@ -8,7 +8,7 @@ namespace ESN {
         , mThreshold( neuronCount )
         , mResistance( neuronCount )
         , mTimeConstant( neuronCount )
-        , mOutputCurrent( neuronCount )
+        , mSpikeCurrent( neuronCount )
         , mSpikeTime( neuronCount )
         , mConnection( neuronCount )
         , mConnectionWeight( neuronCount )
@@ -28,7 +28,7 @@ namespace ESN {
             for ( int j = 0, nj = mConnection[i].size(); j < nj; ++ j )
             {
                 int inputNeuron = mConnection[i][j];
-                inputCurrent += mOutputCurrent[ inputNeuron ] *
+                inputCurrent += mSpikeCurrent[ inputNeuron ] *
                     mConnectionWeight[i][j];
             }
 
@@ -42,7 +42,7 @@ namespace ESN {
             if ( mPotential[i] > mThreshold[i] )
                 mSpikeTime[i] = 0.0f;
 
-            mOutputCurrent[i] = mSpikeTime[i] *
+            mSpikeCurrent[i] = mSpikeTime[i] *
                 std::exp( 1 - mSpikeTime[i] );
 
             mSpikeTime[i] += step;
