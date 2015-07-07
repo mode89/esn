@@ -1,6 +1,8 @@
 #ifndef __ESN_NETWORK_IMPL_H__
 #define __ESN_NETWORK_IMPL_H__
 
+#include <esn/network.h>
+
 namespace ESN {
 
     class NetworkImpl : public Network
