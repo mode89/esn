@@ -1,6 +1,7 @@
 #ifndef __ESN_NETWORK_IMPL_H__
 #define __ESN_NETWORK_IMPL_H__
 
+#include <vector>
 #include <esn/network.h>
 
 namespace ESN {
