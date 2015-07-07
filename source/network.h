@@ -20,6 +20,7 @@ namespace ESN {
         std::vector< float > mResistance;
         std::vector< float > mTimeConstant;
         std::vector< float > mOutputCurrent;
+        std::vector< float > mSpikeTime;
         std::vector< std::vector< unsigned > > mConnection;
         std::vector< std::vector< float > > mConnectionWeight;
     };

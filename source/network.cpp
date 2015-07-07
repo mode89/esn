@@ -1,3 +1,4 @@
+#include <cmath>
 #include <network.h>
 
 namespace ESN {
@@ -8,6 +9,7 @@ namespace ESN {
         , mResistance( neuronCount )
         , mTimeConstant( neuronCount )
         , mOutputCurrent( neuronCount )
+        , mSpikeTime( neuronCount )
         , mConnection( neuronCount )
         , mConnectionWeight( neuronCount )
     {
@@ -30,6 +32,17 @@ namespace ESN {
             float delta = step * ( inputCurrent * mResistance[i] -
                 mPotential[i] ) / mTimeConstant[i];
             mPotential[i] += delta;
+        }
+
+        for ( int i = 0, n = mPotential.size(); i < n; ++ i )
+        {
+            if ( mPotential[i] > mThreshold[i] )
+                mSpikeTime[i] = 0.0f;
+
+            mOutputCurrent[i] = mSpikeTime[i] *
+                std::exp( 1 - mSpikeTime[i] );
+
+            mSpikeTime[i] += step;
         }
     }
 
