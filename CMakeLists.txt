@@ -10,6 +10,12 @@ cmake_minimum_required( VERSION 3.0 )
     include_directories( include )
     include_directories( source )
 
+# Flags
+
+    if ( UNIX )
+        add_compile_options( -std=c++11 )
+    endif()
+
 # Target
 
     add_library( esn ${SRC_FILES} )
