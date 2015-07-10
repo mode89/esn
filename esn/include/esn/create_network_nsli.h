@@ -10,6 +10,10 @@ namespace ESN {
     struct NetworkParamsNSLI
     {
         unsigned neuronCount;
+
+        NetworkParamsNSLI()
+            : neuronCount( 0 )
+        {}
     };
 
     std::unique_ptr< Network >
