@@ -5,6 +5,8 @@
 
 namespace ESN {
 
+    struct NetworkParamsNSLI;
+
     /**
      * Implementation of a network based on non-spiking linear integrator
      * neurons.
@@ -15,7 +17,7 @@ namespace ESN {
         void Step( float step );
 
     public:
-        NetworkNSLI( unsigned neuronCount );
+        NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
     };
 

@@ -1,14 +1,15 @@
+#include <esn/create_network_nsli.h>
 #include <network_nsli.h>
 
 namespace ESN {
 
-    std::unique_ptr< Network > CreateNetwork( unsigned neuronCount )
+    std::unique_ptr< Network > CreateNetwork(
+        const NetworkParamsNSLI & params )
     {
-        return std::unique_ptr< NetworkNSLI >(
-            new NetworkNSLI( neuronCount ) );
+        return std::unique_ptr< NetworkNSLI >( new NetworkNSLI( params ) );
     }
 
-    NetworkNSLI::NetworkNSLI( unsigned neuronCount )
+    NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
     {
     }
 
