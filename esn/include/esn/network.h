@@ -1,6 +1,8 @@
 #ifndef __ESN_NETWORK_H__
 #define __ESN_NETWORK_H__
 
+#include <memory>
+
 namespace ESN {
 
     class Network
@@ -10,6 +12,8 @@ namespace ESN {
 
         virtual ~Network() {}
     };
+
+    std::unique_ptr< Network > CreateNetwork( unsigned neuronCount );
 
 } // namespace ESN
 
