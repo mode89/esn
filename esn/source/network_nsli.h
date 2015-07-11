@@ -26,6 +26,8 @@ namespace ESN {
         Eigen::SparseMatrix< float > mWIn;
         Eigen::ArrayXf mX;
         Eigen::SparseMatrix< float > mW;
+        Eigen::ArrayXf mOut;
+        Eigen::SparseMatrix< float > mWOut;
     };
 
 } // namespace ESN

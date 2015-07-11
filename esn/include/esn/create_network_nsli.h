@@ -11,10 +11,12 @@ namespace ESN {
     {
         unsigned inputCount;
         unsigned neuronCount;
+        unsigned outputCount;
 
         NetworkParamsNSLI()
             : inputCount( 0 )
             , neuronCount( 0 )
+            , outputCount( 0 )
         {}
     };
 

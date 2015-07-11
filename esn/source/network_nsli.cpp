@@ -14,6 +14,8 @@ namespace ESN {
         , mWIn( params.neuronCount, params.inputCount )
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
+        , mOut( params.outputCount )
+        , mWOut( params.outputCount, params.neuronCount )
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -21,6 +23,9 @@ namespace ESN {
         if ( params.neuronCount <= 0 )
             throw std::invalid_argument(
                 "NetworkParamsNSLI::neuronCount must be not null" );
+        if ( params.outputCount <= 0 )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::outputCount must be not null" );
     }
 
     NetworkNSLI::~NetworkNSLI()
