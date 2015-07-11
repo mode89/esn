@@ -10,7 +10,8 @@ namespace ESN {
     }
 
     NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
-        : mIn( params.inputCount )
+        : mParams( params )
+        , mIn( params.inputCount )
         , mWIn( params.neuronCount, params.inputCount )
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )

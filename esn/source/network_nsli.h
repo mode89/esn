@@ -22,6 +22,7 @@ namespace ESN {
         ~NetworkNSLI();
 
     private:
+        NetworkParamsNSLI mParams;
         Eigen::ArrayXf mIn;
         Eigen::SparseMatrix< float > mWIn;
         Eigen::ArrayXf mX;
