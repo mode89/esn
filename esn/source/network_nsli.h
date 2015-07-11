@@ -1,6 +1,7 @@
 #ifndef __ESN_NETWORK_NSLI_H__
 #define __ESN_NETWORK_NSLI_H__
 
+#include <Eigen/Sparse>
 #include <esn/network.h>
 
 namespace ESN {
@@ -19,6 +20,9 @@ namespace ESN {
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
+
+    private:
+        Eigen::ArrayXf mX;
     };
 
 } // namespace ESN
