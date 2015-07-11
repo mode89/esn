@@ -11,6 +11,7 @@ namespace ESN {
 
     NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
         : mX( params.neuronCount )
+        , mW( params.neuronCount, params.neuronCount )
     {
         if ( params.neuronCount <= 0 )
             throw std::invalid_argument(

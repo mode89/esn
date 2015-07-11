@@ -23,6 +23,7 @@ namespace ESN {
 
     private:
         Eigen::ArrayXf mX;
+        Eigen::SparseMatrix< float > mW;
     };
 
 } // namespace ESN
