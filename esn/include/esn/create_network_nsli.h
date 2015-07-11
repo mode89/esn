@@ -9,10 +9,12 @@ namespace ESN {
 
     struct NetworkParamsNSLI
     {
+        unsigned inputCount;
         unsigned neuronCount;
 
         NetworkParamsNSLI()
-            : neuronCount( 0 )
+            : inputCount( 0 )
+            , neuronCount( 0 )
         {}
     };
 

@@ -10,9 +10,14 @@ namespace ESN {
     }
 
     NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
-        : mX( params.neuronCount )
+        : mIn( params.inputCount )
+        , mWIn( params.neuronCount, params.inputCount )
+        , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
     {
+        if ( params.inputCount <= 0 )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::inputCount must be not null" );
         if ( params.neuronCount <= 0 )
             throw std::invalid_argument(
                 "NetworkParamsNSLI::neuronCount must be not null" );

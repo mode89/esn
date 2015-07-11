@@ -22,6 +22,8 @@ namespace ESN {
         ~NetworkNSLI();
 
     private:
+        Eigen::ArrayXf mIn;
+        Eigen::SparseMatrix< float > mWIn;
         Eigen::ArrayXf mX;
         Eigen::SparseMatrix< float > mW;
     };
