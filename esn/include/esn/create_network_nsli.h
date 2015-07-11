@@ -12,11 +12,13 @@ namespace ESN {
         unsigned inputCount;
         unsigned neuronCount;
         unsigned outputCount;
+        float leakingRate;
 
         NetworkParamsNSLI()
             : inputCount( 0 )
             , neuronCount( 0 )
             , outputCount( 0 )
+            , leakingRate( 1.0f )
         {}
     };
 

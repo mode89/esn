@@ -1,3 +1,4 @@
+#include <cmath>
 #include <esn/create_network_nsli.h>
 #include <network_nsli.h>
 
@@ -27,6 +28,9 @@ namespace ESN {
         if ( params.outputCount <= 0 )
             throw std::invalid_argument(
                 "NetworkParamsNSLI::outputCount must be not null" );
+        if ( !( params.leakingRate > 0.0 && params.leakingRate <= 1.0 ) )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::leakingRate must be withing interval [0,1)" );
     }
 
     NetworkNSLI::~NetworkNSLI()
@@ -35,6 +39,9 @@ namespace ESN {
 
     void NetworkNSLI::Step( float step )
     {
+        mX = ( 1 - mParams.leakingRate ) * mX +
+            mParams.leakingRate * ( mWIn * mIn + mW * mX ).unaryExpr(
+                [] ( float x ) -> float { return std::tanh( x ); } );
     }
 
 } // namespace ESN
