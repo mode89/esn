@@ -1,4 +1,5 @@
 #include <cmath>
+#include <Eigen/Eigenvalues>
 #include <esn/create_network_nsli.h>
 #include <network_nsli.h>
 
@@ -35,8 +36,12 @@ namespace ESN {
 
         mWIn = Eigen::MatrixXf::Random(
             params.neuronCount, params.inputCount ).sparseView();
-        mW = Eigen::MatrixXf::Random(
-            params.neuronCount, params.neuronCount ).sparseView();
+
+        Eigen::MatrixXf randomWeights = Eigen::MatrixXf::Random(
+            params.neuronCount, params.neuronCount );
+        float spectralRadius =
+            randomWeights.eigenvalues().cwiseAbs().maxCoeff();
+        mW = ( randomWeights / spectralRadius ).sparseView() ;
     }
 
     NetworkNSLI::~NetworkNSLI()
