@@ -30,7 +30,8 @@ namespace ESN {
                 "NetworkParamsNSLI::outputCount must be not null" );
         if ( !( params.leakingRate > 0.0 && params.leakingRate <= 1.0 ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRate must be withing interval [0,1)" );
+                "NetworkParamsNSLI::leakingRate must be withing "
+                "interval [0,1)" );
     }
 
     NetworkNSLI::~NetworkNSLI()
