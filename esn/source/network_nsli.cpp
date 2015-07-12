@@ -35,6 +35,8 @@ namespace ESN {
 
         mWIn = Eigen::MatrixXf::Random(
             params.neuronCount, params.inputCount ).sparseView();
+        mW = Eigen::MatrixXf::Random(
+            params.neuronCount, params.neuronCount ).sparseView();
     }
 
     NetworkNSLI::~NetworkNSLI()
