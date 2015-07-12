@@ -32,6 +32,9 @@ namespace ESN {
             throw std::invalid_argument(
                 "NetworkParamsNSLI::leakingRate must be withing "
                 "interval [0,1)" );
+
+        mWIn = Eigen::MatrixXf::Random(
+            params.neuronCount, params.inputCount ).sparseView();
     }
 
     NetworkNSLI::~NetworkNSLI()
