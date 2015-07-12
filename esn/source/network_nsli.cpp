@@ -42,6 +42,7 @@ namespace ESN {
         mX = ( 1 - mParams.leakingRate ) * mX +
             mParams.leakingRate * ( mWIn * mIn + mW * mX ).unaryExpr(
                 [] ( float x ) -> float { return std::tanh( x ); } );
+        mOut = mWOut * mX;
     }
 
 } // namespace ESN
