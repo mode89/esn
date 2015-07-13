@@ -6,7 +6,8 @@ namespace ESN {
     class Network
     {
     public:
-        virtual void Step( float step ) = 0;
+        virtual void
+        Step( float step ) = 0;
 
         virtual ~Network() {}
     };
