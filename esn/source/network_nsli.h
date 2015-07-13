@@ -15,7 +15,8 @@ namespace ESN {
     class NetworkNSLI : public Network
     {
     public:
-        void Step( float step );
+        void
+        Step( float step );
 
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
