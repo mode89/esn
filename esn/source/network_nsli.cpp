@@ -48,6 +48,14 @@ namespace ESN {
     {
     }
 
+    void NetworkNSLI::SetInputs( const std::vector< float > & inputs )
+    {
+        if ( inputs.size() != mIn.rows() )
+            throw std::invalid_argument( "Wrong size of the input vector" );
+        mIn = Eigen::Map< Eigen::VectorXf >(
+            const_cast< float * >( inputs.data() ), inputs.size() );
+    }
+
     void NetworkNSLI::Step( float step )
     {
         mX = ( 1 - mParams.leakingRate ) * mX +

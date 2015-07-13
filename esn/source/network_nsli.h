@@ -16,6 +16,9 @@ namespace ESN {
     {
     public:
         void
+        SetInputs( const std::vector< float > & );
+
+        void
         Step( float step );
 
     public:
