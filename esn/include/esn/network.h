@@ -14,6 +14,11 @@ namespace ESN {
         virtual void
         Step( float step ) = 0;
 
+        virtual void
+        Train(
+            const std::vector< std::vector< float > > & inputs,
+            const std::vector< std::vector< float > > & outputs ) = 0;
+
         virtual ~Network() {}
     };
 
