@@ -1,11 +1,16 @@
 #ifndef __ESN_NETWORK_H__
 #define __ESN_NETWORK_H__
 
+#include <vector>
+
 namespace ESN {
 
     class Network
     {
     public:
+        virtual void
+        SetInputs( const std::vector< float > & ) = 0;
+
         virtual void
         Step( float step ) = 0;
 
