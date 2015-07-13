@@ -64,4 +64,16 @@ namespace ESN {
         mOut = mWOut * mX;
     }
 
+    void NetworkNSLI::Train(
+        const std::vector< std::vector< float > > & inputs,
+        const std::vector< std::vector< float > > & outputs )
+    {
+        if ( inputs.size() == 0 )
+            throw std::invalid_argument(
+                "Number of samples must be not null" );
+        if ( inputs.size() != outputs.size() )
+            throw std::invalid_argument(
+                "Number of input and output samples must be equal" );
+    }
+
 } // namespace ESN

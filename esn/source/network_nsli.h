@@ -21,6 +21,11 @@ namespace ESN {
         void
         Step( float step );
 
+        void
+        Train(
+            const std::vector< std::vector< float > > & inputs,
+            const std::vector< std::vector< float > > & outputs );
+
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
