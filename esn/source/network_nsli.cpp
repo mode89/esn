@@ -58,6 +58,10 @@ namespace ESN {
 
     void NetworkNSLI::Step( float step )
     {
+        if ( step <= 0.0f )
+            throw std::invalid_argument(
+                "Step size must be positive value" );
+
         mX = ( 1 - mParams.leakingRate ) * mX +
             mParams.leakingRate * ( mWIn * mIn + mW * mX ).unaryExpr(
                 [] ( float x ) -> float { return std::tanh( x ); } );
