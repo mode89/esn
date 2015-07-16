@@ -1,5 +1,6 @@
 ESN
     reservoir sparsity
     feedback
+    implement recursive least squares (RLS) filter
 samples
     sine-wave generator
