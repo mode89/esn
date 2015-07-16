@@ -9,4 +9,7 @@ find_package( ESN REQUIRED )
 include_directories( ${ESN_INCLUDE_DIRS} )
 
 add_executable( pulse pulse.cpp )
-target_link_libraries( pulse esn )
+target_link_libraries( pulse ${ESN_LIBRARIES} )
+
+add_executable( sine sine.cpp )
+target_link_libraries( sine ${ESN_LIBRARIES} )
