@@ -4,6 +4,7 @@ ESN
     implement least mean squares filter
     implement recursive least squares (RLS) filter
 tests
+    move tests folder to esn folder
     online regression
 samples
     sine-wave generator
