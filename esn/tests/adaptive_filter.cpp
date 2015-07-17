@@ -30,13 +30,13 @@ TEST( AdaptiveFilter, LMS )
     Eigen::VectorXf input( kInputCount );
     Eigen::VectorXf A = kMaxAmplitude / 2.0f *
         ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f );
-    Eigen::VectorXf W = kMaxFrequency / 2.0f *
+    Eigen::VectorXf omega = kMaxFrequency / 2.0f *
         ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f );
 
     for ( int i = 0; i < kSampleCount; ++ i )
     {
         float t = kStep * i;
-        input = A.array() * ( W.array() * t ).unaryExpr(
+        input = A.array() * ( omega.array() * t ).unaryExpr(
             std::ptr_fun( std::sinf ) );
     }
 }
