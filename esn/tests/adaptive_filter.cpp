@@ -40,7 +40,7 @@ TEST( AdaptiveFilter, LMS )
     {
         float t = kStep * i;
         input = A.array() * ( omega.array() * t ).unaryExpr(
-            std::ptr_fun( std::sinf ) );
+            std::ptr_fun< float, float >( std::sin ) );
         Eigen::VectorXf referenceOutput = referenceFilter( input );
         Eigen::VectorXf currentOutput = Wout * input;
         Eigen::VectorXf error = referenceOutput - currentOutput;
