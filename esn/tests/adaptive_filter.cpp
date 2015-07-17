@@ -2,6 +2,21 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
+class ReferenceFilter
+{
+public:
+    ReferenceFilter( unsigned size )
+        : mW( Eigen::VectorXf::Random( size ) )
+    {}
+
+    float operator()( Eigen::VectorXf inputs )
+    {
+        return mW.dot( inputs );
+    }
+
+    Eigen::VectorXf mW;
+};
+
 TEST( AdaptiveFilter, LMS )
 {
     const unsigned kInputCount = 10;
