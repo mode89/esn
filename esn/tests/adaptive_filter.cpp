@@ -5,27 +5,28 @@
 class ReferenceFilter
 {
 public:
-    ReferenceFilter( unsigned size )
-        : mW( Eigen::VectorXf::Random( size ) )
+    ReferenceFilter( unsigned inputCount, unsigned outputCount )
+        : mW( Eigen::MatrixXf::Random( outputCount, inputCount ) )
     {}
 
-    float operator()( Eigen::VectorXf inputs )
+    Eigen::VectorXf operator()( Eigen::VectorXf inputs )
     {
-        return mW.dot( inputs );
+        return mW * inputs;
     }
 
-    Eigen::VectorXf mW;
+    Eigen::MatrixXf mW;
 };
 
 TEST( AdaptiveFilter, LMS )
 {
     const unsigned kInputCount = 10;
+    const unsigned kOutputCount = 3;
     const unsigned kSampleCount = 100;
     const float kMaxAmplitude = 1.0f;
     const float kMaxFrequency = 10.0f;
     const float kStep = 0.1f * 1.0f / kMaxFrequency;
 
-    ReferenceFilter referenceFilter( kInputCount );
+    ReferenceFilter referenceFilter( kInputCount, kOutputCount );
     Eigen::VectorXf input( kInputCount );
     Eigen::VectorXf A = kMaxAmplitude / 2.0f *
         ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f );
