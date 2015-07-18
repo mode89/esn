@@ -19,7 +19,7 @@ public:
 
 class Model
 {
-    const unsigned kInputCount = 5;
+    const unsigned kInputCount = 100;
     const unsigned kOutputCount = 3;
     const float kMaxAmplitude = 1.0f;
     const float kMaxFrequency = 10.0f;
@@ -36,7 +36,7 @@ public:
         , mOutput( kOutputCount )
         , mReferenceFilter( kInputCount, kOutputCount )
         , mReferenceOutput( kOutputCount )
-        , mTime( 0.1f )
+        , mTime( 0.0f )
     {}
 
     void Update()
@@ -61,14 +61,15 @@ public:
 TEST( AdaptiveFilter, LMS )
 {
     const unsigned kStepCount = 10000;
+    const float kTrainStep = 0.1f;
 
     Model model;
 
-    for ( int i = 1; i < kStepCount; ++ i )
+    for ( int i = 0; i < kStepCount; ++ i )
     {
         model.Update();
         Eigen::VectorXf error = model.mReferenceOutput - model.mOutput;
-        model.mW += ( 0.1f * error * model.mInput.transpose() /
+        model.mW += ( kTrainStep * error * model.mInput.transpose() /
             model.mInput.squaredNorm() );
     }
 }
