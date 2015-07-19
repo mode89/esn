@@ -58,7 +58,7 @@ public:
     float mTime;
 };
 
-TEST( AdaptiveFilter, LMS )
+TEST( AdaptiveFilter, NLMS )
 {
     const unsigned kStepCount = 10000;
     const float kTrainStep = 0.1f;
