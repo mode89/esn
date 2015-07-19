@@ -73,3 +73,7 @@ TEST( AdaptiveFilter, NLMS )
             model.mInput.squaredNorm() );
     }
 }
+
+TEST( AdaptiveFilter, RLS )
+{
+}
