@@ -75,4 +75,24 @@ TEST( AdaptiveFilter, NLMS )
 
 TEST( AdaptiveFilter, RLS )
 {
+    const unsigned kStepCount = 1000;
+    const float kTrainStep = 0.1f;
+    const float kDelta = 1000.0f;
+    const float kGamma = 0.999f;
+
+    Model model;
+
+    Eigen::MatrixXf P = Eigen::MatrixXf::Identity(
+        model.mInput.size(), model.mInput.size() ) * kDelta;
+
+    for ( int i = 0; i < kStepCount; ++ i )
+    {
+        model.Update();
+        float error = model.mReferenceOutput - model.mOutput;
+        auto & u = model.mInput;
+        auto uT_P = u.transpose() * P;
+        Eigen::VectorXf K = P * u / ( kGamma + uT_P.dot( u ) );
+        P = 1 / kGamma * ( P - K * uT_P );
+        model.mW += error * K;
+    }
 }
