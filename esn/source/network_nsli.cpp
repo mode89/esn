@@ -20,6 +20,7 @@ namespace ESN {
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB( params.neuronCount, params.outputCount )
+        , mAdaptiveFilter( params.neuronCount )
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -110,6 +111,13 @@ namespace ESN {
         Eigen::MatrixXf matXT = matX.transpose();
 
         mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
+    }
+
+    void NetworkNSLI::TrainOnline( const std::vector< float > & output )
+    {
+        Eigen::VectorXf w = mWOut.row( 0 ).transpose();
+        mAdaptiveFilter.Train( w, mOut( 0 ), output[0], mX );
+        mWOut.row( 0 ) = w.transpose();
     }
 
 } // namespace ESN

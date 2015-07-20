@@ -3,6 +3,7 @@
 
 #include <Eigen/Sparse>
 #include <esn/network.h>
+#include <adaptive_filter_rls.h>
 
 namespace ESN {
 
@@ -29,6 +30,9 @@ namespace ESN {
             const std::vector< std::vector< float > > & inputs,
             const std::vector< std::vector< float > > & outputs );
 
+        void
+        TrainOnline( const std::vector< float > & output );
+
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
@@ -42,6 +46,7 @@ namespace ESN {
         Eigen::VectorXf mOut;
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;
+        AdaptiveFilterRLS mAdaptiveFilter;
     };
 
 } // namespace ESN
