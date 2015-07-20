@@ -19,7 +19,7 @@ int main()
     std::vector< float > actualOutput( 1 );
     for ( int i = 0; i < kTrainSteps; ++ i )
     {
-        output[0] = std::sin( 2 * static_cast< float >( M_PI ) *
+        output[0] = sin( 2 * static_cast< float >( M_PI ) *
             kSineFrequency * i * kSineStep );
         network->Step( 0.1f );
         network->CaptureOutput( actualOutput );
