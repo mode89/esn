@@ -15,6 +15,9 @@ namespace ESN {
         Step( float step ) = 0;
 
         virtual void
+        CaptureOutput( std::vector< float > & output ) = 0;
+
+        virtual void
         Train(
             const std::vector< std::vector< float > > & inputs,
             const std::vector< std::vector< float > > & outputs ) = 0;
