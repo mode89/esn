@@ -4,7 +4,7 @@
 
 static const unsigned kNeuronCount = 100;
 static const float kSineFrequency = 1.0f;
-static const float kSineStep = 0.01f;
+static const float kSineStep = 0.0001f;
 static const float kErrorThreshold = 0.001f;
 
 int main()
