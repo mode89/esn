@@ -6,6 +6,7 @@ static const unsigned kNeuronCount = 100;
 static const unsigned kTrainSteps = 1000;
 static const float kSineFrequency = 1.0f;
 static const float kSineStep = 0.01f;
+static const float kErrorThreshold = 0.001f;
 
 int main()
 {
@@ -21,9 +22,15 @@ int main()
     {
         output[0] = sin( 2 * static_cast< float >( M_PI ) *
             kSineFrequency * i * kSineStep );
+
         network->Step( 0.1f );
         network->CaptureOutput( actualOutput );
-        network->TrainOnline( output );
+        float error = fabs( ( actualOutput[0] - output[0] ) / output[0] );
+
+        if ( error > kErrorThreshold )
+        {
+            network->TrainOnline( output );
+        }
     }
 
     return 0;
