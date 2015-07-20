@@ -16,10 +16,14 @@ int main()
     std::unique_ptr< ESN::Network > network = ESN::CreateNetwork( params );
 
     std::vector< float > output( 1 );
+    std::vector< float > actualOutput( 1 );
     for ( int i = 0; i < kTrainSteps; ++ i )
     {
         output[0] = std::sin( 2 * static_cast< float >( M_PI ) *
             kSineFrequency * i * kSineStep );
+        network->Step( 0.1f );
+        network->CaptureOutput( actualOutput );
+        network->TrainOnline( output );
     }
 
     return 0;
