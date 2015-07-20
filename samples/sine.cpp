@@ -1,6 +1,11 @@
+#define _USE_MATH_DEFINES
 #include <esn/esn.h>
+#include <math.h>
 
 static const unsigned kNeuronCount = 100;
+static const unsigned kTrainSteps = 1000;
+static const float kSineFrequency = 1.0f;
+static const float kSineStep = 0.01f;
 
 int main()
 {
@@ -9,6 +14,13 @@ int main()
     params.neuronCount = kNeuronCount;
     params.outputCount = 1;
     std::unique_ptr< ESN::Network > network = ESN::CreateNetwork( params );
+
+    std::vector< float > output( 1 );
+    for ( int i = 0; i < kTrainSteps; ++ i )
+    {
+        output[0] = std::sin( 2 * static_cast< float >( M_PI ) *
+            kSineFrequency * i * kSineStep );
+    }
 
     return 0;
 }
