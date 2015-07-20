@@ -63,24 +63,31 @@ TEST( AdaptiveFilter, NLMS )
     const float kTrainStep = 0.1f;
 
     Model model;
+    model.Update();
+    float error = model.mReferenceOutput - model.mOutput;
+    float initialError = std::fabs( error / model.mOutput );
 
     for ( int i = 0; i < kStepCount; ++ i )
     {
         model.Update();
-        float error = model.mReferenceOutput - model.mOutput;
+        error = model.mReferenceOutput - model.mOutput;
         model.mW += ( kTrainStep * error * model.mInput.transpose() /
             model.mInput.squaredNorm() );
     }
+
+    EXPECT_TRUE( std::fabs( error / model.mOutput ) < initialError );
 }
 
 TEST( AdaptiveFilter, RLS )
 {
     const unsigned kStepCount = 1000;
-    const float kTrainStep = 0.1f;
     const float kDelta = 1000.0f;
-    const float kGamma = 0.999f;
+    const float kGamma = 0.99f;
 
     Model model;
+    model.Update();
+    float error = model.mReferenceOutput - model.mOutput;
+    float initialError = std::fabs( error / model.mOutput );
 
     Eigen::MatrixXf P = Eigen::MatrixXf::Identity(
         model.mInput.size(), model.mInput.size() ) * kDelta;
@@ -88,11 +95,13 @@ TEST( AdaptiveFilter, RLS )
     for ( int i = 0; i < kStepCount; ++ i )
     {
         model.Update();
-        float error = model.mReferenceOutput - model.mOutput;
+        error = model.mReferenceOutput - model.mOutput;
         auto & u = model.mInput;
         auto uT_P = u.transpose() * P;
         Eigen::VectorXf K = P * u / ( kGamma + uT_P.dot( u ) );
         P = 1 / kGamma * ( P - K * uT_P );
         model.mW += error * K;
     }
+
+    EXPECT_LT( std::fabs( error / model.mOutput ), initialError );
 }
