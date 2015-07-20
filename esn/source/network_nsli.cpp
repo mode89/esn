@@ -72,6 +72,17 @@ namespace ESN {
         mOut = mWOut * mX;
     }
 
+    void NetworkNSLI::CaptureOutput( std::vector< float > & output )
+    {
+        if ( output.size() != mParams.outputCount )
+            throw std::invalid_argument(
+                "Size of the vector must be equal "
+                "actual number of outputs" );
+
+        for ( int i = 0; i < mParams.outputCount; ++ i )
+            output[ i ] = mOut( i );
+    }
+
     void NetworkNSLI::Train(
         const std::vector< std::vector< float > > & inputs,
         const std::vector< std::vector< float > > & outputs )

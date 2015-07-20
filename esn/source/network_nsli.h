@@ -22,6 +22,9 @@ namespace ESN {
         Step( float step );
 
         void
+        CaptureOutput( std::vector< float > & output );
+
+        void
         Train(
             const std::vector< std::vector< float > > & inputs,
             const std::vector< std::vector< float > > & outputs );
