@@ -47,6 +47,8 @@ namespace ESN {
 
         mWFB = Eigen::MatrixXf::Random(
             params.neuronCount, params.outputCount );
+
+        mX = Eigen::VectorXf::Random( params.neuronCount );
     }
 
     NetworkNSLI::~NetworkNSLI()
