@@ -19,6 +19,7 @@ namespace ESN {
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
+        , mWFB( params.neuronCount, params.outputCount )
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -42,6 +43,9 @@ namespace ESN {
         float spectralRadius =
             randomWeights.eigenvalues().cwiseAbs().maxCoeff();
         mW = ( randomWeights / spectralRadius ).sparseView() ;
+
+        mWFB = Eigen::MatrixXf::Random(
+            params.neuronCount, params.outputCount );
     }
 
     NetworkNSLI::~NetworkNSLI()
@@ -62,8 +66,8 @@ namespace ESN {
             throw std::invalid_argument(
                 "Step size must be positive value" );
 
-        mX = ( 1 - mParams.leakingRate ) * mX +
-            mParams.leakingRate * ( mWIn * mIn + mW * mX ).unaryExpr(
+        mX = ( 1 - mParams.leakingRate ) * mX + mParams.leakingRate *
+            ( mWIn * mIn + mW * mX + mWFB * mOut ).unaryExpr(
                 [] ( float x ) -> float { return std::tanh( x ); } );
         mOut = mWOut * mX;
     }

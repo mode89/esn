@@ -38,6 +38,7 @@ namespace ESN {
         Eigen::SparseMatrix< float > mW;
         Eigen::VectorXf mOut;
         Eigen::MatrixXf mWOut;
+        Eigen::MatrixXf mWFB;
     };
 
 } // namespace ESN
