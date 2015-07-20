@@ -22,6 +22,9 @@ namespace ESN {
             const std::vector< std::vector< float > > & inputs,
             const std::vector< std::vector< float > > & outputs ) = 0;
 
+        virtual void
+        TrainOnline( const std::vector< float > & output ) = 0;
+
         virtual ~Network() {}
     };
 
