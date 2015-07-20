@@ -5,22 +5,21 @@
 class ReferenceFilter
 {
 public:
-    ReferenceFilter( unsigned inputCount, unsigned outputCount )
-        : mW( Eigen::MatrixXf::Random( outputCount, inputCount ) )
+    ReferenceFilter( unsigned inputCount )
+        : mW( Eigen::VectorXf::Random( inputCount ) )
     {}
 
-    Eigen::VectorXf operator()( Eigen::VectorXf inputs )
+    float operator()( Eigen::VectorXf inputs )
     {
-        return mW * inputs;
+        return mW.dot( inputs );
     }
 
-    Eigen::MatrixXf mW;
+    Eigen::VectorXf mW;
 };
 
 class Model
 {
     const unsigned kInputCount = 100;
-    const unsigned kOutputCount = 3;
     const float kMaxAmplitude = 1.0f;
     const float kMaxFrequency = 10.0f;
     const float kStep = 0.1f * 1.0f / kMaxFrequency;
@@ -32,10 +31,10 @@ public:
         , mOmega( kMaxFrequency / 2.0f *
             ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f ) )
         , mInput( kInputCount )
-        , mW( Eigen::MatrixXf::Random( kOutputCount, kInputCount ) )
-        , mOutput( kOutputCount )
-        , mReferenceFilter( kInputCount, kOutputCount )
-        , mReferenceOutput( kOutputCount )
+        , mW( Eigen::VectorXf::Random( kInputCount ) )
+        , mOutput( 0.0f )
+        , mReferenceFilter( kInputCount )
+        , mReferenceOutput( 0.0f )
         , mTime( 0.0f )
     {}
 
@@ -44,17 +43,17 @@ public:
         mTime += kStep;
         mInput = mAmplitude.array() * ( mOmega.array() * mTime ).unaryExpr(
             std::ptr_fun< float, float >( std::sin ) );
-        mOutput = mW * mInput;
+        mOutput = mW.dot( mInput );
         mReferenceOutput = mReferenceFilter( mInput );
     }
 
     Eigen::VectorXf mAmplitude;
     Eigen::VectorXf mOmega;
     Eigen::VectorXf mInput;
-    Eigen::MatrixXf mW;
-    Eigen::VectorXf mOutput;
+    Eigen::VectorXf mW;
+    float mOutput;
     ReferenceFilter mReferenceFilter;
-    Eigen::VectorXf mReferenceOutput;
+    float mReferenceOutput;
     float mTime;
 };
 
@@ -68,7 +67,7 @@ TEST( AdaptiveFilter, NLMS )
     for ( int i = 0; i < kStepCount; ++ i )
     {
         model.Update();
-        Eigen::VectorXf error = model.mReferenceOutput - model.mOutput;
+        float error = model.mReferenceOutput - model.mOutput;
         model.mW += ( kTrainStep * error * model.mInput.transpose() /
             model.mInput.squaredNorm() );
     }
