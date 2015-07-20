@@ -1,5 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <esn/esn.h>
+#include <iomanip>
+#include <iostream>
 #include <math.h>
 
 static const unsigned kNeuronCount = 100;
@@ -30,6 +32,10 @@ int main()
         {
             network->TrainOnline( output );
         }
+
+        std::cout << std::setw( 14 ) << output[0];
+        std::cout << std::setw( 14 ) << actualOutput[0];
+        std::cout << std::setw( 14 ) << error << std::endl;
     }
 
     return 0;
