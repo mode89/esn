@@ -33,11 +33,11 @@ namespace ESN {
     private:
         NetworkParamsNSLI mParams;
         Eigen::VectorXf mIn;
-        Eigen::SparseMatrix< float > mWIn;
+        Eigen::MatrixXf mWIn;
         Eigen::VectorXf mX;
         Eigen::SparseMatrix< float > mW;
         Eigen::VectorXf mOut;
-        Eigen::SparseMatrix< float > mWOut;
+        Eigen::MatrixXf mWOut;
     };
 
 } // namespace ESN

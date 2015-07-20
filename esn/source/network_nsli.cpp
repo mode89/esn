@@ -35,7 +35,7 @@ namespace ESN {
                 "interval [0,1)" );
 
         mWIn = Eigen::MatrixXf::Random(
-            params.neuronCount, params.inputCount ).sparseView();
+            params.neuronCount, params.inputCount );
 
         Eigen::MatrixXf randomWeights = Eigen::MatrixXf::Random(
             params.neuronCount, params.neuronCount );
@@ -94,7 +94,7 @@ namespace ESN {
 
         Eigen::MatrixXf matXT = matX.transpose();
 
-        mWOut = ( matY * matXT * ( matX * matXT ).inverse() ).sparseView();
+        mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
     }
 
 } // namespace ESN
