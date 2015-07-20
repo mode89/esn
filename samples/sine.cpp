@@ -3,7 +3,6 @@
 #include <math.h>
 
 static const unsigned kNeuronCount = 100;
-static const unsigned kTrainSteps = 1000;
 static const float kSineFrequency = 1.0f;
 static const float kSineStep = 0.01f;
 static const float kErrorThreshold = 0.001f;
@@ -18,10 +17,10 @@ int main()
 
     std::vector< float > output( 1 );
     std::vector< float > actualOutput( 1 );
-    for ( int i = 0; i < kTrainSteps; ++ i )
+    for ( float time = 0.0f; true; time += kSineStep )
     {
         output[0] = sin( 2 * static_cast< float >( M_PI ) *
-            kSineFrequency * i * kSineStep );
+            kSineFrequency * time );
 
         network->Step( 0.1f );
         network->CaptureOutput( actualOutput );
