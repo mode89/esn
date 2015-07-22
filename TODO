@@ -5,7 +5,7 @@ ESN
     * implement recursive least squares (RLS) filter
 tests
     * move tests folder to esn folder
-    online regression
+    * adaptive filters
 samples
     sine-wave generator
         * initial implementation
