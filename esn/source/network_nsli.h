@@ -31,7 +31,9 @@ namespace ESN {
             const std::vector< std::vector< float > > & outputs );
 
         void
-        TrainOnline( const std::vector< float > & output );
+        TrainOnline(
+            const std::vector< float > & output,
+            bool forceOutput );
 
     public:
         NetworkNSLI( const NetworkParamsNSLI & );

@@ -124,11 +124,17 @@ namespace ESN {
         mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
     }
 
-    void NetworkNSLI::TrainOnline( const std::vector< float > & output )
+    void NetworkNSLI::TrainOnline( const std::vector< float > & output,
+        bool forceOutput )
     {
         Eigen::VectorXf w = mWOut.row( 0 ).transpose();
         mAdaptiveFilter.Train( w, mOut( 0 ), output[0], mR );
         mWOut.row( 0 ) = w.transpose();
+
+        if ( forceOutput )
+            mOut = Eigen::Map< Eigen::VectorXf >(
+                const_cast< float * >( output.data() ),
+                mParams.outputCount );
     }
 
 } // namespace ESN
