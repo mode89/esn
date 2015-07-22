@@ -3,9 +3,9 @@ ESN
     * feedback
     implement least mean squares filter
     * implement recursive least squares (RLS) filter
-tests
-    * move tests folder to esn folder
-    * adaptive filters
+    tests
+        * move tests folder to esn folder
+        * adaptive filters
 samples
     sine-wave generator
         * initial implementation
