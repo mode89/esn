@@ -7,7 +7,7 @@
 static const unsigned kNeuronCount = 100;
 static const float kSineFrequency = 1.0f;
 static const float kSimulationStep = 0.01f;
-static const float kErrorThreshold = 0.001f;
+static const float kTrainingTime = 25.0f * 1.0f / kSineFrequency;
 
 int main()
 {
@@ -28,10 +28,8 @@ int main()
         network->CaptureOutput( actualOutput );
         float error = fabs( ( actualOutput[0] - output[0] ) / output[0] );
 
-        if ( error > kErrorThreshold )
-        {
-            network->TrainOnline( output );
-        }
+        if ( time < kTrainingTime )
+            network->TrainOnline( output, true );
 
         std::cout << std::setw( 14 ) << output[0];
         std::cout << std::setw( 14 ) << actualOutput[0];
