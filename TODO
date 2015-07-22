@@ -9,3 +9,4 @@ tests
 samples
     sine-wave generator
         * initial implementation
+        plotting
