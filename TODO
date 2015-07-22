@@ -2,7 +2,7 @@ ESN
     reservoir sparsity
     feedback
     implement least mean squares filter
-    implement recursive least squares (RLS) filter
+    * implement recursive least squares (RLS) filter
 tests
     * move tests folder to esn folder
     online regression
