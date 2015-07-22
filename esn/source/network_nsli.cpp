@@ -16,6 +16,7 @@ namespace ESN {
         , mIn( params.inputCount )
         , mWIn( params.neuronCount, params.inputCount )
         , mX( params.neuronCount )
+        , mR( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
@@ -74,10 +75,13 @@ namespace ESN {
             throw std::invalid_argument(
                 "Step size must be positive value" );
 
-        mX = ( 1 - mParams.leakingRate ) * mX + mParams.leakingRate *
-            ( mWIn * mIn + mW * mX + mWFB * mOut ).unaryExpr(
-                [] ( float x ) -> float { return std::tanh( x ); } );
-        mOut = mWOut * mX;
+        mR = mX.unaryExpr(
+            [] ( float x ) -> float { return std::tanh( x ); } );
+
+        mX = ( 1 - mParams.leakingRate ) * mX +
+            mParams.leakingRate * ( mW * mR + mWFB * mOut );
+
+        mOut = mWOut * mR;
     }
 
     void NetworkNSLI::CaptureOutput( std::vector< float > & output )
@@ -123,7 +127,7 @@ namespace ESN {
     void NetworkNSLI::TrainOnline( const std::vector< float > & output )
     {
         Eigen::VectorXf w = mWOut.row( 0 ).transpose();
-        mAdaptiveFilter.Train( w, mOut( 0 ), output[0], mX );
+        mAdaptiveFilter.Train( w, mOut( 0 ), output[0], mR );
         mWOut.row( 0 ) = w.transpose();
     }
 

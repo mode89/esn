@@ -42,6 +42,7 @@ namespace ESN {
         Eigen::VectorXf mIn;
         Eigen::MatrixXf mWIn;
         Eigen::VectorXf mX;
+        Eigen::VectorXf mR;
         Eigen::SparseMatrix< float > mW;
         Eigen::VectorXf mOut;
         Eigen::MatrixXf mWOut;
