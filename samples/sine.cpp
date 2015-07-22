@@ -33,6 +33,7 @@ int main()
         if ( time < kTrainingTime )
             network->TrainOnline( output, true );
 
+        std::cout << std::setw( 14 ) << time;
         std::cout << std::setw( 14 ) << output[0];
         std::cout << std::setw( 14 ) << actualOutput[0];
         std::cout << std::setw( 14 ) << error << std::endl;
