@@ -13,12 +13,16 @@ namespace ESN {
         unsigned neuronCount;
         unsigned outputCount;
         float leakingRate;
+        float onlineTrainingForgettingFactor;
+        float onlineTrainingInitialCovariance;
 
         NetworkParamsNSLI()
             : inputCount( 0 )
             , neuronCount( 0 )
             , outputCount( 0 )
             , leakingRate( 1.0f )
+            , onlineTrainingForgettingFactor( 0.999f )
+            , onlineTrainingInitialCovariance( 1000.0f )
         {}
     };
 

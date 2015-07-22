@@ -21,7 +21,9 @@ namespace ESN {
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB( params.neuronCount, params.outputCount )
-        , mAdaptiveFilter( params.neuronCount )
+        , mAdaptiveFilter( params.neuronCount,
+            params.onlineTrainingForgettingFactor,
+            params.onlineTrainingInitialCovariance )
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
