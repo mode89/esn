@@ -6,7 +6,7 @@
 
 static const unsigned kNeuronCount = 100;
 static const float kSineFrequency = 1.0f;
-static const float kSineStep = 0.0001f;
+static const float kSimulationStep = 0.01f;
 static const float kErrorThreshold = 0.001f;
 
 int main()
@@ -19,7 +19,7 @@ int main()
 
     std::vector< float > output( 1 );
     std::vector< float > actualOutput( 1 );
-    for ( float time = 0.0f; true; time += kSineStep )
+    for ( float time = 0.0f; true; time += kSimulationStep )
     {
         output[0] = sin( 2 * static_cast< float >( M_PI ) *
             kSineFrequency * time ) + 2.0f;
