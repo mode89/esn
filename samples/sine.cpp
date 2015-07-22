@@ -5,6 +5,7 @@
 #include <math.h>
 
 static const unsigned kNeuronCount = 100;
+static const float kLeakingRate = 0.1f;
 static const float kSineFrequency = 1.0f;
 static const float kSimulationStep = 0.01f;
 static const float kTrainingTime = 25.0f * 1.0f / kSineFrequency;
@@ -15,6 +16,7 @@ int main()
     params.inputCount = 1;
     params.neuronCount = kNeuronCount;
     params.outputCount = 1;
+    params.leakingRate = kLeakingRate;
     std::unique_ptr< ESN::Network > network = ESN::CreateNetwork( params );
 
     std::vector< float > output( 1 );
