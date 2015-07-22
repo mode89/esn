@@ -8,3 +8,4 @@ tests
     online regression
 samples
     sine-wave generator
+        * initial implementation
