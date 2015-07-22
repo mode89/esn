@@ -24,7 +24,7 @@ int main()
     for ( float time = 0.0f; true; time += kSimulationStep )
     {
         output[0] = sin( 2 * static_cast< float >( M_PI ) *
-            kSineFrequency * time ) + 2.0f;
+            kSineFrequency * time );
 
         network->Step( 0.1f );
         network->CaptureOutput( actualOutput );
