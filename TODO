@@ -1,6 +1,6 @@
 ESN
     reservoir sparsity
-    feedback
+    * feedback
     implement least mean squares filter
     * implement recursive least squares (RLS) filter
 tests
