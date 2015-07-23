@@ -81,7 +81,7 @@ namespace ESN {
             [] ( float x ) -> float { return std::tanh( x ); } );
 
         mX = ( 1 - mParams.leakingRate ) * mX +
-            mParams.leakingRate * ( mW * mR + mWFB * mOut );
+            mParams.leakingRate * ( mWIn * mIn + mW * mR + mWFB * mOut );
 
         mOut = mWOut * mR;
     }
