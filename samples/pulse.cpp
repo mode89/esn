@@ -67,6 +67,7 @@ int main()
 
         std::cout <<
             std::setw( 3 ) << inputState <<
+            std::setw( 15 ) << referenceOutput[0] <<
             std::endl;
     }
 
