@@ -9,4 +9,7 @@ ESN
 samples
     sine-wave generator
         * initial implementation
+        grid search
         plotting
+    pulse
+        grid search
