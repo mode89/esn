@@ -75,6 +75,7 @@ int main()
             network->TrainOnline( referenceOutput, true );
 
         std::cout <<
+            std::setw( 15 ) << time <<
             std::setw( 3 ) << inputState <<
             std::setw( 15 ) << referenceOutput[0] <<
             std::endl;
