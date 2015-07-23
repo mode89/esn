@@ -1,4 +1,6 @@
 #include <esn/esn.h>
+#include <iomanip>
+#include <iostream>
 #include <random>
 
 static const unsigned kNeuronCount = 100;
@@ -28,6 +30,10 @@ int main()
             input[0] = inputState ? 1.0f : 0.0f;
             nextInterval += random( randomEngine );
         }
+
+        std::cout <<
+            std::setw( 3 ) << inputState <<
+            std::endl;
     }
 
     return 0;
