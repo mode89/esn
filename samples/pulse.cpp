@@ -43,6 +43,8 @@ int main()
     float outputPulseAmplitude = 0.0f;
     unsigned outputPulseCount = 0;
 
+    std::vector< float > output( 1 );
+
     for ( float time = 0.0f; true; time += kStep )
     {
         if ( time > nextInterval )
@@ -70,6 +72,7 @@ int main()
 
         network->SetInputs( input );
         network->Step( kStep );
+        network->CaptureOutput( output );
 
         if ( outputPulseCount < kTrainPulseCount )
             network->TrainOnline( referenceOutput, true );
@@ -78,6 +81,7 @@ int main()
             std::setw( 15 ) << time <<
             std::setw( 3 ) << inputState <<
             std::setw( 15 ) << referenceOutput[0] <<
+            std::setw( 15 ) << output[0] <<
             std::endl;
     }
 
