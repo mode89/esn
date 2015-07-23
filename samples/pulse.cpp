@@ -52,7 +52,7 @@ int main()
                 outputPulseStart = time;
                 outputPulseAmplitude = ( kTargetIntervalError - std::fabs(
                     currentIntervalWidth - kTargetIntervalWidth ) ) /
-                    kTargetIntervalError;
+                    kTargetIntervalError * kOutputPulseMax;
             }
 
             inputState = !inputState;
