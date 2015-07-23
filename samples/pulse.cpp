@@ -13,6 +13,7 @@ static const float kTargetIntervalError = 0.1f;
 static const float kOutputPulseWidth = 0.1f;
 static const float kOutputPulseMax = 1.0f;
 static const float kOutputPulseThreshold = 0.0001f;
+static const unsigned kTrainPulseCount = 100;
 
 inline float Pulse( float x, float width, float max )
 {
@@ -40,6 +41,7 @@ int main()
     std::vector< float > referenceOutput( 1 );
     float outputPulseStart = 0.0f;
     float outputPulseAmplitude = 0.0f;
+    unsigned outputPulseCount = 0;
 
     for ( float time = 0.0f; true; time += kStep )
     {
@@ -53,6 +55,7 @@ int main()
                 outputPulseAmplitude = ( kTargetIntervalError - std::fabs(
                     currentIntervalWidth - kTargetIntervalWidth ) ) /
                     kTargetIntervalError * kOutputPulseMax;
+                outputPulseCount ++;
             }
 
             inputState = !inputState;
@@ -64,6 +67,12 @@ int main()
 
         referenceOutput[0] = Pulse( time - outputPulseStart,
             kOutputPulseWidth, outputPulseAmplitude );
+
+        network->SetInputs( input );
+        network->Step( kStep );
+
+        if ( outputPulseCount < kTrainPulseCount )
+            network->TrainOnline( referenceOutput, true );
 
         std::cout <<
             std::setw( 3 ) << inputState <<
