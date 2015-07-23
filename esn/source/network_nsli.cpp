@@ -46,7 +46,8 @@ namespace ESN {
             params.neuronCount, params.neuronCount );
         float spectralRadius =
             randomWeights.eigenvalues().cwiseAbs().maxCoeff();
-        mW = ( randomWeights / spectralRadius ).sparseView() ;
+        mW = ( randomWeights / spectralRadius *
+            params.spectralRadius ).sparseView() ;
 
         mWOut = Eigen::MatrixXf::Random(
             params.outputCount, params.neuronCount );

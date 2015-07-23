@@ -13,6 +13,7 @@ namespace ESN {
         unsigned neuronCount;
         unsigned outputCount;
         float leakingRate;
+        float spectralRadius;
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
 
@@ -21,6 +22,7 @@ namespace ESN {
             , neuronCount( 0 )
             , outputCount( 0 )
             , leakingRate( 1.0f )
+            , spectralRadius( 1.0f )
             , onlineTrainingForgettingFactor( 0.999f )
             , onlineTrainingInitialCovariance( 1000.0f )
         {}
