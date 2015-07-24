@@ -38,6 +38,17 @@ if _DLL_PATH == None :
 
 _DLL = cdll.LoadLibrary( _DLL_PATH )
 
+class Network :
+
+    def __init__( self, pointer ) :
+        self.pointer = pointer
+
+    def __del__( self ) :
+        self.release()
+
+    def release( self ) :
+        _DLL.esnNetworkDestruct( self.pointer )
+
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
             ( "inputCount", c_uint ),
@@ -68,4 +79,4 @@ def CreateNetworkNSLI(
         onlineTrainingInitialCovariance = onlineTrainingInitialCovariance )
 
     _DLL.esnCreateNetworkNSLI.restype = c_void_p
-    return func( pointer( params ) )
+    return Network( _DLL.esnCreateNetworkNSLI( pointer( params ) ) )
