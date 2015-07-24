@@ -33,11 +33,14 @@ cmake_minimum_required( VERSION 3.0 )
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}" )
     endif()
 
-    add_custom_command( TARGET esn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/python" "${OUTPUT_DIR}/esn"
-        COMMENT "Deploy python binding package"
+    add_custom_command( OUTPUT "${OUTPUT_DIR}/esn.py"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/source/esn.py"
+            "${OUTPUT_DIR}/esn.py"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/esn.py"
+        COMMENT "Deploy python module"
     )
+    add_custom_target( esn-python ALL DEPENDS "${OUTPUT_DIR}/esn.py" )
 
 # Tests
 
