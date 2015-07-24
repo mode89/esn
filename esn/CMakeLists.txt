@@ -35,7 +35,9 @@ cmake_minimum_required( VERSION 3.0 )
 
     add_custom_command( TARGET esn POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/python" "${OUTPUT_DIR}/esn" )
+            "${CMAKE_CURRENT_SOURCE_DIR}/python" "${OUTPUT_DIR}/esn"
+        COMMENT "Deploy python binding package"
+    )
 
 # Tests
 
