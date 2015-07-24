@@ -23,7 +23,7 @@ cmake_minimum_required( VERSION 3.0 )
 
 # Target
 
-    add_library( esn ${SRC_FILES} )
+    add_library( esn SHARED ${SRC_FILES} )
 
 # Tests
 
