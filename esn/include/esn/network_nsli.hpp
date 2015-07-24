@@ -1,6 +1,7 @@
 #ifndef __ESN_NETWORK_NSLI_HPP__
 #define __ESN_NETWORK_NSLI_HPP__
 
+#include <esn/export.h>
 #include <memory>
 
 namespace ESN {
@@ -28,7 +29,7 @@ namespace ESN {
         {}
     };
 
-    std::unique_ptr< Network >
+    ESN_EXPORT std::unique_ptr< Network >
     CreateNetwork( const NetworkParamsNSLI & );
 
 } // namespace ESN

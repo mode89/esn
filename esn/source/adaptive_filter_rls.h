@@ -2,18 +2,19 @@
 #define __ESN_ADAPTIVE_FILTER_RLS_H__
 
 #include <Eigen/Dense>
+#include <esn/export.h>
 
 namespace ESN {
 
     class AdaptiveFilterRLS
     {
     public:
-        AdaptiveFilterRLS(
+        ESN_EXPORT AdaptiveFilterRLS(
             unsigned inputCount,
             float forgettingFactor = 0.99f,
             float regularization = 1000.0f );
 
-        void
+        ESN_EXPORT void
         Train(
             Eigen::VectorXf & w,
             float actualOutput,

@@ -1,6 +1,8 @@
 #ifndef __ESN_NETWORK_NSLI_H__
 #define __ESN_NETWORK_NSLI_H__
 
+#include <esn/export.h>
+
 extern "C" {
 
     struct esnNetworkParamsNSLI
@@ -14,7 +16,7 @@ extern "C" {
         float onlineTrainingInitialCovariance;
     };
 
-    void *
+    ESN_EXPORT void *
     esnCreateNetworkNSLI( esnNetworkParamsNSLI * );
 
 } // export "C"

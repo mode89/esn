@@ -1,27 +1,29 @@
 #ifndef __ESN_NETWORK_H__
 #define __ESN_NETWORK_H__
 
+#include <esn/export.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-void
+ESN_EXPORT void
 esnNetworkSetInputs( void * network,
     float * inputs, int inputCount );
 
-void
+ESN_EXPORT void
 esnNetworkStep( void * network,
     float step );
 
-void
+ESN_EXPORT void
 esnNetworkCaptureOutput( void * network,
     float * outputs, int outputCount );
 
-void
+ESN_EXPORT void
 esnNetworkTrainOnline( void * network,
     float * outputs, int outputCount, bool forceOutpus );
 
-void
+ESN_EXPORT void
 esnNetworkDestruct( void * network );
 
 #ifdef __cplusplus
