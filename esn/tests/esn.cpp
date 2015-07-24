@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <esn/create_network_nsli.h>
-#include <esn/network.h>
+#include <esn/network.hpp>
 #include <random>
 
 TEST( ESN, CreateNetworkNSLI )

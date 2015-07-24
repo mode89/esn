@@ -1,5 +1,5 @@
-#ifndef __ESN_NETWORK_H__
-#define __ESN_NETWORK_H__
+#ifndef __ESN_NETWORK_HPP__
+#define __ESN_NETWORK_HPP__
 
 #include <vector>
 
@@ -32,4 +32,4 @@ namespace ESN {
 
 } // namespace ESN
 
-#endif // __ESN_NETWORK_H__
+#endif // __ESN_NETWORK_HPP__

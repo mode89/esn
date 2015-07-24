@@ -2,7 +2,7 @@
 #define __ESN_NETWORK_NSLI_H__
 
 #include <Eigen/Sparse>
-#include <esn/network.h>
+#include <esn/network.hpp>
 #include <adaptive_filter_rls.h>
 
 namespace ESN {
