@@ -1,5 +1,7 @@
 #include <cmath>
+#include <cstring>
 #include <Eigen/Eigenvalues>
+#include <esn/network_nsli.h>
 #include <esn/network_nsli.hpp>
 #include <network_nsli.h>
 
@@ -141,3 +143,15 @@ namespace ESN {
     }
 
 } // namespace ESN
+
+void * esnCreateNetworkNSLI( esnNetworkParamsNSLI * params )
+{
+    static_assert( sizeof( esnNetworkParamsNSLI ) ==
+        sizeof( ESN::NetworkParamsNSLI ), "esnNetworkParamsNSLI must be"
+        "the same size as ESN::NetworkParamsNSLI." );
+
+    ESN::NetworkParamsNSLI p;
+    std::memcpy( &p, params, sizeof( esnNetworkParamsNSLI ) );
+
+    return new ESN::NetworkNSLI( p );
+}
