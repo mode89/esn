@@ -1,5 +1,5 @@
 #include <cmath>
-#include <esn/esn.h>
+#include <esn/esn.hpp>
 #include <iomanip>
 #include <iostream>
 #include <random>
