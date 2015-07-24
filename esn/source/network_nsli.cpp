@@ -1,6 +1,6 @@
 #include <cmath>
 #include <Eigen/Eigenvalues>
-#include <esn/create_network_nsli.h>
+#include <esn/network_nsli.hpp>
 #include <network_nsli.h>
 
 namespace ESN {

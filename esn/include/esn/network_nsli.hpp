@@ -1,5 +1,5 @@
-#ifndef __ESN_CREATE_NETWORK_NSLI_H__
-#define __ESN_CREATE_NETWORK_NSLI_H__
+#ifndef __ESN_NETWORK_NSLI_HPP__
+#define __ESN_NETWORK_NSLI_HPP__
 
 #include <memory>
 
@@ -33,4 +33,4 @@ namespace ESN {
 
 } // namespace ESN
 
-#endif // __ESN_CREATE_NETWORK_NSLI_H__
+#endif // __ESN_NETWORK_NSLI_HPP__

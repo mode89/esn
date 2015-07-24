@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <esn/create_network_nsli.h>
+#include <esn/network_nsli.hpp>
 #include <esn/network.hpp>
 #include <random>
 
