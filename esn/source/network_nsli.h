@@ -1,5 +1,5 @@
-#ifndef __ESN_NETWORK_NSLI_H__
-#define __ESN_NETWORK_NSLI_H__
+#ifndef __ESN_SOURCE_NETWORK_NSLI_H__
+#define __ESN_SOURCE_NETWORK_NSLI_H__
 
 #include <Eigen/Sparse>
 #include <esn/network.hpp>
@@ -54,4 +54,4 @@ namespace ESN {
 
 } // namespace ESN
 
-#endif // __ESN_NETWORK_NSLI_H__
+#endif // __ESN_SOURCE_NETWORK_NSLI_H__
