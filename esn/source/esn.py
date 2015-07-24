@@ -5,38 +5,38 @@ import os
 
 # Search for ESN shared library
 
-__LIB_BASE_NAME = "esn"
+_DLL_BASE_NAME = "esn"
 if os.name == "nt" :
-    __LIB_NAME = __LIB_BASE_NAME + ".dll"
+    _DLL_NAME = _DLL_BASE_NAME + ".dll"
 else :
-    __LIB_NAME = "lib" + __LIB_BASE_NAME + ".so"
+    _DLL_NAME = "lib" + _DLL_BASE_NAME + ".so"
 
 FIND_LIBRARY_PATHS = [
-    __LIB_BASE_NAME,
-    os.path.join( os.getcwd(), __LIB_BASE_NAME )
+    _DLL_BASE_NAME,
+    os.path.join( os.getcwd(), _DLL_BASE_NAME )
 ]
 
 frames = inspect.stack()
 for frame in frames :
     frameDir = os.path.dirname( frame[1] )
-    checkPath = os.path.join( frameDir, __LIB_BASE_NAME )
+    checkPath = os.path.join( frameDir, _DLL_BASE_NAME )
     FIND_LIBRARY_PATHS.append( checkPath )
 
 for path in FIND_LIBRARY_PATHS :
-    __LIB_PATH = find_library( path )
-    if __LIB_PATH != None :
+    _DLL_PATH = find_library( path )
+    if _DLL_PATH != None :
         break
     else :
         pathDir = os.path.dirname( path )
-        checkPath = os.path.join( pathDir, __LIB_NAME )
+        checkPath = os.path.join( pathDir, _DLL_NAME )
         if os.path.exists( checkPath ) :
-            __LIB_PATH = checkPath
+            _DLL_PATH = checkPath
             break
 
-if __LIB_PATH == None :
+if _DLL_PATH == None :
     raise RuntimeError( "Failed to find ESN shared library." )
 
-__LIB = cdll.LoadLibrary( __LIB_PATH )
+_DLL = cdll.LoadLibrary( _DLL_PATH )
 
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
@@ -67,7 +67,5 @@ def CreateNetworkNSLI(
         onlineTrainingForgettingFactor = onlineTrainingForgettingFactor,
         onlineTrainingInitialCovariance = onlineTrainingInitialCovariance )
 
-    func = __LIB.esnCreateNetworkNSLI
-    func.restype = c_void_p
-
+    _DLL.esnCreateNetworkNSLI.restype = c_void_p
     return func( pointer( params ) )
