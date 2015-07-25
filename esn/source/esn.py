@@ -60,6 +60,12 @@ class Network :
         output = [ outputArray[ i ] for i in range( count ) ]
         return output
 
+    def train_online( self, output, forceOutput = False ) :
+        OutputArrayType = c_float * len( output )
+        outputArray = OutputArrayType( *output )
+        _DLL.esnNetworkTrainOnline( self.pointer, pointer( outputArray ),
+            len( output ), forceOutput )
+
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
             ( "inputCount", c_uint ),
