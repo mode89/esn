@@ -52,6 +52,14 @@ class Network :
     def step( self, step ) :
         _DLL.esnNetworkStep( self.pointer, c_float( step ) )
 
+    def capture_output( self, count ) :
+        OutputArrayType = c_float * count
+        outputArray = OutputArrayType()
+        _DLL.esnNetworkCaptureOutput( self.pointer,
+            pointer( outputArray ), count )
+        output = [ outputArray[ i ] for i in range( count ) ]
+        return output
+
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
             ( "inputCount", c_uint ),
