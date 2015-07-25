@@ -49,6 +49,9 @@ class Network :
     def release( self ) :
         _DLL.esnNetworkDestruct( self.pointer )
 
+    def step( self, step ) :
+        _DLL.esnNetworkStep( self.pointer, c_float( step ) )
+
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
             ( "inputCount", c_uint ),
