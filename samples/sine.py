@@ -10,10 +10,9 @@ TRAIN_TIME = 25.0 / SINE_FREQ
 network = esn.CreateNetworkNSLI( inputCount = 1, neuronCount = NEURON_COUNT,
     outputCount  = 1, leakingRate = LEAKING_RATE )
 
-time = 0.0
-while True :
+def simulate( frame ) :
 
-    time += SIM_STEP
+    time = frame * SIM_STEP
 
     sine = sin( 2 * pi * SINE_FREQ * time )
 
@@ -23,10 +22,19 @@ while True :
     if time < TRAIN_TIME :
         network.train_online( [ sine ], True )
 
+    return [ time, sine, output[0] ]
+
+frame = 0
+while True :
+
+    frame += 1
+
+    time, sine, output = simulate( frame )
+
     print( "%10s %10s %10s" %
             (
                 str( "%0.5f" % time ),
                 str( "%0.5f" % sine ),
-                str( "%0.5f" % output[0] )
+                str( "%0.5f" % output )
             )
         )
