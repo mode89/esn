@@ -1,5 +1,15 @@
 from math import *
 import esn
+import imp
+
+# Check if we can use matplotlib
+try :
+    imp.find_module( "matplotlib" )
+    from matplotlib import pyplot
+    from matplotlib import animation
+    USE_MATPLOTLIB = True
+except ImportError :
+    USE_MATPLOTLIB = False
 
 NEURON_COUNT = 100
 LEAKING_RATE = 0.1
