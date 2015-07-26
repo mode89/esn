@@ -34,17 +34,40 @@ def simulate( frame ) :
 
     return [ time, sine, output[0] ]
 
-frame = 0
-while True :
+if USE_MATPLOTLIB :
 
-    frame += 1
+    figure = pyplot.figure()
+    subplot = figure.add_subplot( 111 )
+    line, = subplot.plot( [], [] )
 
-    time, sine, output = simulate( frame )
+    timeData = []
+    sineData = []
 
-    print( "%10s %10s %10s" %
-            (
-                str( "%0.5f" % time ),
-                str( "%0.5f" % sine ),
-                str( "%0.5f" % output )
+    def animationFunc( frame ) :
+        time, sine, output = simulate( frame )
+        timeData.append( time )
+        sineData.append( sine )
+        line.set_data( timeData, sineData )
+        subplot.relim()
+        subplot.autoscale_view()
+
+    anim = animation.FuncAnimation( figure, animationFunc, interval = 30 )
+
+    pyplot.show()
+
+else :
+
+    frame = 0
+    while True :
+
+        frame += 1
+
+        time, sine, output = simulate( frame )
+
+        print( "%10s %10s %10s" %
+                (
+                    str( "%0.5f" % time ),
+                    str( "%0.5f" % sine ),
+                    str( "%0.5f" % output )
+                )
             )
-        )
