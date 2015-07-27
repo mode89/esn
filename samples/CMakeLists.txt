@@ -22,16 +22,11 @@ else()
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}" )
 endif()
 
-set( CONFIG_PY "${OUTPUT_DIR}/config.py" )
-add_custom_command( OUTPUT ${CONFIG_PY}
-    COMMAND ${CMAKE_COMMAND} -E
-        echo "ESN_LIB = '$<TARGET_FILE:esn>'" > ${CONFIG_PY} )
-
 set( SINE_PY "${OUTPUT_DIR}/sine.py" )
 add_custom_command( OUTPUT ${SINE_PY}
     COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_CURRENT_SOURCE_DIR}/sine.py"
         ${SINE_PY}
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sine.py" ${CONFIG_PY} )
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sine.py" )
 
 add_custom_target( sine_py ALL DEPENDS ${SINE_PY} )
