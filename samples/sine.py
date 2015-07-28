@@ -16,6 +16,7 @@ LEAKING_RATE = 0.1
 SINE_FREQ = 1.0
 SIM_STEP = 0.01
 TRAIN_TIME = 25.0 / SINE_FREQ
+STEPS_PER_FRAME = 10
 
 network = esn.CreateNetworkNSLI( inputCount = 1, neuronCount = NEURON_COUNT,
     outputCount  = 1, leakingRate = LEAKING_RATE )
@@ -38,18 +39,24 @@ if USE_MATPLOTLIB :
 
     figure = pyplot.figure()
     subplot = figure.add_subplot( 111 )
-    line, = subplot.plot( [], [] )
+    sineLine, outputLine = subplot.plot( [], [], [], [] )
+    subplot.set_xlim( -1, 1 )
+    subplot.set_ylim( -1.1, 1.1 )
+    subplot.grid( True )
 
     timeData = []
     sineData = []
+    outputData = []
 
     def animationFunc( frame ) :
-        time, sine, output = simulate( frame )
-        timeData.append( time )
-        sineData.append( sine )
-        line.set_data( timeData, sineData )
-        subplot.relim()
-        subplot.autoscale_view()
+        for i in range( 0, STEPS_PER_FRAME ) :
+            time, sine, output = simulate( i + STEPS_PER_FRAME * frame )
+            timeData.append( time )
+            sineData.append( sine )
+            outputData.append( output )
+        sineLine.set_data( timeData, sineData )
+        outputLine.set_data( timeData, outputData )
+        subplot.set_xlim( time - 1, time + 0.1 )
 
     anim = animation.FuncAnimation( figure, animationFunc, interval = 30 )
 
