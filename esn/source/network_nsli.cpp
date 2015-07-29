@@ -38,7 +38,7 @@ namespace ESN {
                 "NetworkParamsNSLI::outputCount must be not null" );
         if ( !( params.leakingRate > 0.0 && params.leakingRate <= 1.0 ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRate must be withing "
+                "NetworkParamsNSLI::leakingRate must be within "
                 "interval [0,1)" );
 
         mWIn = Eigen::MatrixXf::Random(
@@ -147,7 +147,7 @@ namespace ESN {
 void * esnCreateNetworkNSLI( esnNetworkParamsNSLI * params )
 {
     static_assert( sizeof( esnNetworkParamsNSLI ) ==
-        sizeof( ESN::NetworkParamsNSLI ), "esnNetworkParamsNSLI must be"
+        sizeof( ESN::NetworkParamsNSLI ), "esnNetworkParamsNSLI must be "
         "the same size as ESN::NetworkParamsNSLI." );
 
     ESN::NetworkParamsNSLI p;
