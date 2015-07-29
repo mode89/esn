@@ -7,6 +7,7 @@ extern "C" {
 
     struct esnNetworkParamsNSLI
     {
+        unsigned structSize;
         unsigned inputCount;
         unsigned neuronCount;
         unsigned outputCount;

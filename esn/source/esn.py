@@ -68,6 +68,7 @@ class Network :
 
 class NetworkParamsNSLI( Structure ) :
     _fields_ = [
+            ( "structSize", c_uint ),
             ( "inputCount", c_uint ),
             ( "neuronCount", c_uint ),
             ( "outputCount", c_uint ),
@@ -87,6 +88,7 @@ def CreateNetworkNSLI(
     onlineTrainingInitialCovariance = 1000.0 ) :
 
     params = NetworkParamsNSLI(
+        structSize = sizeof( NetworkParamsNSLI ),
         inputCount = inputCount,
         neuronCount = neuronCount,
         outputCount = outputCount,
