@@ -13,6 +13,7 @@ extern "C" {
         unsigned outputCount;
         float leakingRate;
         float spectralRadius;
+        float connectivity;
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
     };

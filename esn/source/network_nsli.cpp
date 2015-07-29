@@ -40,12 +40,21 @@ namespace ESN {
             throw std::invalid_argument(
                 "NetworkParamsNSLI::leakingRate must be within "
                 "interval [0,1)" );
+        if ( !( params.connectivity > 0.0f &&
+                params.connectivity <= 1.0f ) )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::connectivity must be within "
+                "interval (0,1]" );
 
         mWIn = Eigen::MatrixXf::Random(
             params.neuronCount, params.inputCount );
 
-        Eigen::MatrixXf randomWeights = Eigen::MatrixXf::Random(
-            params.neuronCount, params.neuronCount );
+        Eigen::MatrixXf randomWeights =
+            ( Eigen::MatrixXf::Random( params.neuronCount,
+                params.neuronCount ).array().abs()
+                    <= params.connectivity ).cast< float >() *
+            Eigen::MatrixXf::Random( params.neuronCount,
+                params.neuronCount ).array();
         float spectralRadius =
             randomWeights.eigenvalues().cwiseAbs().maxCoeff();
         mW = ( randomWeights / spectralRadius *
