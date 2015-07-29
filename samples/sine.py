@@ -13,13 +13,18 @@ except ImportError :
 
 NEURON_COUNT = 100
 LEAKING_RATE = 0.1
+CONNECTIVITY = 0.1
 SINE_FREQ = 1.0
 SIM_STEP = 0.01
 TRAIN_TIME = 25.0 / SINE_FREQ
 STEPS_PER_FRAME = 10
 
-network = esn.CreateNetworkNSLI( inputCount = 1, neuronCount = NEURON_COUNT,
-    outputCount  = 1, leakingRate = LEAKING_RATE )
+network = esn.CreateNetworkNSLI(
+    inputCount = 1,
+    neuronCount = NEURON_COUNT,
+    outputCount  = 1,
+    leakingRate = LEAKING_RATE,
+    connectivity = CONNECTIVITY )
 
 def simulate( frame ) :
 
