@@ -61,7 +61,7 @@ if USE_MATPLOTLIB :
             outputData.append( output )
         sineLine.set_data( timeData, sineData )
         outputLine.set_data( timeData, outputData )
-        subplot.set_xlim( time - 1, time + 0.1 )
+        subplot.set_xlim( time - 1 / SINE_FREQ, time + 0.1 / SINE_FREQ )
 
     anim = animation.FuncAnimation( figure, animationFunc, interval = 30 )
 
