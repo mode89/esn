@@ -15,6 +15,7 @@ NEURON_COUNT = 10
 LEAKING_RATE = 0.2
 CONNECTIVITY = 0.1
 SINE_FREQ = 50.0
+SINE_AMPLITUDE = 0.5
 SIM_STEP = 0.001
 TRAIN_TIME = 1 / SINE_FREQ
 STEPS_PER_FRAME = 20
@@ -30,7 +31,7 @@ def simulate( frame ) :
 
     time = frame * SIM_STEP
 
-    sine = sin( 2 * pi * SINE_FREQ * time )
+    sine = sin( 2 * pi * SINE_FREQ * time ) * SINE_AMPLITUDE
 
     network.step( SIM_STEP )
     output = network.capture_output( 1 )
@@ -54,7 +55,7 @@ if USE_MATPLOTLIB :
     subplot = figure.add_subplot( 111 )
     sineLine, outputLine = subplot.plot( [], [], [], [] )
     subplot.set_xlim( -1, 1 )
-    subplot.set_ylim( -1.1, 1.1 )
+    subplot.set_ylim( -1.1 * SINE_AMPLITUDE, 1.1 * SINE_AMPLITUDE )
     subplot.grid( True )
 
     timeData = []
