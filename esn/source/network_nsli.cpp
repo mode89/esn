@@ -153,10 +153,13 @@ namespace ESN {
 
 } // namespace ESN
 
+#define SIZEOF_MEMBER( structure, member ) \
+    sizeof( ( ( structure * ) 0 )->member )
+
 void * esnCreateNetworkNSLI( esnNetworkParamsNSLI * params )
 {
     static_assert( ( sizeof( esnNetworkParamsNSLI ) -
-                        sizeof( esnNetworkParamsNSLI::structSize ) ) ==
+        SIZEOF_MEMBER( esnNetworkParamsNSLI, structSize ) ) ==
         sizeof( ESN::NetworkParamsNSLI ),
         "Wrong size of esnNetworkParamsNSLI" );
 
@@ -167,8 +170,10 @@ void * esnCreateNetworkNSLI( esnNetworkParamsNSLI * params )
 
     ESN::NetworkParamsNSLI p;
     std::memcpy( &p, reinterpret_cast< char * >( params ) +
-        sizeof( esnNetworkParamsNSLI::structSize ),
+        SIZEOF_MEMBER( esnNetworkParamsNSLI, structSize ),
         sizeof( ESN::NetworkParamsNSLI ) );
 
     return new ESN::NetworkNSLI( p );
 }
+
+#undef SIZEOF_MEMBER
