@@ -38,6 +38,14 @@ def simulate( frame ) :
     if time < TRAIN_TIME :
         network.train_online( [ sine ], True )
 
+    print( "%10s %10s %10s" %
+            (
+                str( "%0.5f" % time ),
+                str( "%0.5f" % sine ),
+                str( "%0.5f" % output[0] )
+            )
+        )
+
     return [ time, sine, output[0] ]
 
 if USE_MATPLOTLIB :
@@ -71,15 +79,5 @@ else :
 
     frame = 0
     while True :
-
         frame += 1
-
-        time, sine, output = simulate( frame )
-
-        print( "%10s %10s %10s" %
-                (
-                    str( "%0.5f" % time ),
-                    str( "%0.5f" % sine ),
-                    str( "%0.5f" % output )
-                )
-            )
+        simulate( frame )
