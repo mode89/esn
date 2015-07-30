@@ -7,6 +7,7 @@
 static const unsigned kNeuronCount = 100;
 static const float kLeakingRate = 0.1f;
 static const float kSineFrequency = 1.0f;
+static const float kSineAmplitude = 0.5f;
 static const float kSimulationStep = 0.01f;
 static const float kTrainingTime = 25.0f * 1.0f / kSineFrequency;
 
@@ -24,7 +25,7 @@ int main()
     for ( float time = 0.0f; true; time += kSimulationStep )
     {
         output[0] = sin( 2 * static_cast< float >( M_PI ) *
-            kSineFrequency * time );
+            kSineFrequency * time ) * kSineAmplitude;
 
         network->Step( 0.1f );
         network->CaptureOutput( actualOutput );
