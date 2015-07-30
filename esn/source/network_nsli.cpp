@@ -18,7 +18,6 @@ namespace ESN {
         , mIn( params.inputCount )
         , mWIn( params.neuronCount, params.inputCount )
         , mX( params.neuronCount )
-        , mR( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
@@ -60,7 +59,7 @@ namespace ESN {
         mW = ( randomWeights / spectralRadius *
             params.spectralRadius ).sparseView() ;
 
-        mWOut = Eigen::MatrixXf::Random(
+        mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
 
         mWFB = Eigen::MatrixXf::Random(
@@ -89,13 +88,12 @@ namespace ESN {
             throw std::invalid_argument(
                 "Step size must be positive value" );
 
-        mR = mX.unaryExpr(
-            [] ( float x ) -> float { return std::tanh( x ); } );
+        auto tanh = [] ( float x ) -> float { return std::tanh( x ); };
 
-        mX = ( 1 - mParams.leakingRate ) * mX +
-            mParams.leakingRate * ( mWIn * mIn + mW * mR + mWFB * mOut );
+        mX = ( 1 - mParams.leakingRate ) * mX + ( mParams.leakingRate *
+            ( mWIn * mIn + mW * mX + mWFB * mOut ) ).unaryExpr( tanh );
 
-        mOut = mWOut * mR;
+        mOut = ( mWOut * mX ).unaryExpr( tanh );
     }
 
     void NetworkNSLI::CaptureOutput( std::vector< float > & output )
@@ -142,7 +140,8 @@ namespace ESN {
         bool forceOutput )
     {
         Eigen::VectorXf w = mWOut.row( 0 ).transpose();
-        mAdaptiveFilter.Train( w, mOut( 0 ), output[0], mR );
+        mAdaptiveFilter.Train( w, std::atanh( mOut( 0 ) ),
+            std::atanh( output[0] ), mX );
         mWOut.row( 0 ) = w.transpose();
 
         if ( forceOutput )
