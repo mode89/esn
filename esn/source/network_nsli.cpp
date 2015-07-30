@@ -139,10 +139,13 @@ namespace ESN {
     void NetworkNSLI::TrainOnline( const std::vector< float > & output,
         bool forceOutput )
     {
-        Eigen::VectorXf w = mWOut.row( 0 ).transpose();
-        mAdaptiveFilter.Train( w, std::atanh( mOut( 0 ) ),
-            std::atanh( output[0] ), mX );
-        mWOut.row( 0 ) = w.transpose();
+        for ( unsigned i = 0; i < mParams.outputCount; ++ i )
+        {
+            Eigen::VectorXf w = mWOut.row( i ).transpose();
+            mAdaptiveFilter.Train( w, std::atanh( mOut( i ) ),
+                std::atanh( output[i] ), mX );
+            mWOut.row( i ) = w.transpose();
+        }
 
         if ( forceOutput )
             mOut = Eigen::Map< Eigen::VectorXf >(
