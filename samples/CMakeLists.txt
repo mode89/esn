@@ -22,11 +22,17 @@ else()
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}" )
 endif()
 
-set( SINE_PY "${OUTPUT_DIR}/sine.py" )
-add_custom_command( OUTPUT ${SINE_PY}
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/sine.py"
-        ${SINE_PY}
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sine.py" )
+# Deploy all python samples
 
-add_custom_target( sine_py ALL DEPENDS ${SINE_PY} )
+    file( GLOB PYTHON_FILES *.py )
+    foreach( file IN ITEMS ${PYTHON_FILES} )
+        get_filename_component( fileName ${file} NAME )
+        set( outputFile "${OUTPUT_DIR}/${fileName}" )
+        list( APPEND OUTPUT_PYTHON_FILES "${outputFile}" )
+        add_custom_command( OUTPUT "${outputFile}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${file}" "${outputFile}"
+            DEPENDS "${file}"
+            COMMENT "Deploy ${fileName}"
+        )
+    endforeach()
+    add_custom_target( samples-python ALL DEPENDS ${OUTPUT_PYTHON_FILES} )
