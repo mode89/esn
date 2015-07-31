@@ -90,10 +90,18 @@ namespace ESN {
 
         auto tanh = [] ( float x ) -> float { return std::tanh( x ); };
 
+#ifdef ESN_NSLI_LINEAR_OUTPUT
+        mX = ( 1 - mParams.leakingRate ) * mX +
+            ( mParams.leakingRate * ( mWIn * mIn + mW * mX +
+                mWFB * mOut.unaryExpr( tanh ) ) ).unaryExpr( tanh );
+
+        mOut = mWOut * mX;
+#else
         mX = ( 1 - mParams.leakingRate ) * mX + ( mParams.leakingRate *
             ( mWIn * mIn + mW * mX + mWFB * mOut ) ).unaryExpr( tanh );
 
         mOut = ( mWOut * mX ).unaryExpr( tanh );
+#endif
     }
 
     void NetworkNSLI::CaptureOutput( std::vector< float > & output )
@@ -142,8 +150,12 @@ namespace ESN {
         for ( unsigned i = 0; i < mParams.outputCount; ++ i )
         {
             Eigen::VectorXf w = mWOut.row( i ).transpose();
+#ifdef ESN_NSLI_LINEAR_OUTPUT
+            mAdaptiveFilter.Train( w, mOut( i ), output[i], mX );
+#else
             mAdaptiveFilter.Train( w, std::atanh( mOut( i ) ),
                 std::atanh( output[i] ), mX );
+#endif
             mWOut.row( i ) = w.transpose();
         }
 
