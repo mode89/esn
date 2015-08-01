@@ -3,6 +3,15 @@ import esn
 import imp
 import random
 
+# Check if we can use matplotlib
+try :
+    imp.find_module( "matplotlib" )
+    from matplotlib import pyplot
+    from matplotlib import animation
+    USE_MATPLOTLIB = True
+except ImportError :
+    USE_MATPLOTLIB = False
+
 NEURON_COUNT = 100
 LEAKING_RATE = 0.1
 CONNECTIVITY = 0.1
@@ -82,9 +91,43 @@ class Model :
                 )
             )
 
+        return time, self.inputs[0], referenceOutput, output[0]
+
 model = Model()
 
-frame = 0
-while True :
-    frame += 1
-    model.simulate( frame )
+if USE_MATPLOTLIB :
+
+    figure = pyplot.figure()
+    subplot = figure.add_subplot( 111 )
+    inputLine, refLine, outputLine = subplot.plot( [], [], [], [], [], [] )
+    subplot.set_ylim( -0.1, 1.1 )
+    subplot.grid( True )
+
+    timeData = []
+    inputData = []
+    refData = []
+    outputData = []
+
+    def animationFunc( frame ) :
+        for i in range( 0, STEPS_PER_FRAME ) :
+            time, input, ref, output = \
+                model.simulate( i + STEPS_PER_FRAME * frame )
+            timeData.append( time )
+            inputData.append( input )
+            refData.append( ref )
+            outputData.append( output )
+        inputLine.set_data( timeData, inputData )
+        refLine.set_data( timeData, refData )
+        outputLine.set_data( timeData, outputData )
+        subplot.set_xlim( time - 1, time + 0.1 )
+
+    anim = animation.FuncAnimation( figure, animationFunc, interval = 30 )
+
+    pyplot.show()
+
+else :
+
+    frame = 0
+    while True :
+        frame += 1
+        model.simulate( frame )
