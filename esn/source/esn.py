@@ -49,6 +49,12 @@ class Network :
     def release( self ) :
         _DLL.esnNetworkDestruct( self.pointer )
 
+    def set_inputs( self, inputs ) :
+        InputsArrayType = c_float * len( inputs )
+        inputsArray = InputsArrayType( *inputs )
+        _DLL.esnNetworkSetInputs( self.pointer, pointer( inputsArray ),
+            len( inputs ) )
+
     def step( self, step ) :
         _DLL.esnNetworkStep( self.pointer, c_float( step ) )
 
