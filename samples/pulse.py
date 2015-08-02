@@ -20,6 +20,7 @@ INTERVAL_WIDTH_MIN = 0.1
 INTERVAL_WIDTH_MAX = 1.0
 TARGET_INTERVAL_WIDTH = 0.7
 TARGET_INTERVAL_ERROR = 0.1
+INPUT_PULSE_MAX = 1.0
 OUTPUT_PULSE_WIDTH = 0.1
 OUTPUT_PULSE_MAX = 1.0
 OUTPUT_PULSE_THRESHOLD = 0.0001
@@ -71,6 +72,9 @@ class Model :
             self.currentIntervalWidth = random.uniform( INTERVAL_WIDTH_MIN,
                 INTERVAL_WIDTH_MAX )
             self.nextInterval += self.currentIntervalWidth
+
+        self.inputs[0] = self.pulse( self.nextInterval - time,
+            self.currentIntervalWidth, INPUT_PULSE_MAX ) if self.inputState else 0
 
         referenceOutput = self.pulse( time - self.outputPulseStart,
             OUTPUT_PULSE_WIDTH, self.outputPulseAmplitude );
