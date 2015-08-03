@@ -81,6 +81,7 @@ class NetworkParamsNSLI( Structure ) :
             ( "leakingRate", c_float ),
             ( "spectralRadius", c_float ),
             ( "connectivity", c_float ),
+            ( "linearOutput", c_bool ),
             ( "onlineTrainingForgettingFactor", c_float ),
             ( "onlineTrainingInitialCovariance", c_float )
         ]
@@ -92,6 +93,7 @@ def CreateNetworkNSLI(
     leakingRate = 1.0,
     spectralRadius = 1.0,
     connectivity = 1.0,
+    linearOutput = False,
     onlineTrainingForgettingFactor = 0.999,
     onlineTrainingInitialCovariance = 1000.0 ) :
 
@@ -103,6 +105,7 @@ def CreateNetworkNSLI(
         leakingRate = leakingRate,
         spectralRadius = spectralRadius,
         connectivity = connectivity,
+        linearOutput = linearOutput,
         onlineTrainingForgettingFactor = onlineTrainingForgettingFactor,
         onlineTrainingInitialCovariance = onlineTrainingInitialCovariance )
 

@@ -14,6 +14,7 @@ extern "C" {
         float leakingRate;
         float spectralRadius;
         float connectivity;
+        bool linearOutput;
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
     };
