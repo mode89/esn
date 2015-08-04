@@ -55,6 +55,18 @@ class Network :
         _DLL.esnNetworkSetInputs( self.pointer, pointer( inputsArray ),
             len( inputs ) )
 
+    def set_input_scalings( self, scalings ) :
+        ScalingsArrayType = c_float * len( scalings )
+        scalingsArray = ScalingsArrayType( *scalings )
+        _DLL.esnNetworkSetInputScalings( self.pointer,
+            pointer( scalingsArray ), len( scalings ) )
+
+    def set_feedback_scalings( self, scalings ) :
+        ScalingsArrayType = c_float * len( scalings )
+        scalingsArray = ScalingsArrayType( *scalings )
+        _DLL.esnNetworkSetFeedbackScalings( self.pointer,
+            pointer( scalingsArray ), len( scalings ) )
+
     def step( self, step ) :
         _DLL.esnNetworkStep( self.pointer, c_float( step ) )
 

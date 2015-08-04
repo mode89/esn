@@ -7,6 +7,20 @@ void esnNetworkSetInputs( void * network, float * inputs, int inputCount )
         std::vector< float >( inputs, inputs + inputCount ) );
 }
 
+void esnNetworkSetInputScalings( void * network,
+    float * scalings, int count )
+{
+    static_cast< ESN::Network * >( network )->SetInputScalings(
+        std::vector< float >( scalings, scalings + count ) );
+}
+
+void esnNetworkSetFeedbackScalings( void * network,
+    float * scalings, int count )
+{
+    static_cast< ESN::Network * >( network )->SetFeedbackScalings(
+        std::vector< float >( scalings, scalings + count ) );
+}
+
 void esnNetworkStep( void * network, float step )
 {
     static_cast< ESN::Network * >( network )->Step( step );

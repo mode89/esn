@@ -13,6 +13,12 @@ namespace ESN {
         SetInputs( const std::vector< float > & ) = 0;
 
         virtual ESN_EXPORT void
+        SetInputScalings( const std::vector< float > & ) = 0;
+
+        virtual ESN_EXPORT void
+        SetFeedbackScalings( const std::vector< float > & ) = 0;
+
+        virtual ESN_EXPORT void
         Step( float step ) = 0;
 
         virtual ESN_EXPORT void

@@ -12,6 +12,14 @@ esnNetworkSetInputs( void * network,
     float * inputs, int inputCount );
 
 ESN_EXPORT void
+esnNetworkSetInputScalings( void * network,
+    float * scalings, int count );
+
+ESN_EXPORT void
+esnNetworkSetFeedbackScalings( void * network,
+    float * scalings, int cound );
+
+ESN_EXPORT void
 esnNetworkStep( void * network,
     float step );
 

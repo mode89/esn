@@ -20,6 +20,12 @@ namespace ESN {
         SetInputs( const std::vector< float > & );
 
         void
+        SetInputScalings( const std::vector< float > & );
+
+        void
+        SetFeedbackScalings( const std::vector< float > & );
+
+        void
         Step( float step );
 
         void
@@ -46,11 +52,13 @@ namespace ESN {
         NetworkParamsNSLI mParams;
         Eigen::VectorXf mIn;
         Eigen::MatrixXf mWIn;
+        Eigen::VectorXf mWInScaling;
         Eigen::VectorXf mX;
         Eigen::SparseMatrix< float > mW;
         Eigen::VectorXf mOut;
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;
+        Eigen::VectorXf mWFBScaling;
         AdaptiveFilterRLS mAdaptiveFilter;
     };
 

@@ -17,11 +17,13 @@ namespace ESN {
         : mParams( params )
         , mIn( params.inputCount )
         , mWIn( params.neuronCount, params.inputCount )
+        , mWInScaling( params.inputCount )
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB( params.neuronCount, params.outputCount )
+        , mWFBScaling( params.outputCount )
         , mAdaptiveFilter( params.neuronCount,
             params.onlineTrainingForgettingFactor,
             params.onlineTrainingInitialCovariance )
@@ -59,11 +61,15 @@ namespace ESN {
         mW = ( randomWeights / spectralRadius *
             params.spectralRadius ).sparseView() ;
 
+        mWInScaling = Eigen::VectorXf::Constant( params.inputCount, 1.0f );
+
         mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
 
         mWFB = Eigen::MatrixXf::Random(
             params.neuronCount, params.outputCount );
+
+        mWFBScaling = Eigen::VectorXf::Constant( params.outputCount, 1.0f );
 
         mIn = Eigen::VectorXf::Zero( params.inputCount );
         mX = Eigen::VectorXf::Random( params.neuronCount );
@@ -82,6 +88,26 @@ namespace ESN {
             const_cast< float * >( inputs.data() ), inputs.size() );
     }
 
+    void NetworkNSLI::SetInputScalings(
+        const std::vector< float > & scalings )
+    {
+        if ( scalings.size() != mParams.inputCount )
+            throw std::invalid_argument(
+                "Wrong size of the scalings vector" );
+        mWInScaling = Eigen::Map< Eigen::VectorXf >(
+            const_cast< float * >( scalings.data() ), scalings.size() );
+    }
+
+    void NetworkNSLI::SetFeedbackScalings(
+        const std::vector< float > & scalings )
+    {
+        if ( scalings.size() != mParams.outputCount )
+            throw std::invalid_argument(
+                "Wrong size of the scalings vector" );
+        mWFBScaling = Eigen::Map< Eigen::VectorXf >(
+            const_cast< float * >( scalings.data() ), scalings.size() );
+    }
+
     void NetworkNSLI::Step( float step )
     {
         if ( step <= 0.0f )
@@ -93,15 +119,17 @@ namespace ESN {
         if ( mParams.linearOutput )
         {
             mX = ( 1 - mParams.leakingRate ) * mX +
-                ( mParams.leakingRate * ( mWIn * mIn + mW * mX +
-                    mWFB * mOut.unaryExpr( tanh ) ) ).unaryExpr( tanh );
+                ( mParams.leakingRate * ( mWIn * mIn * mWInScaling +
+                    mW * mX + mWFB * mOut.unaryExpr( tanh ) *
+                        mWFBScaling ) ).unaryExpr( tanh );
 
             mOut = mWOut * mX;
         }
         else
         {
             mX = ( 1 - mParams.leakingRate ) * mX + ( mParams.leakingRate *
-                ( mWIn * mIn + mW * mX + mWFB * mOut ) ).unaryExpr( tanh );
+                ( mWIn * mIn * mWInScaling + mW * mX +
+                    mWFB * mOut * mWFBScaling ) ).unaryExpr( tanh );
 
             mOut = ( mWOut * mX ).unaryExpr( tanh );
         }
