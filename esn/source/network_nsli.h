@@ -23,6 +23,9 @@ namespace ESN {
         Step( float step );
 
         void
+        CaptureActivations( std::vector< float > & activations );
+
+        void
         CaptureOutput( std::vector< float > & output );
 
         void

@@ -58,6 +58,13 @@ class Network :
     def step( self, step ) :
         _DLL.esnNetworkStep( self.pointer, c_float( step ) )
 
+    def capture_activations( self, count ) :
+        ActivationsArrayType = c_float * count
+        activationsArray = ActivationsArrayType()
+        _DLL.esnNetworkCaptureActivations( self.pointer,
+            pointer( activationsArray ), count )
+        return [ activationsArray[i] for i in range( count ) ]
+
     def capture_output( self, count ) :
         OutputArrayType = c_float * count
         outputArray = OutputArrayType()

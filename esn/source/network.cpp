@@ -12,6 +12,16 @@ void esnNetworkStep( void * network, float step )
     static_cast< ESN::Network * >( network )->Step( step );
 }
 
+void esnNetworkCaptureActivations( void * network,
+    float * activations, int neuronCount )
+{
+    std::vector< float > activationsVector( neuronCount );
+    static_cast< ESN::Network * >( network )->CaptureActivations(
+        activationsVector );
+    std::copy( activationsVector.begin(), activationsVector.end(),
+        activations );
+}
+
 void esnNetworkCaptureOutput( void * network,
     float * outputs, int outputCount )
 {

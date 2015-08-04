@@ -107,6 +107,18 @@ namespace ESN {
         }
     }
 
+    void NetworkNSLI::CaptureActivations(
+        std::vector< float > & activations )
+    {
+        if ( activations.size() != mParams.neuronCount )
+            throw std::invalid_argument(
+                "Size of the vector must be equal "
+                "actual number of neurons" );
+
+        for ( int i = 0; i < mParams.neuronCount; ++ i )
+            activations[ i ] = mX( i );
+    }
+
     void NetworkNSLI::CaptureOutput( std::vector< float > & output )
     {
         if ( output.size() != mParams.outputCount )
