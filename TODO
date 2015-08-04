@@ -1,5 +1,5 @@
 ESN
-    reservoir sparsity
+    * reservoir sparsity
     * feedback
     implement least mean squares filter
     * implement recursive least squares (RLS) filter
