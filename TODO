@@ -5,6 +5,8 @@ ESN
     * feedback
     implement least mean squares filter
     * implement recursive least squares (RLS) filter
+    python
+        save params in Network
     tests
         * move tests folder to esn folder
         * adaptive filters
