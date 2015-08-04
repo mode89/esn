@@ -1,5 +1,6 @@
 ESN
     input weigths scaling
+    feedback weights scaling
     * reservoir sparsity
     * feedback
     implement least mean squares filter
