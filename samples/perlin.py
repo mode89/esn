@@ -3,14 +3,14 @@ import math
 class Noise :
 
     def __init__( self, persistence, octave_count ) :
-        self.persistence = persistence
-        self.octave_count = octave_count
+        self._persistence = persistence
+        self._octave_count = octave_count
 
     def __call__( self, x ) :
         retval = 0
-        for octave in range( self.octave_count ) :
+        for octave in range( self._octave_count ) :
             frequency = 2 ** octave
-            amplitude = self.persistence ** octave
+            amplitude = self._persistence ** octave
             retval += self._interpolated_random( x * frequency ) * amplitude
         return retval
 
