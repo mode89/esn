@@ -50,20 +50,24 @@ class Model :
                 outputCount=1
             )
         self._noise = perlin.Noise( persistence=0.5, octave_count=8 )
-        self._time = 0
+        self._pattern = Signal( 1000 )
+        self.time = 0
 
     def step( self, step ) :
-        self.input = self._noise( self._time )
+        self._pattern.step( step )
+        self.noise_value = self._noise( self.time ) * 0.3 + 0.5
+        self.input = self.noise_value + self._pattern.value
         self._network.set_inputs( [ self.input ] )
         self._network.step( step )
         self.output = self._network.capture_output( 1 )[ 0 ]
 
-        print( "%10s %10s %10s" %
+        print( "%10s %10s %10s %10s" %
                 (
-                    str( "%0.3f" % self._time ),
+                    str( "%0.3f" % self.time ),
                     str( "%0.5f" % self.input ),
+                    str( "%0.5f" % self._pattern.value ),
                     str( "%0.5f" % self.output )
                 )
             )
 
-        self._time += step
+        self.time += step
