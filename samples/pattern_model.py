@@ -1,6 +1,46 @@
 import esn
 import perlin
 
+PATTERN_LENGTH = 1
+PATTERN_PAUSE = 0.5
+
+class Signal :
+
+    def __init__( self, seed ) :
+        self.seed = seed
+        self.value = 0
+        self.time = 0
+        self.front_edge_time = 0
+        self.pattern_noise = \
+            perlin.Noise( persistence=0.5, octave_count=8 )
+        self.pulse_noise = \
+            perlin.Noise( persistence=0.5, octave_count=1 )
+        self.prev_pulse_noise = self.pulse_noise( 0 )
+        self.cur_pulse_noise = self.pulse_noise( 0 )
+
+    def step( self, step ) :
+        if self.time > ( self.front_edge_time + PATTERN_LENGTH + \
+           PATTERN_PAUSE ) and self.is_front_edge() :
+            self.front_edge_time = self.time
+
+        if self.front_edge_time <= self.time and \
+           self.time <= ( self.front_edge_time + PATTERN_LENGTH ) :
+            self.value = self.pattern_noise( self.time - \
+                    self.front_edge_time + self.seed ) * 0.3 + 0.5
+        else :
+            self.value = 0
+
+        self.prev_pulse_noise = \
+            self.pulse_noise( self.time + self.seed )
+        self.time += step
+
+    def is_front_edge( self ) :
+        if self.prev_pulse_noise <= 0 and \
+            self.pulse_noise( self.time + self.seed ) > 0 :
+            return True
+        else :
+            return False
+
 class Model :
 
     def __init__( self, neuron_count ) :
