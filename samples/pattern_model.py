@@ -1,7 +1,7 @@
 import esn
 import perlin
 
-class PatternModel :
+class Model :
 
     def __init__( self, neuron_count ) :
         self._network = esn.CreateNetworkNSLI(
