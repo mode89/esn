@@ -5,6 +5,7 @@ ESN
     * feedback
     implement least mean squares filter
     * implement recursive least squares (RLS) filter
+    orthonormal weight matrix
     python
         save params in Network
     tests
