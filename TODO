@@ -18,3 +18,5 @@ samples
         plotting
     pulse
         grid search
+    pattern
+        false pattern signal
