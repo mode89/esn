@@ -10,13 +10,13 @@ class Gaussian :
 
     def __call__( self, x ) :
         return self.a * exp( -( ( x - self.b ) ** 2 ) /
-            ( ( 2 * self.c ) ** 2 ) )
+            ( ( 2.0 * self.c ) ** 2 ) )
 
 class GaussianPulse :
 
     def __init__( self, amplitude, width ) :
-        self.gaussian = Gaussian( a = amplitude, b = ( width / 2 ),
-            c = width / 10 )
+        self.gaussian = Gaussian( a = amplitude, b = ( width / 2.0 ),
+            c = width / 10.0 )
 
     def __call__( self, x ) :
         return self.gaussian( x )
