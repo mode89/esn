@@ -4,6 +4,7 @@ ESN
     * reservoir sparsity
     * feedback
     * implement recursive least squares (RLS) filter
+    input-to-output connections
     orthonormal weight matrix
     python
         save params in Network
