@@ -1,4 +1,5 @@
 from math import *
+import random
 
 class Gaussian :
 
@@ -25,14 +26,19 @@ class PerlinNoise :
     def __init__( self, persistence, octave_count ) :
         self._persistence = persistence
         self._octave_count = octave_count
+        self.shift = random.uniform(0.0, 1000000.0)
 
     def __call__( self, x ) :
         retval = 0
         for octave in range( self._octave_count ) :
             frequency = 2 ** octave
             amplitude = self._persistence ** octave
-            retval += self._interpolated_random( x * frequency ) * amplitude
+            retval += self._interpolated_random(
+                ( x + self.shift ) * frequency ) * amplitude
         return retval
+
+    def seed( self, value ) :
+        self.shift = value * 1000000.0
 
     def _interpolated_random( self, x ) :
         x_int = int( x )
