@@ -1,6 +1,7 @@
 from pattern_model import Model
 
 SIM_STEP = 0.01
+STEPS_PER_FRAME = 10
 
 model = Model(
     neuron_count = 100
@@ -28,10 +29,11 @@ try :
     pattern_data = []
 
     def animate_model( frame ) :
-        model.step( SIM_STEP )
-        time_data.append( model.time )
-        input_data.append( model.input )
-        pattern_data.append( model.pattern.value )
+        for i in range( STEPS_PER_FRAME ) :
+            model.step( SIM_STEP )
+            time_data.append( model.time )
+            input_data.append( model.input )
+            pattern_data.append( model.pattern.value )
         input_line.set_data( time_data, input_data )
         pattern_line.set_data( time_data, pattern_data )
         model_plot.set_xlim( model.time - 1.0, model.time + 0.1 )
