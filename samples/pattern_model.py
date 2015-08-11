@@ -1,5 +1,5 @@
 import esn
-import perlin
+import signals
 
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
@@ -12,9 +12,9 @@ class Signal :
         self.time = 0
         self.front_edge_time = 0
         self.pattern_noise = \
-            perlin.Noise( persistence=0.5, octave_count=8 )
+            signals.PerlinNoise( persistence=0.5, octave_count=8 )
         self.pulse_noise = \
-            perlin.Noise( persistence=0.5, octave_count=1 )
+            signals.PerlinNoise( persistence=0.5, octave_count=1 )
         self.prev_pulse_noise = self.pulse_noise( 0 )
         self.cur_pulse_noise = self.pulse_noise( 0 )
 
@@ -49,7 +49,7 @@ class Model :
                 neuronCount=neuron_count,
                 outputCount=1
             )
-        self.noise = perlin.Noise( persistence=0.5, octave_count=8 )
+        self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         self.pattern = Signal( 1000 )
         self.time = 0
 
