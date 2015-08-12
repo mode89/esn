@@ -1,7 +1,7 @@
 from pattern_model import Model
 
 SIM_STEP = 0.01
-STEPS_PER_FRAME = 10
+STEPS_PER_FRAME = 20
 
 model = Model(
     neuron_count = 100
