@@ -23,10 +23,12 @@ try :
 
     input_line, = model_plot.plot( [], [] )
     pattern_line, = model_plot.plot( [], [] )
+    train_output_line, = model_plot.plot( [], [] )
 
     time_data = []
     input_data = []
     pattern_data = []
+    train_output_data = []
 
     def animate_model( frame ) :
         for i in range( STEPS_PER_FRAME ) :
@@ -34,8 +36,10 @@ try :
             time_data.append( model.time )
             input_data.append( model.input )
             pattern_data.append( model.pattern.value )
+            train_output_data.append( model.train_output )
         input_line.set_data( time_data, input_data )
         pattern_line.set_data( time_data, pattern_data )
+        train_output_line.set_data( time_data, train_output_data )
         model_plot.set_xlim( model.time - 1.0, model.time + 0.1 )
     model_animation = animation.FuncAnimation( figure, animate_model,
         interval=30 )
