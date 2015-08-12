@@ -1,5 +1,6 @@
 import esn
 import signals
+import random
 
 SEED = 0
 PATTERN_LENGTH = 1
@@ -8,10 +9,12 @@ OUTPUT_PULSE_AMPLITUDE = 0.7
 OUTPUT_PULSE_LENGTH = 0.1
 WASHOUT_TIME = 10.0
 TRAIN_TIME = 100.0
+VARIABLE_MAGNITUDE = False
 
 class Signal :
 
     def __init__( self ) :
+        self.magnitude = 1.0
         self.value = 0
         self.time = 0
         self.front_edge = 0
@@ -32,11 +35,13 @@ class Signal :
            PATTERN_PAUSE ) and self.is_front_edge() :
             self.front_edge = self.time
             self.back_edge = self.front_edge + PATTERN_LENGTH
+            if VARIABLE_MAGNITUDE :
+                self.magnitude = random.uniform( 0.3, 1.0 )
 
         if self.front_edge <= self.time and \
            self.time <= self.back_edge :
             self.value = self.pattern_noise( self.time - \
-                    self.front_edge ) * 0.15
+                    self.front_edge ) * 0.15 * self.magnitude
         else :
             self.value = 0
 
