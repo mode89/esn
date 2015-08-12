@@ -5,6 +5,8 @@ SEED = 0
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
 OUTPUT_PULSE_LENGTH = 0.2
+WASHOUT_TIME = 10.0
+TRAIN_TIME = 100.0
 
 class Signal :
 
@@ -73,6 +75,8 @@ class Model :
         self.output = self.network.capture_output( 1 )[ 0 ]
         self.train_output = self.train_pulse( self.time - \
             self.pattern.back_edge )
+        if self.time > WASHOUT_TIME and self.time < TRAIN_TIME :
+            self.network.train_online( [ self.train_output ], False )
 
         print( "%10s %10s %10s %10s %10s" %
                 (
