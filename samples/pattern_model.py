@@ -1,7 +1,7 @@
 import esn
 import signals
 
-SEED = 1
+SEED = 0
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
 OUTPUT_PULSE_LENGTH = 0.2
