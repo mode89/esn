@@ -12,7 +12,7 @@ class Signal :
         self.value = 0
         self.time = 0
         self.front_edge = 0
-        self.back_edge = 0
+        self.back_edge = -OUTPUT_PULSE_LENGTH
         self.pattern_noise = \
             signals.PerlinNoise( persistence=1, octave_count=7 )
         if SEED > 0 :
