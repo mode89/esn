@@ -17,14 +17,19 @@ try :
     figure = plt.figure()
     figure.suptitle( "Model" )
 
-    model_plot = figure.add_subplot( 111 )
+    model_plot = figure.add_subplot( 211 )
     model_plot.set_ylim( -1.0, 1.0 )
     model_plot.grid( True )
 
     input_line, = model_plot.plot( [], [] )
     pattern_line, = model_plot.plot( [], [] )
-    train_output_line, = model_plot.plot( [], [] )
-    output_line, = model_plot.plot( [], [] )
+
+    output_plot = figure.add_subplot( 212 )
+    output_plot.set_ylim( -1.0, 1.0 )
+    output_plot.grid( True )
+
+    train_output_line, = output_plot.plot( [], [] )
+    output_line, = output_plot.plot( [], [] )
 
     time_data = []
     input_data = []
@@ -45,6 +50,7 @@ try :
         train_output_line.set_data( time_data, train_output_data )
         output_line.set_data( time_data, output_data )
         model_plot.set_xlim( model.time - 1.0, model.time + 0.1 )
+        output_plot.set_xlim( model.time - 1.0, model.time + 0.1 )
     model_animation = animation.FuncAnimation( figure, animate_model,
         interval=30 )
 
