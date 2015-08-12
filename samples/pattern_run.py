@@ -18,7 +18,7 @@ try :
     figure.suptitle( "Model" )
 
     model_plot = figure.add_subplot( 111 )
-    model_plot.set_ylim( -0.5, 1.5 )
+    model_plot.set_ylim( -1.0, 1.0 )
     model_plot.grid( True )
 
     input_line, = model_plot.plot( [], [] )

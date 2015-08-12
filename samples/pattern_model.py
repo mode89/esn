@@ -11,7 +11,7 @@ class Signal :
         self.time = 0
         self.front_edge_time = 0
         self.pattern_noise = \
-            signals.PerlinNoise( persistence=0.5, octave_count=8 )
+            signals.PerlinNoise( persistence=1, octave_count=7 )
         self.pulse_noise = \
             signals.PerlinNoise( persistence=0.5, octave_count=1 )
         self.prev_pulse_noise = self.pulse_noise( 0 )
@@ -25,7 +25,7 @@ class Signal :
         if self.front_edge_time <= self.time and \
            self.time <= ( self.front_edge_time + PATTERN_LENGTH ) :
             self.value = self.pattern_noise( self.time - \
-                    self.front_edge_time ) * 0.3 + 0.5
+                    self.front_edge_time ) * 0.15
         else :
             self.value = 0
 
@@ -54,7 +54,7 @@ class Model :
 
     def step( self, step ) :
         self.pattern.step( step )
-        self.noise_value = self.noise( self.time ) * 0.3 + 0.5
+        self.noise_value = self.noise( self.time ) * 0.1
         self.input = self.noise_value + self.pattern.value
         self.network.set_inputs( [ self.input ] )
         self.network.step( step )
