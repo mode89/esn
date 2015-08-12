@@ -4,6 +4,7 @@ import signals
 SEED = 1
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
+OUTPUT_PULSE_LENGTH = 0.2
 
 class Signal :
 
@@ -11,6 +12,7 @@ class Signal :
         self.value = 0
         self.time = 0
         self.front_edge_time = 0
+        self.back_edge_time = 0
         self.pattern_noise = \
             signals.PerlinNoise( persistence=1, octave_count=7 )
         if SEED > 0 :
@@ -26,9 +28,10 @@ class Signal :
         if self.time > ( self.front_edge_time + PATTERN_LENGTH + \
            PATTERN_PAUSE ) and self.is_front_edge() :
             self.front_edge_time = self.time
+            self.back_edge_time = self.front_edge_time + PATTERN_LENGTH
 
         if self.front_edge_time <= self.time and \
-           self.time <= ( self.front_edge_time + PATTERN_LENGTH ) :
+           self.time <= self.back_edge_time :
             self.value = self.pattern_noise( self.time - \
                     self.front_edge_time ) * 0.15
         else :
@@ -57,6 +60,8 @@ class Model :
         if SEED > 0 :
             self.noise.seed( SEED + 2 )
         self.pattern = Signal()
+        self.train_pulse = signals.GaussianPulse(
+            amplitude=0.5, width=OUTPUT_PULSE_LENGTH )
         self.time = 0
 
     def step( self, step ) :
@@ -66,12 +71,15 @@ class Model :
         self.network.set_inputs( [ self.input ] )
         self.network.step( step )
         self.output = self.network.capture_output( 1 )[ 0 ]
+        self.train_output = self.train_pulse( self.time - \
+            self.pattern.back_edge_time )
 
-        print( "%10s %10s %10s %10s" %
+        print( "%10s %10s %10s %10s %10s" %
                 (
                     str( "%0.3f" % self.time ),
                     str( "%0.5f" % self.input ),
                     str( "%0.5f" % self.pattern.value ),
+                    str( "%0.5f" % self.train_output ),
                     str( "%0.5f" % self.output )
                 )
             )
