@@ -1,6 +1,7 @@
 import esn
 import signals
 
+SEED = 1
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
 
@@ -12,10 +13,12 @@ class Signal :
         self.front_edge_time = 0
         self.pattern_noise = \
             signals.PerlinNoise( persistence=1, octave_count=7 )
-        self.pattern_noise.seed( 0 )
+        if SEED > 0 :
+            self.pattern_noise.seed( SEED )
         self.pulse_noise = \
             signals.PerlinNoise( persistence=0.5, octave_count=1 )
-        self.pulse_noise.seed( 1 )
+        if SEED > 0 :
+            self.pulse_noise.seed( SEED + 1 )
         self.prev_pulse_noise = self.pulse_noise( 0 )
         self.cur_pulse_noise = self.pulse_noise( 0 )
 
@@ -51,7 +54,8 @@ class Model :
                 outputCount=1
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
-        self.noise.seed( 2 )
+        if SEED > 0 :
+            self.noise.seed( SEED + 2 )
         self.pattern = Signal()
         self.time = 0
 
