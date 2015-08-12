@@ -4,7 +4,8 @@ import signals
 SEED = 0
 PATTERN_LENGTH = 1
 PATTERN_PAUSE = 0.5
-OUTPUT_PULSE_LENGTH = 0.2
+OUTPUT_PULSE_AMPLITUDE = 0.7
+OUTPUT_PULSE_LENGTH = 0.1
 WASHOUT_TIME = 10.0
 TRAIN_TIME = 100.0
 
@@ -63,7 +64,8 @@ class Model :
             self.noise.seed( SEED + 2 )
         self.pattern = Signal()
         self.train_pulse = signals.GaussianPulse(
-            amplitude=0.5, width=OUTPUT_PULSE_LENGTH )
+            amplitude=OUTPUT_PULSE_AMPLITUDE,
+            width=OUTPUT_PULSE_LENGTH )
         self.time = 0
 
     def step( self, step ) :
