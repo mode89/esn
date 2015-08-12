@@ -12,8 +12,10 @@ class Signal :
         self.front_edge_time = 0
         self.pattern_noise = \
             signals.PerlinNoise( persistence=1, octave_count=7 )
+        self.pattern_noise.seed( 0 )
         self.pulse_noise = \
             signals.PerlinNoise( persistence=0.5, octave_count=1 )
+        self.pulse_noise.seed( 1 )
         self.prev_pulse_noise = self.pulse_noise( 0 )
         self.cur_pulse_noise = self.pulse_noise( 0 )
 
@@ -49,6 +51,7 @@ class Model :
                 outputCount=1
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
+        self.noise.seed( 2 )
         self.pattern = Signal()
         self.time = 0
 
