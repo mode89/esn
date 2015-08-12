@@ -6,8 +6,7 @@ PATTERN_PAUSE = 0.5
 
 class Signal :
 
-    def __init__( self, seed ) :
-        self.seed = seed
+    def __init__( self ) :
         self.value = 0
         self.time = 0
         self.front_edge_time = 0
@@ -26,17 +25,17 @@ class Signal :
         if self.front_edge_time <= self.time and \
            self.time <= ( self.front_edge_time + PATTERN_LENGTH ) :
             self.value = self.pattern_noise( self.time - \
-                    self.front_edge_time + self.seed ) * 0.3 + 0.5
+                    self.front_edge_time ) * 0.3 + 0.5
         else :
             self.value = 0
 
         self.prev_pulse_noise = \
-            self.pulse_noise( self.time + self.seed )
+            self.pulse_noise( self.time )
         self.time += step
 
     def is_front_edge( self ) :
         if self.prev_pulse_noise <= 0 and \
-            self.pulse_noise( self.time + self.seed ) > 0 :
+            self.pulse_noise( self.time ) > 0 :
             return True
         else :
             return False
@@ -50,7 +49,7 @@ class Model :
                 outputCount=1
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
-        self.pattern = Signal( 1000 )
+        self.pattern = Signal()
         self.time = 0
 
     def step( self, step ) :
