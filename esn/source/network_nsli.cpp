@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstring>
 #include <Eigen/Eigenvalues>
+#include <Eigen/SVD>
 #include <esn/network_nsli.h>
 #include <esn/network_nsli.hpp>
 #include <network_nsli.h>
@@ -56,10 +57,19 @@ namespace ESN {
                     <= params.connectivity ).cast< float >() *
             Eigen::MatrixXf::Random( params.neuronCount,
                 params.neuronCount ).array();
-        float spectralRadius =
-            randomWeights.eigenvalues().cwiseAbs().maxCoeff();
-        mW = ( randomWeights / spectralRadius *
-            params.spectralRadius ).sparseView() ;
+        if ( params.useOrthonormalMatrix )
+        {
+            auto svd = randomWeights.jacobiSvd(
+                Eigen::ComputeFullU | Eigen::ComputeFullV );
+            mW = ( svd.matrixU() * svd.matrixV() ).sparseView();
+        }
+        else
+        {
+            float spectralRadius =
+                randomWeights.eigenvalues().cwiseAbs().maxCoeff();
+            mW = ( randomWeights / spectralRadius *
+                params.spectralRadius ).sparseView() ;
+        }
 
         mWInScaling = Eigen::VectorXf::Constant( params.inputCount, 1.0f );
 
