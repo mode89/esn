@@ -10,6 +10,7 @@ OUTPUT_PULSE_LENGTH = 0.1
 WASHOUT_TIME = 10.0
 TRAIN_TIME = 100.0
 VARIABLE_MAGNITUDE = False
+FALSE_PATTERN = True
 CONNECTIVITY = 0.5
 TEACHER_FORCING = False
 USE_ORTHONORMAL_MATRIX = True
@@ -73,6 +74,8 @@ class Model :
         if SEED > 0 :
             self.noise.seed( SEED + 2 )
         self.pattern = Signal()
+        if FALSE_PATTERN :
+            self.false_pattern = Signal()
         self.train_pulse = signals.GaussianPulse(
             amplitude=OUTPUT_PULSE_AMPLITUDE,
             width=OUTPUT_PULSE_LENGTH )
@@ -82,6 +85,9 @@ class Model :
         self.pattern.step( step )
         self.noise_value = self.noise( self.time ) * 0.1
         self.input = self.noise_value + self.pattern.value
+        if FALSE_PATTERN :
+            self.false_pattern.step( step )
+            self.input += self.false_pattern.value
         self.network.set_inputs( [ self.input ] )
         self.network.step( step )
         self.output = self.network.capture_output( 1 )[ 0 ]
