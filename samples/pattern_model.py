@@ -12,6 +12,7 @@ TRAIN_TIME = 100.0
 VARIABLE_MAGNITUDE = False
 CONNECTIVITY = 0.5
 TEACHER_FORCING = False
+USE_ORTHONORMAL_MATRIX = True
 
 class Signal :
 
@@ -65,7 +66,8 @@ class Model :
                 inputCount=1,
                 neuronCount=neuron_count,
                 outputCount=1,
-                connectivity=CONNECTIVITY
+                connectivity=CONNECTIVITY,
+                useOrthonormalMatrix=USE_ORTHONORMAL_MATRIX
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         if SEED > 0 :
