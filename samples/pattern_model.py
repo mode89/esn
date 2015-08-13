@@ -10,6 +10,7 @@ OUTPUT_PULSE_LENGTH = 0.1
 WASHOUT_TIME = 10.0
 TRAIN_TIME = 100.0
 VARIABLE_MAGNITUDE = False
+CONNECTIVITY = 0.5
 
 class Signal :
 
@@ -62,7 +63,8 @@ class Model :
         self.network = esn.CreateNetworkNSLI(
                 inputCount=1,
                 neuronCount=neuron_count,
-                outputCount=1
+                outputCount=1,
+                connectivity=CONNECTIVITY
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         if SEED > 0 :
