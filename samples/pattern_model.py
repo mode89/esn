@@ -11,6 +11,7 @@ WASHOUT_TIME = 10.0
 TRAIN_TIME = 100.0
 VARIABLE_MAGNITUDE = False
 CONNECTIVITY = 0.5
+TEACHER_FORCING = False
 
 class Signal :
 
@@ -85,7 +86,8 @@ class Model :
         self.train_output = self.train_pulse( self.time - \
             self.pattern.back_edge )
         if self.time > WASHOUT_TIME and self.time < TRAIN_TIME :
-            self.network.train_online( [ self.train_output ], False )
+            self.network.train_online( [ self.train_output ],
+                TEACHER_FORCING )
 
         print( "%10s %10s %10s %10s %10s" %
                 (
