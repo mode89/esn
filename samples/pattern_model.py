@@ -14,6 +14,7 @@ FALSE_PATTERN = True
 CONNECTIVITY = 0.5
 TEACHER_FORCING = False
 USE_ORTHONORMAL_MATRIX = True
+TRAINING_STRATEGY = "discontinuous"
 
 class Signal :
 
@@ -94,8 +95,7 @@ class Model :
         self.train_output = self.train_pulse( self.time - \
             self.pattern.back_edge )
         if self.time > WASHOUT_TIME and self.time < TRAIN_TIME :
-            self.network.train_online( [ self.train_output ],
-                TEACHER_FORCING )
+            getattr( Model.TrainingStrategy, TRAINING_STRATEGY )( self )
 
         print( "%10s %10s %10s %10s %10s" %
                 (
@@ -108,3 +108,19 @@ class Model :
             )
 
         self.time += step
+
+    class TrainingStrategy :
+
+        def continuous( model ) :
+            model.network.train_online( [ model.train_output ],
+                TEACHER_FORCING )
+
+        def discontinuous( model ) :
+            if model.time > model.pattern.back_edge and \
+                model.time < ( model.pattern.back_edge + \
+                    OUTPUT_PULSE_LENGTH ) :
+                model.network.train_online( [ model.train_output ],
+                    TEACHER_FORCING )
+            elif model.output > 0.3 or model.output < -0.3:
+                model.network.train_online( [ model.train_output ],
+                    TEACHER_FORCING )
