@@ -111,10 +111,12 @@ class Model :
 
     class TrainingStrategy :
 
+        @staticmethod
         def continuous( model ) :
             model.network.train_online( [ model.train_output ],
                 TEACHER_FORCING )
 
+        @staticmethod
         def discontinuous( model ) :
             if model.time > model.pattern.back_edge and \
                 model.time < ( model.pattern.back_edge + \
