@@ -45,3 +45,11 @@ cmake_minimum_required( VERSION 3.0 )
 # Tests
 
     add_subdirectory( tests )
+
+# Install
+
+    install( TARGETS esn
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib )
+    install( FILES "source/esn.py"
+        DESTINATION bin )
