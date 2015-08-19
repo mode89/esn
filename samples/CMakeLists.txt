@@ -25,13 +25,22 @@ endif()
 # Deploy all python samples
 
     file( GLOB PYTHON_FILES *.py )
+    set( CONFIGURE_FILE_CMAKE
+        "${CMAKE_CURRENT_SOURCE_DIR}/configure_file.cmake" )
     foreach( file IN ITEMS ${PYTHON_FILES} )
         get_filename_component( fileName ${file} NAME )
         set( outputFile "${OUTPUT_DIR}/${fileName}" )
         list( APPEND OUTPUT_PYTHON_FILES "${outputFile}" )
         add_custom_command( OUTPUT "${outputFile}"
-            COMMAND ${CMAKE_COMMAND} -E copy "${file}" "${outputFile}"
-            DEPENDS "${file}"
+            COMMAND ${CMAKE_COMMAND}
+                -DSRC_FILE="${file}" -DDST_FILE="${outputFile}"
+                -DESN_PYTHON_MODULE="${ESN_PYTHON_MODULE}"
+                -DESN_DLL=$<TARGET_FILE:esn>
+                -P "${CONFIGURE_FILE_CMAKE}"
+            DEPENDS
+                "${file}"
+                "${ESN_PYTHON_MODULE}"
+                "${CONFIGURE_FILE_CMAKE}"
             COMMENT "Deploy ${fileName}"
         )
     endforeach()
