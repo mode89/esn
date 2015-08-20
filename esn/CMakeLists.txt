@@ -33,14 +33,27 @@ cmake_minimum_required( VERSION 3.0 )
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}" )
     endif()
 
-    add_custom_command( OUTPUT "${OUTPUT_DIR}/esn.py"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/source/esn.py"
-            "${OUTPUT_DIR}/esn.py"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/esn.py"
+    if( ESN_DEVELOP )
+        set( ESN_PY_DLL_PATH \\"$<TARGET_FILE:esn>\\" )
+    else()
+        set( ESN_PY_DLL_PATH find_library( \\"esn\\" ) )
+    endif()
+
+    set( SRC_ESN_PY "${CMAKE_CURRENT_SOURCE_DIR}/source/esn.py" )
+    set( DST_ESN_PY "${OUTPUT_DIR}/esn.py" )
+    set( CONFIGURE_FILE_CMAKE
+        "${CMAKE_CURRENT_SOURCE_DIR}/configure_file.cmake" )
+    add_custom_command( OUTPUT "${DST_ESN_PY}"
+        COMMAND ${CMAKE_COMMAND}
+            -DSRC_FILE="${SRC_ESN_PY}" -DDST_FILE="${DST_ESN_PY}"
+            -DESN_PY_DLL_PATH="${ESN_PY_DLL_PATH}"
+            -P "${CONFIGURE_FILE_CMAKE}"
+        DEPENDS
+            "${SRC_ESN_PY}"
+            "${CONFIGURE_FILE_CMAKE}"
         COMMENT "Deploy python module"
     )
-    add_custom_target( esn-python ALL DEPENDS "${OUTPUT_DIR}/esn.py" )
+    add_custom_target( esn-python ALL DEPENDS "${DST_ESN_PY}" )
 
 # Tests
 

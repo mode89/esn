@@ -3,7 +3,7 @@ from ctypes.util import find_library
 import inspect
 import os
 
-_DLL_PATH = find_library( "esn" )
+_DLL_PATH = @ESN_PY_DLL_PATH@
 # Need to check the path, otherwise CDLL.LoadLibrary()
 # raises an exception under Windows.
 if _DLL_PATH :
