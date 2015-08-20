@@ -4,7 +4,10 @@ import inspect
 import os
 
 _DLL_PATH = find_library( "esn" )
-_DLL = cdll.LoadLibrary( _DLL_PATH )
+# Need to check the path, otherwise CDLL.LoadLibrary()
+# raises an exception under Windows.
+if _DLL_PATH :
+    _DLL = cdll.LoadLibrary( _DLL_PATH )
 
 def load_library( dll_path ) :
     global _DLL, _DLL_PATH
