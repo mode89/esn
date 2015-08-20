@@ -9,11 +9,6 @@ _DLL_PATH = @ESN_PY_DLL_PATH@
 if _DLL_PATH :
     _DLL = cdll.LoadLibrary( _DLL_PATH )
 
-def load_library( dll_path ) :
-    global _DLL, _DLL_PATH
-    _DLL = cdll.LoadLibrary( dll_path )
-    _DLL_PATH = dll_path
-
 class Network :
 
     def __init__( self, pointer ) :
