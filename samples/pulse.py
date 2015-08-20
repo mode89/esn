@@ -1,9 +1,7 @@
 from math import *
+import esn
 import imp
 import random
-
-esn = imp.load_source( "esn", "@ESN_PYTHON_MODULE@" )
-esn.load_library( "@ESN_DLL@" )
 
 # Check if we can use matplotlib
 try :

@@ -1,9 +1,7 @@
+import esn
 import imp
 import signals
 import random
-
-esn = imp.load_source( "esn", "@ESN_PYTHON_MODULE@" )
-esn.load_library( "@ESN_DLL@" )
 
 SEED = 0
 PATTERN_LENGTH = 1
