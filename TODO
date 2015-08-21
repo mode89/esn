@@ -19,5 +19,5 @@ samples
     pulse
         grid search
     pattern
-        washout
+        * washout
         false pattern signal
