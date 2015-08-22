@@ -77,7 +77,7 @@ class NetworkParamsNSLI( Structure ) :
             ( "onlineTrainingInitialCovariance", c_float )
         ]
 
-def CreateNetworkNSLI(
+def create_network(
     inputCount,
     neuronCount,
     outputCount,

@@ -20,7 +20,7 @@ SIM_STEP = 0.001
 TRAIN_TIME = 1 / SINE_FREQ
 STEPS_PER_FRAME = 20
 
-network = esn.CreateNetworkNSLI(
+network = esn.create_network(
     inputCount = 1,
     neuronCount = NEURON_COUNT,
     outputCount  = 1,

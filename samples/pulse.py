@@ -31,7 +31,7 @@ class Model :
 
     def __init__( self ) :
 
-        self.network = esn.CreateNetworkNSLI(
+        self.network = esn.create_network(
             inputCount = 1,
             neuronCount = NEURON_COUNT,
             outputCount  = 1,
