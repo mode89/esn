@@ -2,6 +2,7 @@
 #include <cstring>
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
+#include <esn/exceptions.hpp>
 #include <esn/network_nsli.h>
 #include <esn/network_nsli.hpp>
 #include <network_nsli.h>
@@ -143,6 +144,11 @@ namespace ESN {
 
             mOut = ( mWOut * mX ).unaryExpr( tanh );
         }
+
+        auto isnotfinite =
+            [] (float n) -> bool { return !std::isfinite(n); };
+        if (mOut.unaryExpr(isnotfinite).any())
+            throw OutputIsNotFinite();
     }
 
     void NetworkNSLI::CaptureActivations(
