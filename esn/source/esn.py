@@ -55,7 +55,8 @@ class Network :
             pointer( scalingsArray ), len( scalings ) )
 
     def step( self, step ) :
-        _DLL.esnNetworkStep( self.pointer, c_float( step ) )
+        retval = _DLL.esnNetworkStep( self.pointer, c_float( step ) )
+        raise_on_error( retval )
 
     def capture_activations( self, count ) :
         ActivationsArrayType = c_float * count
