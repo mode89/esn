@@ -19,7 +19,7 @@ ESN_EXPORT void
 esnNetworkSetFeedbackScalings( void * network,
     float * scalings, int cound );
 
-ESN_EXPORT void
+ESN_EXPORT int
 esnNetworkStep( void * network,
     float step );
 

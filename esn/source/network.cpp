@@ -1,3 +1,5 @@
+#include <esn/errors.h>
+#include <esn/exceptions.hpp>
 #include <esn/network.h>
 #include <esn/network.hpp>
 
@@ -21,9 +23,14 @@ void esnNetworkSetFeedbackScalings( void * network,
         std::vector< float >( scalings, scalings + count ) );
 }
 
-void esnNetworkStep( void * network, float step )
+int esnNetworkStep( void * network, float step )
 {
-    static_cast< ESN::Network * >( network )->Step( step );
+    try {
+        static_cast< ESN::Network * >( network )->Step( step );
+    } catch ( const ESN::OutputIsNotFinite & e ) {
+        return ESN_OUTPUT_IS_NOT_FINITE;
+    }
+    return ESN_NO_ERROR;
 }
 
 void esnNetworkCaptureActivations( void * network,
