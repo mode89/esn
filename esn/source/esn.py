@@ -14,6 +14,11 @@ class Error( Enum ) :
     NO_ERROR = 0
     OUTPUT_IS_NOT_FINITE = 1
 
+class OutputIsNotFinite( RuntimeError ) :
+    def __init__( self ) :
+        RuntimeError.__init__( self, "One or more outputs "
+            "of the network are not finite values." )
+
 class Network :
 
     def __init__( self, pointer ) :
