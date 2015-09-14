@@ -19,6 +19,12 @@ class OutputIsNotFinite( RuntimeError ) :
         RuntimeError.__init__( self, "One or more outputs "
             "of the network are not finite values." )
 
+def raise_on_error( code ) :
+    if Error( code ) != Error.NO_ERROR :
+        raise {
+                Error.OUTPUT_IS_NOT_FINITE : OutputIsNotFinite()
+            }[ Error( code ) ]
+
 class Network :
 
     def __init__( self, pointer ) :
