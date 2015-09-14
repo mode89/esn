@@ -1,5 +1,6 @@
 from ctypes import *
 from ctypes.util import find_library
+from enum import Enum
 import inspect
 import os
 
@@ -8,6 +9,10 @@ _DLL_PATH = @ESN_PY_DLL_PATH@
 # raises an exception under Windows.
 if _DLL_PATH :
     _DLL = cdll.LoadLibrary( _DLL_PATH )
+
+class Error( Enum ) :
+    NO_ERROR = 0
+    OUTPUT_IS_NOT_FINITE = 1
 
 class Network :
 
