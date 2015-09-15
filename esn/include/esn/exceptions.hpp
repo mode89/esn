@@ -1,7 +1,7 @@
 #ifndef __ESN_EXCEPTIONS_H__
 #define __ESN_EXCEPTIONS_H__
 
-#include <exception>
+#include <stdexcept>
 
 namespace ESN {
 
