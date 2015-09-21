@@ -164,6 +164,17 @@ namespace ESN {
             throw OutputIsNotFinite();
     }
 
+    void NetworkNSLI::CaptureTransformedInput(
+        std::vector< float > & input )
+    {
+        if ( input.size() != mParams.inputCount )
+            throw std::invalid_argument(
+                "Size of the vector must be equal to "
+                "the number of inputs" );
+        for ( int i = 0; i < mParams.inputCount; ++ i )
+            input[ i ] = mIn( i );
+    }
+
     void NetworkNSLI::CaptureActivations(
         std::vector< float > & activations )
     {

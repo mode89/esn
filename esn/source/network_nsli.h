@@ -32,6 +32,9 @@ namespace ESN {
         Step( float step );
 
         void
+        CaptureTransformedInput( std::vector< float > & input );
+
+        void
         CaptureActivations( std::vector< float > & activations );
 
         void

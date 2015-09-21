@@ -64,6 +64,13 @@ class Network :
         retval = _DLL.esnNetworkStep( self.pointer, c_float( step ) )
         raise_on_error( retval )
 
+    def capture_transformed_inputs( self, count ) :
+        InputArrayType = c_float * count
+        inputArray = InputArrayType()
+        _DLL.esnNetworkCaptureTransformedInput( self.pointer,
+            pointer( inputArray ), count )
+        return [ inputArray[i] for i in range( count ) ]
+
     def capture_activations( self, count ) :
         ActivationsArrayType = c_float * count
         activationsArray = ActivationsArrayType()

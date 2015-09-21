@@ -25,6 +25,9 @@ namespace ESN {
         Step( float step ) = 0;
 
         virtual ESN_EXPORT void
+        CaptureTransformedInput( std::vector< float > & input ) = 0;
+
+        virtual ESN_EXPORT void
         CaptureActivations( std::vector< float > & activations ) = 0;
 
         virtual ESN_EXPORT void

@@ -28,6 +28,10 @@ esnNetworkStep( void * network,
     float step );
 
 ESN_EXPORT void
+esnNetworkCaptureTransformedInput( void * network,
+    float * input, int inputCount );
+
+ESN_EXPORT void
 esnNetworkCaptureActivations( void * network,
     float * activations, int neuronCount );
 

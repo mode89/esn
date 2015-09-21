@@ -40,6 +40,15 @@ int esnNetworkStep( void * network, float step )
     return ESN_NO_ERROR;
 }
 
+void esnNetworkCaptureTransformedInput( void * network,
+    float * input, int inputCount )
+{
+    std::vector< float > inputVector( inputCount );
+    static_cast< ESN::Network * >( network )->CaptureTransformedInput(
+        inputVector );
+    std::copy( inputVector.begin(), inputVector.end(), input );
+}
+
 void esnNetworkCaptureActivations( void * network,
     float * activations, int neuronCount )
 {
