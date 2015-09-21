@@ -20,6 +20,7 @@ namespace ESN {
         , mIn( params.inputCount )
         , mWIn( params.neuronCount, params.inputCount )
         , mWInScaling( params.inputCount )
+        , mWInBias( params.inputCount )
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
@@ -73,6 +74,7 @@ namespace ESN {
         }
 
         mWInScaling = Eigen::VectorXf::Constant( params.inputCount, 1.0f );
+        mWInBias = Eigen::VectorXf::Zero( params.inputCount );
 
         mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
@@ -95,8 +97,9 @@ namespace ESN {
     {
         if ( inputs.size() != mIn.rows() )
             throw std::invalid_argument( "Wrong size of the input vector" );
-        mIn = Eigen::Map< Eigen::VectorXf >(
-            const_cast< float * >( inputs.data() ), inputs.size() );
+        mIn = ( Eigen::Map< Eigen::VectorXf >(
+            const_cast< float * >( inputs.data() ), inputs.size() ) +
+                mWInBias ) * mWInScaling;
     }
 
     void NetworkNSLI::SetInputScalings(
@@ -107,6 +110,16 @@ namespace ESN {
                 "Wrong size of the scalings vector" );
         mWInScaling = Eigen::Map< Eigen::VectorXf >(
             const_cast< float * >( scalings.data() ), scalings.size() );
+    }
+
+    void NetworkNSLI::SetInputBias(
+        const std::vector< float > & bias )
+    {
+        if ( bias.size() != mParams.inputCount )
+            throw std::invalid_argument(
+                "Wrong size of the scalings vector" );
+        mWInBias = Eigen::Map< Eigen::VectorXf >(
+            const_cast< float * >( bias.data() ), bias.size() );
     }
 
     void NetworkNSLI::SetFeedbackScalings(
@@ -130,7 +143,7 @@ namespace ESN {
         if ( mParams.linearOutput )
         {
             mX = ( 1 - mParams.leakingRate ) * mX +
-                ( mParams.leakingRate * ( mWIn * mIn * mWInScaling +
+                ( mParams.leakingRate * ( mWIn * mIn +
                     mW * mX + mWFB * mOut.unaryExpr( tanh ) *
                         mWFBScaling ) ).unaryExpr( tanh );
 
@@ -139,7 +152,7 @@ namespace ESN {
         else
         {
             mX = ( 1 - mParams.leakingRate ) * mX + ( mParams.leakingRate *
-                ( mWIn * mIn * mWInScaling + mW * mX +
+                ( mWIn * mIn + mW * mX +
                     mWFB * mOut * mWFBScaling ) ).unaryExpr( tanh );
 
             mOut = ( mWOut * mX ).unaryExpr( tanh );

@@ -16,6 +16,13 @@ void esnNetworkSetInputScalings( void * network,
         std::vector< float >( scalings, scalings + count ) );
 }
 
+void esnNetworkSetInputBias( void * network,
+    float * bias, int count )
+{
+    static_cast< ESN::Network * >( network )->SetInputBias(
+        std::vector< float >( bias, bias + count ) );
+}
+
 void esnNetworkSetFeedbackScalings( void * network,
     float * scalings, int count )
 {

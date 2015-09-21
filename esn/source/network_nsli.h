@@ -23,6 +23,9 @@ namespace ESN {
         SetInputScalings( const std::vector< float > & );
 
         void
+        SetInputBias( const std::vector< float > & );
+
+        void
         SetFeedbackScalings( const std::vector< float > & );
 
         void
@@ -53,6 +56,7 @@ namespace ESN {
         Eigen::VectorXf mIn;
         Eigen::MatrixXf mWIn;
         Eigen::VectorXf mWInScaling;
+        Eigen::VectorXf mWInBias;
         Eigen::VectorXf mX;
         Eigen::SparseMatrix< float > mW;
         Eigen::VectorXf mOut;
