@@ -62,6 +62,8 @@ namespace ESN {
         Eigen::VectorXf mWInBias;
         Eigen::VectorXf mX;
         Eigen::SparseMatrix< float > mW;
+        Eigen::VectorXf mLeakingRate;
+        Eigen::VectorXf mOneMinusLeakingRate;
         Eigen::VectorXf mOut;
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;

@@ -40,10 +40,20 @@ namespace ESN {
         if ( params.outputCount <= 0 )
             throw std::invalid_argument(
                 "NetworkParamsNSLI::outputCount must be not null" );
-        if ( !( params.leakingRate > 0.0 && params.leakingRate <= 1.0 ) )
+        if ( !( params.leakingRateMin > 0.0 &&
+                params.leakingRateMin <= 1.0 ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRate must be within "
-                "interval [0,1)" );
+                "NetworkParamsNSLI::leakingRateMin must be within "
+                "interval (0,1]" );
+        if ( !( params.leakingRateMax > 0.0 &&
+                params.leakingRateMax <= 1.0 ) )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::leakingRateMax must be within "
+                "interval (0,1]" );
+        if ( params.leakingRateMin > params.leakingRateMax )
+            throw std::invalid_argument(
+                "NetworkParamsNSLI::leakingRateMin must be less then or "
+                "equal to NetworkParamsNSLI::leakingRateMax" );
         if ( !( params.connectivity > 0.0f &&
                 params.connectivity <= 1.0f ) )
             throw std::invalid_argument(
@@ -83,6 +93,11 @@ namespace ESN {
             params.neuronCount, params.outputCount );
 
         mWFBScaling = Eigen::VectorXf::Constant( params.outputCount, 1.0f );
+
+        mLeakingRate = ( Eigen::ArrayXf::Random( params.neuronCount ) *
+            ( mParams.leakingRateMax - mParams.leakingRateMin ) +
+            ( mParams.leakingRateMin + mParams.leakingRateMax ) ) / 2.0f;
+        mOneMinusLeakingRate = 1.0f - mLeakingRate.array();
 
         mIn = Eigen::VectorXf::Zero( params.inputCount );
         mX = Eigen::VectorXf::Random( params.neuronCount );
@@ -142,17 +157,17 @@ namespace ESN {
 
         if ( mParams.linearOutput )
         {
-            mX = ( 1 - mParams.leakingRate ) * mX +
-                ( mParams.leakingRate * ( mWIn * mIn +
-                    mW * mX + mWFB * mOut.unaryExpr( tanh ) *
+            mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
+                ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
+                    mWFB * mOut.unaryExpr( tanh ) *
                         mWFBScaling ) ).unaryExpr( tanh );
 
             mOut = mWOut * mX;
         }
         else
         {
-            mX = ( 1 - mParams.leakingRate ) * mX + ( mParams.leakingRate *
-                ( mWIn * mIn + mW * mX +
+            mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
+                ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
                     mWFB * mOut * mWFBScaling ) ).unaryExpr( tanh );
 
             mOut = ( mWOut * mX ).unaryExpr( tanh );

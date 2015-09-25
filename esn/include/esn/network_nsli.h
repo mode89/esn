@@ -11,7 +11,8 @@ extern "C" {
         unsigned inputCount;
         unsigned neuronCount;
         unsigned outputCount;
-        float leakingRate;
+        float leakingRateMin;
+        float leakingRateMax;
         bool useOrthonormalMatrix;
         float spectralRadius;
         float connectivity;

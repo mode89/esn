@@ -13,7 +13,8 @@ namespace ESN {
         unsigned inputCount;
         unsigned neuronCount;
         unsigned outputCount;
-        float leakingRate;
+        float leakingRateMin;
+        float leakingRateMax;
         bool useOrthonormalMatrix;
         float spectralRadius;
         float connectivity;
@@ -25,7 +26,8 @@ namespace ESN {
             : inputCount( 0 )
             , neuronCount( 0 )
             , outputCount( 0 )
-            , leakingRate( 1.0f )
+            , leakingRateMin( 0.1f )
+            , leakingRateMax( 1.0f )
             , useOrthonormalMatrix( false )
             , spectralRadius( 1.0f )
             , connectivity( 1.0f )
