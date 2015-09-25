@@ -32,7 +32,7 @@ namespace ESN {
             , spectralRadius( 1.0f )
             , connectivity( 1.0f )
             , linearOutput( false )
-            , onlineTrainingForgettingFactor( 0.999f )
+            , onlineTrainingForgettingFactor( 1.0f )
             , onlineTrainingInitialCovariance( 1000.0f )
         {}
     };

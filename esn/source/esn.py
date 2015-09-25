@@ -118,7 +118,7 @@ def create_network(
     spectralRadius = 1.0,
     connectivity = 1.0,
     linearOutput = False,
-    onlineTrainingForgettingFactor = 0.999,
+    onlineTrainingForgettingFactor = 1.0,
     onlineTrainingInitialCovariance = 1000.0 ) :
 
     if not _DLL._name :
