@@ -114,7 +114,7 @@ def create_network(
     outputCount,
     leakingRateMin = 0.1,
     leakingRateMax = 1.0,
-    useOrthonormalMatrix = False,
+    useOrthonormalMatrix = True,
     spectralRadius = 1.0,
     connectivity = 1.0,
     linearOutput = False,

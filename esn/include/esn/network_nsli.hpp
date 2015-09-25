@@ -28,7 +28,7 @@ namespace ESN {
             , outputCount( 0 )
             , leakingRateMin( 0.1f )
             , leakingRateMax( 1.0f )
-            , useOrthonormalMatrix( false )
+            , useOrthonormalMatrix( true )
             , spectralRadius( 1.0f )
             , connectivity( 1.0f )
             , linearOutput( false )
