@@ -17,7 +17,8 @@ int main()
     params.inputCount = 1;
     params.neuronCount = kNeuronCount;
     params.outputCount = 1;
-    params.leakingRate = kLeakingRate;
+    params.leakingRateMin = kLeakingRate;
+    params.leakingRateMax = kLeakingRate;
     std::unique_ptr< ESN::Network > network = ESN::CreateNetwork( params );
 
     std::vector< float > output( 1 );

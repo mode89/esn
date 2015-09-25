@@ -12,7 +12,6 @@ except ImportError :
     USE_MATPLOTLIB = False
 
 NEURON_COUNT = 10
-LEAKING_RATE = 0.1
 CONNECTIVITY = 0.1
 SINE_FREQ = 50.0
 SINE_AMPLITUDE = 0.5
@@ -24,7 +23,6 @@ network = esn.create_network(
     inputCount = 1,
     neuronCount = NEURON_COUNT,
     outputCount  = 1,
-    leakingRate = LEAKING_RATE,
     connectivity = CONNECTIVITY )
 
 def simulate( frame ) :
