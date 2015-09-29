@@ -22,3 +22,4 @@ samples
     pattern
         * washout
         false pattern signal
+    split samples to another repository
