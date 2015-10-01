@@ -4,7 +4,7 @@ from enum import Enum
 import inspect
 import os
 
-_DLL_PATH = @ESN_PY_DLL_PATH@
+_DLL_PATH = find_library( "esn" )
 # Need to check the path, otherwise CDLL.LoadLibrary()
 # raises an exception under Windows.
 if _DLL_PATH :
