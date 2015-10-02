@@ -31,8 +31,8 @@ cmake_minimum_required( VERSION 3.0 )
 
 # Install
 
-    install( TARGETS esn
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib )
-    install( FILES "source/esn.py"
-        DESTINATION bin )
+    install( TARGETS esn LIBRARY DESTINATION lib )
+
+# Other
+
+    add_subdirectory( python )
