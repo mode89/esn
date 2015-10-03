@@ -11,7 +11,7 @@ ESN
     tests
         * move tests folder to esn folder
         * adaptive filters
-    handle Eigen as cmake external project (optionally)
+    * handle Eigen as cmake external project (optionally)
 samples
     sine-wave generator
         * initial implementation
