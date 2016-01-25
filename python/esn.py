@@ -109,34 +109,34 @@ class NetworkParamsNSLI( Structure ) :
         ]
 
 def create_network(
-    inputCount,
-    neuronCount,
-    outputCount,
-    leakingRateMin = 0.1,
-    leakingRateMax = 1.0,
-    useOrthonormalMatrix = True,
-    spectralRadius = 1.0,
-    connectivity = 1.0,
-    linearOutput = False,
-    onlineTrainingForgettingFactor = 1.0,
-    onlineTrainingInitialCovariance = 1000.0 ) :
+    in_cnt,
+    out_cnt,
+    neurons,
+    leak_min = 0.1,
+    leak_max = 1.0,
+    use_orth_mat = True,
+    spect_rad = 1.0,
+    cnctvty = 1.0,
+    lin_out = False,
+    forgetting = 1.0,
+    covariance = 1000.0 ) :
 
     if not _DLL._name :
         raise RuntimeError( "ESN shared library hasn't been loaded." )
 
     params = NetworkParamsNSLI(
         structSize = sizeof( NetworkParamsNSLI ),
-        inputCount = inputCount,
-        neuronCount = neuronCount,
-        outputCount = outputCount,
-        leakingRateMin = leakingRateMin,
-        leakingRateMax = leakingRateMax,
-        useOrthonormalMatrix = useOrthonormalMatrix,
-        spectralRadius = spectralRadius,
-        connectivity = connectivity,
-        linearOutput = linearOutput,
-        onlineTrainingForgettingFactor = onlineTrainingForgettingFactor,
-        onlineTrainingInitialCovariance = onlineTrainingInitialCovariance )
+        inputCount = in_cnt,
+        neuronCount = neurons,
+        outputCount = out_cnt,
+        leakingRateMin = leak_min,
+        leakingRateMax = leak_max,
+        useOrthonormalMatrix = use_orth_mat,
+        spectralRadius = spect_rad,
+        connectivity = cnctvty,
+        linearOutput = lin_out,
+        onlineTrainingForgettingFactor = forgetting,
+        onlineTrainingInitialCovariance = covariance )
 
     _DLL.esnCreateNetworkNSLI.restype = c_void_p
     return Network( _DLL.esnCreateNetworkNSLI( pointer( params ) ) )
