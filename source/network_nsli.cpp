@@ -159,8 +159,8 @@ namespace ESN {
         {
             mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
                 ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
-                    mWFB * mOut.unaryExpr( tanh ) *
-                        mWFBScaling ) ).unaryExpr( tanh );
+                    mWFB * mOut.unaryExpr(tanh).cwiseProduct(
+                        mWFBScaling))).unaryExpr(tanh);
 
             mOut = mWOut * mX;
         }
@@ -168,7 +168,7 @@ namespace ESN {
         {
             mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
                 ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
-                    mWFB * mOut * mWFBScaling ) ).unaryExpr( tanh );
+                    mWFB * mOut.cwiseProduct(mWFBScaling))).unaryExpr(tanh);
 
             mOut = ( mWOut * mX ).unaryExpr( tanh );
         }
