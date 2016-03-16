@@ -11,7 +11,7 @@ cmake_minimum_required( VERSION 3.0 )
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Dependencies
+# Find dependencies
 
     if(NOT ESN_USE_SYSTEM_EIGEN)
         include(Eigen)
@@ -38,6 +38,12 @@ cmake_minimum_required( VERSION 3.0 )
 # Target
 
     add_library(esn SHARED ${SRC_FILES})
+
+# Apply dependencies
+
+    if(NOT ESN_USE_SYSTEM_EIGEN)
+        add_dependencies(esn eigen)
+    endif()
 
 # Install
 
