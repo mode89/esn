@@ -4,6 +4,7 @@ cmake_minimum_required( VERSION 3.0 )
 # Options
 
     option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" ON)
+    option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
 
 # CMake configuration
 
