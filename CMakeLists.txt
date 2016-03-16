@@ -1,6 +1,10 @@
 project( ESN )
 cmake_minimum_required( VERSION 3.0 )
 
+# Options
+
+    option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" ON)
+
 # CMake configuration
 
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -9,7 +13,9 @@ cmake_minimum_required( VERSION 3.0 )
 
 # Dependencies
 
-    include(Eigen)
+    if(NOT ESN_USE_SYSTEM_EIGEN)
+        include(Eigen)
+    endif()
 
     find_package(Eigen3)
 

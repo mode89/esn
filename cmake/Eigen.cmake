@@ -6,3 +6,5 @@ ExternalProject_Add(eigen
     BUILD_COMMAND echo Skip building
     INSTALL_COMMAND echo Skip installation
 )
+
+set(EIGEN3_INCLUDE_DIR "${CMAKE_BINARY_DIR}/eigen-prefix/src/eigen")
