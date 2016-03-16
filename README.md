@@ -41,7 +41,7 @@ if `OFF` CMake download Eigen library during build step.
 
 Build and install
 ```sh
-cmake install
+cmake --build . --target install
 ```
 
 # License
