@@ -48,7 +48,7 @@ cmake_minimum_required( VERSION 3.0 )
 
 # Install
 
-    install( TARGETS esn LIBRARY DESTINATION lib )
+    install(TARGETS esn DESTINATION lib)
 
 # Subdirectoris
 
