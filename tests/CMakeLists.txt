@@ -3,10 +3,6 @@ cmake_minimum_required( VERSION 3.0 )
 
 # Dependencies
 
-    if(NOT ESN_USE_SYSTEM_GTEST)
-        include(GTest)
-    endif()
-
     find_package(GTest)
 
 file( GLOB SRC_FILES *.cpp )

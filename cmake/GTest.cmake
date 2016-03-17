@@ -1,17 +1,12 @@
-message(STATUS "Building GTest...")
+include(ExternalProject)
 
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/gtest")
-execute_process(
-    COMMAND ${CMAKE_COMMAND} "${CMAKE_CURRENT_LIST_DIR}/gtest"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/gtest"
-    OUTPUT_QUIET
+ExternalProject_Add(gtest-project
+    URL "https://github.com/google/googletest/archive/release-1.7.0.zip"
+    PREFIX "${CMAKE_BINARY_DIR}/gtest"
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        -DBUILD_SHARED_LIBS=ON
+    INSTALL_COMMAND echo Skip installation
 )
-
-execute_process(
-    COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}/gtest"
-    OUTPUT_QUIET
-)
-
-set(GTEST_ROOT "${CMAKE_BINARY_DIR}/gtest/gtest-prefix/src/gtest")
-list(APPEND CMAKE_LIBRARY_PATH
-    "${CMAKE_BINARY_DIR}/gtest/gtest-prefix/src/gtest-build")

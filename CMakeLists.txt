@@ -12,11 +12,17 @@ cmake_minimum_required( VERSION 3.0 )
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Find dependencies
+# External projects
 
     if(NOT ESN_USE_SYSTEM_EIGEN)
         include(Eigen)
     endif()
+
+    if(NOT ESN_USE_SYSTEM_GTEST)
+        include(GTest)
+    endif()
+
+# Find dependencies
 
     find_package(Eigen3)
 
