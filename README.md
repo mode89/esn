@@ -49,6 +49,11 @@ Build and install
 cmake --build . --target install
 ```
 
+# TODO
+* More tests
+* More samples
+* Building under Windows
+
 # License
 
 BSD 2-clause license
