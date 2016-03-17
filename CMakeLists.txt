@@ -40,12 +40,6 @@ cmake_minimum_required( VERSION 3.0 )
 
     add_library(esn SHARED ${SRC_FILES})
 
-# Apply dependencies
-
-    if(NOT ESN_USE_SYSTEM_EIGEN)
-        add_dependencies(esn eigen)
-    endif()
-
 # Install
 
     install( TARGETS esn LIBRARY DESTINATION lib )

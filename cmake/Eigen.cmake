@@ -1,10 +1,15 @@
-include(ExternalProject)
+message(STATUS "Building Eigen...")
 
-ExternalProject_Add(eigen
-    URL "http://bitbucket.org/eigen/eigen/get/3.2.5.tar.bz2"
-    CONFIGURE_COMMAND echo Skip configuration
-    BUILD_COMMAND echo Skip building
-    INSTALL_COMMAND echo Skip installation
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/eigen")
+execute_process(
+    COMMAND ${CMAKE_COMMAND} "${CMAKE_CURRENT_LIST_DIR}/eigen"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/eigen"
+    OUTPUT_QUIET
 )
 
-set(EIGEN3_INCLUDE_DIR "${CMAKE_BINARY_DIR}/eigen-prefix/src/eigen")
+execute_process(
+    COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}/eigen"
+    OUTPUT_QUIET
+)
+
+set(EIGEN3_INCLUDE_DIR "${CMAKE_BINARY_DIR}/eigen/eigen-prefix/src/eigen")
