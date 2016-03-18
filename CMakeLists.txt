@@ -34,7 +34,6 @@ cmake_minimum_required( VERSION 3.0 )
 
     include_directories(include)
     include_directories(source)
-    include_directories(${EIGEN3_INCLUDE_DIR})
 
 # Flags
 
@@ -45,6 +44,10 @@ cmake_minimum_required( VERSION 3.0 )
 # Target
 
     add_library(esn SHARED ${SRC_FILES})
+
+# Linking
+
+    target_link_libraries(esn ${EIGEN3_LIBRARY})
 
 # Install
 
