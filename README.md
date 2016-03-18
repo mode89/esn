@@ -8,6 +8,7 @@ ESN library implements simulation of [Echo State Networks].
 * Customizable connectivity between neurons
 * Input/output scaling
 * C/C++/Python
+* Linux/Windows
 * Using [Eigen] library for linear algebra computation
 
 [Echo State Networks]: <http://www.scholarpedia.org/article/Echo_state_network>
@@ -52,7 +53,6 @@ cmake --build . --target install
 # TODO
 * More tests
 * More samples
-* Building under Windows
 
 # License
 
