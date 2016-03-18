@@ -14,7 +14,7 @@ ESN library implements simulation of [Echo State Networks].
 
 # Dependencies
 
-* [CMake]. It's used for building the library.
+* [CMake] 3.3. It's used for building the library.
 * [Eigen]. By default, the build script downloads Eigens library during
 configuration step. This behavior can be overriden by CMake options.
 * [Google Test]. It's used for testing ESN library. By default, the build
