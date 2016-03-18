@@ -16,6 +16,19 @@ if(NOT ESN_USE_SYSTEM_GTEST)
     set(GTEST_LIBRARIES gtest)
     set(GTEST_INCLUDE_DIRS
         "${CMAKE_BINARY_DIR}/gtest/src/gtest-project/include")
+else()
+    find_library(
+        GTEST_LIBRARIES gtest
+        HINTS
+            ENV GTEST_ROOT
+            ${GTEST_ROOT}
+    )
+    find_path(
+        GTEST_INCLUDE_DIRS gtest/gtest.h
+        HINTS
+            $ENV{GTEST_ROOT}/include
+            ${GTEST_ROOT}/include
+    )
 endif()
 
 find_package_handle_standard_args(
