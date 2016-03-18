@@ -53,6 +53,7 @@ cmake --build . --target install
 # TODO
 * More tests
 * More samples
+* Saving/loading network
 
 # License
 
