@@ -65,12 +65,12 @@ class Signal :
 class Model :
 
     def __init__( self, neuron_count ) :
-        self.network = esn.create_network(
-                inputCount=1,
-                neuronCount=neuron_count,
-                outputCount=1,
-                connectivity=CONNECTIVITY,
-                useOrthonormalMatrix=USE_ORTHONORMAL_MATRIX
+        self.network = esn.Network(
+                ins=1,
+                neurons=neuron_count,
+                outs=1,
+                cnctvty=CONNECTIVITY,
+                use_orth_mat=USE_ORTHONORMAL_MATRIX
             )
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         if SEED > 0 :

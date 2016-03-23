@@ -31,12 +31,11 @@ class Model :
 
     def __init__( self ) :
 
-        self.network = esn.create_network(
-            inputCount = 1,
-            neuronCount = NEURON_COUNT,
-            outputCount  = 1,
-            leakingRate = LEAKING_RATE,
-            connectivity = CONNECTIVITY
+        self.network = esn.Network(
+            ins=1,
+            neurons=NEURON_COUNT,
+            outs=1,
+            cnctvty=CONNECTIVITY
         )
 
         self.inputState = False

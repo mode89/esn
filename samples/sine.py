@@ -19,11 +19,8 @@ SIM_STEP = 0.001
 TRAIN_TIME = 1 / SINE_FREQ
 STEPS_PER_FRAME = 20
 
-network = esn.create_network(
-    inputCount = 1,
-    neuronCount = NEURON_COUNT,
-    outputCount  = 1,
-    connectivity = CONNECTIVITY )
+network = esn.Network(
+    ins=1, neurons=NEURON_COUNT, outs=1, cnctvty=CONNECTIVITY)
 
 def simulate( frame ) :
 
