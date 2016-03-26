@@ -112,9 +112,9 @@ namespace ESN {
     {
         if ( inputs.size() != mIn.rows() )
             throw std::invalid_argument( "Wrong size of the input vector" );
-        mIn = ( Eigen::Map< Eigen::VectorXf >(
-            const_cast< float * >( inputs.data() ), inputs.size() ) +
-                mWInBias ) * mWInScaling;
+        mIn = (Eigen::Map<Eigen::VectorXf>(
+            const_cast<float*>(inputs.data()), inputs.size()) +
+            mWInBias).cwiseProduct(mWInScaling);
     }
 
     void NetworkNSLI::SetInputScalings(
