@@ -24,6 +24,8 @@ namespace ESN {
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
+        , mOutScale(params.outputCount)
+        , mOutBias(params.outputCount)
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB()
         , mWFBScaling()
@@ -89,6 +91,9 @@ namespace ESN {
         mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
 
+        mOutScale = Eigen::VectorXf::Constant(params.outputCount, 1.0f);
+        mOutBias = Eigen::VectorXf::Zero(params.outputCount);
+
         if (params.hasOutputFeedback)
         {
             mWFB = Eigen::MatrixXf::Random(
@@ -138,6 +143,24 @@ namespace ESN {
                 "Wrong size of the scalings vector" );
         mWInBias = Eigen::Map< Eigen::VectorXf >(
             const_cast< float * >( bias.data() ), bias.size() );
+    }
+
+    void NetworkNSLI::SetOutputScale(const std::vector<float> & scale)
+    {
+        if (scale.size() != mParams.outputCount)
+            throw std::invalid_argument(
+                "Wrong size of the output scale vector");
+        mOutScale = Eigen::Map<Eigen::VectorXf>(
+            const_cast<float*>(scale.data()), scale.size());
+    }
+
+    void NetworkNSLI::SetOutputBias(const std::vector<float> & bias)
+    {
+        if (bias.size() != mParams.outputCount)
+            throw std::invalid_argument(
+                "Wrong size of the output bias vector");
+        mOutBias = Eigen::Map<Eigen::VectorXf>(
+            const_cast<float*>(bias.data()), bias.size());
     }
 
     void NetworkNSLI::SetFeedbackScalings(
@@ -228,7 +251,7 @@ namespace ESN {
                 "actual number of outputs" );
 
         for ( int i = 0; i < mParams.outputCount; ++ i )
-            output[ i ] = mOut( i );
+            output[i] = mOut(i) * mOutScale(i) + mOutBias(i);
     }
 
     void NetworkNSLI::Train(
@@ -263,21 +286,25 @@ namespace ESN {
     void NetworkNSLI::TrainOnline( const std::vector< float > & output,
         bool forceOutput )
     {
+        // Calculate output without bias and scaling
+        std::vector<float> _output(mParams.outputCount);
+        for (unsigned i = 0; i < mParams.outputCount; ++ i)
+            _output[i] = (output[i] - mOutBias(i)) / mOutScale(i);
+
         for ( unsigned i = 0; i < mParams.outputCount; ++ i )
         {
             Eigen::VectorXf w = mWOut.row( i ).transpose();
             if ( mParams.linearOutput )
-                mAdaptiveFilter.Train( w, mOut( i ), output[i], mX );
+                mAdaptiveFilter.Train(w, mOut(i), _output[i], mX);
             else
                 mAdaptiveFilter.Train( w, std::atanh( mOut( i ) ),
-                    std::atanh( output[i] ), mX );
+                    std::atanh(_output[i]), mX);
             mWOut.row( i ) = w.transpose();
         }
 
         if ( forceOutput )
-            mOut = Eigen::Map< Eigen::VectorXf >(
-                const_cast< float * >( output.data() ),
-                mParams.outputCount );
+            mOut = Eigen::Map<Eigen::VectorXf>(
+                const_cast<float*>(_output.data()), mParams.outputCount);
     }
 
 } // namespace ESN

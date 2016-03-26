@@ -20,6 +20,12 @@ esnNetworkSetInputBias( void * network,
     float * bias, int count );
 
 ESN_EXPORT void
+esnNetworkSetOutputScale(void * network, float * scale, int count);
+
+ESN_EXPORT void
+esnNetworkSetOutputBias(void * network, float * bias, int count);
+
+ESN_EXPORT void
 esnNetworkSetFeedbackScalings( void * network,
     float * scalings, int cound );
 

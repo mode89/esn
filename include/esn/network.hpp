@@ -19,6 +19,12 @@ namespace ESN {
         SetInputBias( const std::vector< float > & ) = 0;
 
         virtual ESN_EXPORT void
+        SetOutputScale(const std::vector<float> &) = 0;
+
+        virtual ESN_EXPORT void
+        SetOutputBias(const std::vector<float> &) = 0;
+
+        virtual ESN_EXPORT void
         SetFeedbackScalings( const std::vector< float > & ) = 0;
 
         virtual ESN_EXPORT void

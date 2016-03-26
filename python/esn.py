@@ -102,6 +102,18 @@ class Network :
         _DLL.esnNetworkSetInputBias( self.pointer,
             pointer( biasArray ), len( bias ) )
 
+    def set_output_scale(self, scale):
+        ScaleArrayType = c_float * len(scale)
+        scaleArray = ScaleArrayType(*scale)
+        _DLL.esnNetworkSetOutputScale(
+            self.pointer, pointer(scaleArray), len(scale))
+
+    def set_output_bias(self, bias):
+        BiasArrayType = c_float * len(bias)
+        biasArray = BiasArrayType(*bias)
+        _DLL.esnNetworkSetOutputBias(
+            self.pointer, pointer(biasArray), len(bias))
+
     def set_feedback_scalings( self, scalings ) :
         ScalingsArrayType = c_float * len( scalings )
         scalingsArray = ScalingsArrayType( *scalings )

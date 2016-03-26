@@ -26,6 +26,12 @@ namespace ESN {
         SetInputBias( const std::vector< float > & );
 
         void
+        SetOutputScale(const std::vector<float> &);
+
+        void
+        SetOutputBias(const std::vector<float> &);
+
+        void
         SetFeedbackScalings( const std::vector< float > & );
 
         void
@@ -65,6 +71,8 @@ namespace ESN {
         Eigen::VectorXf mLeakingRate;
         Eigen::VectorXf mOneMinusLeakingRate;
         Eigen::VectorXf mOut;
+        Eigen::VectorXf mOutScale;
+        Eigen::VectorXf mOutBias;
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;
         Eigen::VectorXf mWFBScaling;
