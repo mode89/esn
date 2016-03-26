@@ -87,3 +87,28 @@ TEST(ESN, TrainOnline)
         network->TrainOnline(outputs, false);
     }
 }
+
+TEST(ESN, NoFeedback)
+{
+    ESN::NetworkParamsNSLI params;
+    params.inputCount = 32;
+    params.neuronCount = 64;
+    params.outputCount = 16;
+    params.hasOutputFeedback = false;
+    auto network = CreateNetwork(params);
+
+    std::default_random_engine randomEngine;
+    std::uniform_real_distribution<float> randomDist(-0.5f, 0.5f);
+    std::vector<float> inputs(params.inputCount);
+    std::vector<float> outputs(params.outputCount);
+    for (int s = 0; s < 100; ++ s)
+    {
+        for (int i = 0; i < params.inputCount; ++ i)
+            inputs[i] = randomDist(randomEngine);
+        for (int i = 0; i < params.outputCount; ++ i)
+            outputs[i] = randomDist(randomEngine);
+        network->SetInputs(inputs);
+        network->Step(1.0f);
+        network->TrainOnline(outputs, false);
+    }
+}
