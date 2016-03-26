@@ -12,7 +12,7 @@ TEST( ESN, CreateNetworkNSLI )
     std::unique_ptr< ESN::Network > network = CreateNetwork( params );
 }
 
-TEST( ESN, SetInputsNSLI )
+TEST(ESN, SetInputs)
 {
     ESN::NetworkParamsNSLI params;
     params.inputCount = 25;
@@ -23,8 +23,12 @@ TEST( ESN, SetInputsNSLI )
     std::default_random_engine randomEngine;
     std::uniform_real_distribution<float > randomDist( -1.0f, 1.0f );
     std::vector< float > inputs( params.inputCount );
-    for ( int i = 0; i < params.inputCount; ++ i )
-        inputs[i] = randomDist( randomEngine );
+    for (int s = 0; s < 100; ++ s)
+    {
+        for (int i = 0; i < params.inputCount; ++ i)
+            inputs[i] = randomDist(randomEngine);
+        network->SetInputs(inputs);
+    }
 }
 
 TEST( ESN, StepNSLI )
