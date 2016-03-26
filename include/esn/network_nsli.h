@@ -19,6 +19,7 @@ extern "C" {
         bool linearOutput;
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
+        bool hasOutputFeedback;
     };
 
     ESN_EXPORT void *

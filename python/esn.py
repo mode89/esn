@@ -38,7 +38,8 @@ class NetworkParams(Structure) :
             ( "connectivity", c_float ),
             ( "linearOutput", c_bool ),
             ( "onlineTrainingForgettingFactor", c_float ),
-            ( "onlineTrainingInitialCovariance", c_float )
+            ( "onlineTrainingInitialCovariance", c_float ),
+            ( "hasOutputFeedback", c_bool )
         ]
 
 class Network :
@@ -53,6 +54,7 @@ class Network :
         spect_rad = 1.0,
         cnctvty = 1.0,
         lin_out = False,
+        has_ofb = True,
         forgetting = 1.0,
         covariance = 1000.0):
         if not _DLL._name :
@@ -69,6 +71,7 @@ class Network :
             spectralRadius=spect_rad,
             connectivity=cnctvty,
             linearOutput=lin_out,
+            hasOutputFeedback=has_ofb,
             onlineTrainingForgettingFactor=forgetting,
             onlineTrainingInitialCovariance=covariance)
 

@@ -21,6 +21,7 @@ namespace ESN {
         bool linearOutput;
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
+        bool hasOutputFeedback;
 
         NetworkParamsNSLI()
             : inputCount( 0 )
@@ -34,6 +35,7 @@ namespace ESN {
             , linearOutput( false )
             , onlineTrainingForgettingFactor( 1.0f )
             , onlineTrainingInitialCovariance( 1000.0f )
+            , hasOutputFeedback(true)
         {}
     };
 

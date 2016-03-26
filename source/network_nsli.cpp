@@ -25,8 +25,8 @@ namespace ESN {
         , mW( params.neuronCount, params.neuronCount )
         , mOut( params.outputCount )
         , mWOut( params.outputCount, params.neuronCount )
-        , mWFB( params.neuronCount, params.outputCount )
-        , mWFBScaling( params.outputCount )
+        , mWFB()
+        , mWFBScaling()
         , mAdaptiveFilter( params.neuronCount,
             params.onlineTrainingForgettingFactor,
             params.onlineTrainingInitialCovariance )
@@ -89,10 +89,13 @@ namespace ESN {
         mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
 
-        mWFB = Eigen::MatrixXf::Random(
-            params.neuronCount, params.outputCount );
-
-        mWFBScaling = Eigen::VectorXf::Constant( params.outputCount, 1.0f );
+        if (params.hasOutputFeedback)
+        {
+            mWFB = Eigen::MatrixXf::Random(
+                params.neuronCount, params.outputCount);
+            mWFBScaling = Eigen::VectorXf::Constant(
+                params.outputCount, 1.0f);
+        }
 
         mLeakingRate = ( Eigen::ArrayXf::Random( params.neuronCount ) *
             ( mParams.leakingRateMax - mParams.leakingRateMin ) +
@@ -140,6 +143,10 @@ namespace ESN {
     void NetworkNSLI::SetFeedbackScalings(
         const std::vector< float > & scalings )
     {
+        if (!mParams.hasOutputFeedback)
+            throw std::logic_error(
+                "Trying to set up feedback scaling for a network "
+                "which doesn't have an output feedback");
         if ( scalings.size() != mParams.outputCount )
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
@@ -155,23 +162,34 @@ namespace ESN {
 
         auto tanh = [] ( float x ) -> float { return std::tanh( x ); };
 
+        #define TEMP mWIn * mIn + mW * mX
+
+        #define CALC_X(val) \
+            mX = mOneMinusLeakingRate.cwiseProduct(mX) + \
+                mLeakingRate.cwiseProduct(val).unaryExpr(tanh)
+
+        #define CALC_X_WITH_FB(val) \
+            if (mParams.hasOutputFeedback) \
+                CALC_X(TEMP + val); \
+            else \
+                CALC_X(TEMP)
+
         if ( mParams.linearOutput )
         {
-            mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
-                ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
-                    mWFB * mOut.unaryExpr(tanh).cwiseProduct(
-                        mWFBScaling))).unaryExpr(tanh);
-
+            CALC_X_WITH_FB(
+                mWFB * mOut.unaryExpr(tanh).cwiseProduct(mWFBScaling));
             mOut = mWOut * mX;
         }
         else
         {
-            mX = mOneMinusLeakingRate.cwiseProduct( mX ) +
-                ( mLeakingRate.cwiseProduct( mWIn * mIn + mW * mX +
-                    mWFB * mOut.cwiseProduct(mWFBScaling))).unaryExpr(tanh);
-
+            CALC_X_WITH_FB(
+                mWFB * mOut.cwiseProduct(mWFBScaling));
             mOut = ( mWOut * mX ).unaryExpr( tanh );
         }
+
+        #undef TEMP
+        #undef CALC_X
+        #undef CALC_X_WITH_FB
 
         auto isnotfinite =
             [] (float n) -> bool { return !std::isfinite(n); };
