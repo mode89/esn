@@ -3,6 +3,15 @@
 #include <esn/network.hpp>
 #include <random>
 
+std::default_random_engine sRandomEngine;
+
+static void Randomize(std::vector<float> & v, float min, float max)
+{
+    std::uniform_real_distribution<float> dist(min, max);
+    for (auto & val : v)
+        val = dist(sRandomEngine);
+}
+
 TEST( ESN, CreateNetworkNSLI )
 {
     ESN::NetworkParamsNSLI params;
@@ -20,13 +29,10 @@ TEST(ESN, SetInputs)
     params.outputCount = 17;
     auto network = CreateNetwork( params );
 
-    std::default_random_engine randomEngine;
-    std::uniform_real_distribution<float > randomDist( -1.0f, 1.0f );
     std::vector< float > inputs( params.inputCount );
     for (int s = 0; s < 100; ++ s)
     {
-        for (int i = 0; i < params.inputCount; ++ i)
-            inputs[i] = randomDist(randomEngine);
+        Randomize(inputs, -1.0f, 1.0f);
         network->SetInputs(inputs);
     }
 }
@@ -72,18 +78,14 @@ TEST(ESN, TrainOnline)
     params.outputCount = 16;
     auto network = CreateNetwork(params);
 
-    std::default_random_engine randomEngine;
-    std::uniform_real_distribution<float> randomDist(-0.5f, 0.5f);
     std::vector<float> inputs(params.inputCount);
     std::vector<float> outputs(params.outputCount);
     for (int s = 0; s < 100; ++ s)
     {
-        for (int i = 0; i < params.inputCount; ++ i)
-            inputs[i] = randomDist(randomEngine);
-        for (int i = 0; i < params.outputCount; ++ i)
-            outputs[i] = randomDist(randomEngine);
+        Randomize(inputs, -1.0f, 1.0f);
         network->SetInputs(inputs);
         network->Step(1.0f);
+        Randomize(outputs, -0.7f, 0.7f);
         network->TrainOnline(outputs, false);
     }
 }
@@ -97,18 +99,14 @@ TEST(ESN, NoFeedback)
     params.hasOutputFeedback = false;
     auto network = CreateNetwork(params);
 
-    std::default_random_engine randomEngine;
-    std::uniform_real_distribution<float> randomDist(-0.5f, 0.5f);
     std::vector<float> inputs(params.inputCount);
     std::vector<float> outputs(params.outputCount);
     for (int s = 0; s < 100; ++ s)
     {
-        for (int i = 0; i < params.inputCount; ++ i)
-            inputs[i] = randomDist(randomEngine);
-        for (int i = 0; i < params.outputCount; ++ i)
-            outputs[i] = randomDist(randomEngine);
+        Randomize(inputs, -1.0f, 1.0f);
         network->SetInputs(inputs);
         network->Step(1.0f);
+        Randomize(outputs, -0.7f, 0.7f);
         network->TrainOnline(outputs, false);
     }
 }
