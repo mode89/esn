@@ -151,3 +151,10 @@ class Network :
         outputArray = OutputArrayType( *output )
         _DLL.esnNetworkTrainOnline( self.pointer, pointer( outputArray ),
             len( output ), forceOutput )
+
+    def train_single_output_online(self, index, value, force = False):
+        _DLL.esnNetworkTrainSingleOutputOnline(
+            c_void_p(self.pointer),
+            c_uint(index),
+            c_float(value),
+            c_bool(force))

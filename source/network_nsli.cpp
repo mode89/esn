@@ -29,9 +29,7 @@ namespace ESN {
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB()
         , mWFBScaling()
-        , mAdaptiveFilter( params.neuronCount,
-            params.onlineTrainingForgettingFactor,
-            params.onlineTrainingInitialCovariance )
+        , mAdaptiveFilter(params.outputCount)
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -110,6 +108,12 @@ namespace ESN {
         mIn = Eigen::VectorXf::Zero( params.inputCount );
         mX = Eigen::VectorXf::Random( params.neuronCount );
         mOut = Eigen::VectorXf::Zero( params.outputCount );
+
+        for (int i = 0; i < params.outputCount; ++i)
+            mAdaptiveFilter[i] = std::make_shared<AdaptiveFilterRLS>(
+                params.neuronCount,
+                params.onlineTrainingForgettingFactor,
+                params.onlineTrainingInitialCovariance);
     }
 
     NetworkNSLI::~NetworkNSLI()
@@ -283,28 +287,30 @@ namespace ESN {
         mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
     }
 
-    void NetworkNSLI::TrainOnline( const std::vector< float > & output,
-        bool forceOutput )
+    void NetworkNSLI::TrainSingleOutputOnline(
+        unsigned index, float value, bool force)
     {
         // Calculate output without bias and scaling
-        std::vector<float> _output(mParams.outputCount);
+        float _value = (value - mOutBias(index)) / mOutScale(index);
+
+        Eigen::VectorXf w = mWOut.row(index).transpose();
+        if (!mParams.linearOutput)
+            mAdaptiveFilter[index]->Train(w, std::atanh(mOut(index)),
+                std::atanh(_value), mX);
+        else
+            mAdaptiveFilter[index]->Train(w, mOut(index), _value, mX);
+
+        mWOut.row(index) = w.transpose();
+
+        if (force)
+            mOut(index) = _value;
+    }
+
+    void NetworkNSLI::TrainOnline(
+        const std::vector<float> & output, bool forceOutput)
+    {
         for (unsigned i = 0; i < mParams.outputCount; ++ i)
-            _output[i] = (output[i] - mOutBias(i)) / mOutScale(i);
-
-        for ( unsigned i = 0; i < mParams.outputCount; ++ i )
-        {
-            Eigen::VectorXf w = mWOut.row( i ).transpose();
-            if ( mParams.linearOutput )
-                mAdaptiveFilter.Train(w, mOut(i), _output[i], mX);
-            else
-                mAdaptiveFilter.Train( w, std::atanh( mOut( i ) ),
-                    std::atanh(_output[i]), mX);
-            mWOut.row( i ) = w.transpose();
-        }
-
-        if ( forceOutput )
-            mOut = Eigen::Map<Eigen::VectorXf>(
-                const_cast<float*>(_output.data()), mParams.outputCount);
+            TrainSingleOutputOnline(i, output[i], forceOutput);
     }
 
 } // namespace ESN

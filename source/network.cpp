@@ -87,6 +87,13 @@ void esnNetworkTrainOnline( void * network,
         forceOutpus );
 }
 
+void esnNetworkTrainSingleOutputOnline(
+    void * network, unsigned index, float value, bool force)
+{
+    static_cast<ESN::Network*>(network)->TrainSingleOutputOnline(
+        index, value, force);
+}
+
 void esnNetworkDestruct( void * network )
 {
     delete static_cast< ESN::Network * >( network );

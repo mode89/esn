@@ -56,6 +56,9 @@ namespace ESN {
             const std::vector< float > & output,
             bool forceOutput );
 
+        void
+        TrainSingleOutputOnline(unsigned index, float value, bool force);
+
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
@@ -76,7 +79,7 @@ namespace ESN {
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;
         Eigen::VectorXf mWFBScaling;
-        AdaptiveFilterRLS mAdaptiveFilter;
+        std::vector<std::shared_ptr<AdaptiveFilterRLS>> mAdaptiveFilter;
     };
 
 } // namespace ESN

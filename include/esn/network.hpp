@@ -49,6 +49,10 @@ namespace ESN {
             const std::vector< float > & output,
             bool forceOutput = false ) = 0;
 
+        virtual ESN_EXPORT void
+        TrainSingleOutputOnline(
+            unsigned index, float value, bool force = false) = 0;
+
         virtual ESN_EXPORT ~Network() {}
     };
 

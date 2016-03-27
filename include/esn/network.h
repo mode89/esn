@@ -50,6 +50,10 @@ esnNetworkTrainOnline( void * network,
     float * outputs, int outputCount, bool forceOutpus );
 
 ESN_EXPORT void
+esnNetworkTrainSingleOutputOnline(
+    void * network, unsigned index, float value, bool force);
+
+ESN_EXPORT void
 esnNetworkDestruct( void * network );
 
 #ifdef __cplusplus
