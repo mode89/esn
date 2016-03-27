@@ -106,7 +106,7 @@ TEST(ESN, NoFeedback)
         Randomize(inputs, -1.0f, 1.0f);
         network->SetInputs(inputs);
         network->Step(1.0f);
-        Randomize(outputs, -0.7f, 0.7f);
+        Randomize(outputs, -0.5f, 0.5f);
         network->TrainOnline(outputs, false);
     }
 }
