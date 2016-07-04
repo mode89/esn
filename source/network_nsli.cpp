@@ -9,10 +9,10 @@
 
 namespace ESN {
 
-    std::unique_ptr< Network > CreateNetwork(
-        const NetworkParamsNSLI & params )
+    std::shared_ptr<Network> CreateNetwork(
+        const NetworkParamsNSLI & params)
     {
-        return std::unique_ptr< NetworkNSLI >( new NetworkNSLI( params ) );
+        return std::shared_ptr<NetworkNSLI>(new NetworkNSLI(params));
     }
 
     NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )

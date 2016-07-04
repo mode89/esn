@@ -39,8 +39,8 @@ namespace ESN {
         {}
     };
 
-    ESN_EXPORT std::unique_ptr< Network >
-    CreateNetwork( const NetworkParamsNSLI & );
+    ESN_EXPORT std::shared_ptr<Network>
+    CreateNetwork(const NetworkParamsNSLI &);
 
 } // namespace ESN
 

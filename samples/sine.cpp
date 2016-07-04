@@ -19,7 +19,7 @@ int main()
     params.outputCount = 1;
     params.leakingRateMin = kLeakingRate;
     params.leakingRateMax = kLeakingRate;
-    std::unique_ptr< ESN::Network > network = ESN::CreateNetwork( params );
+    auto network = ESN::CreateNetwork(params);
 
     std::vector< float > output( 1 );
     std::vector< float > actualOutput( 1 );
