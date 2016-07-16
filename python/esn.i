@@ -1,8 +1,8 @@
 %module esn
 
 %{
-#include "esn/network.hpp"
-#include "esn/network_nsli.hpp"
+#include "esn/network.h"
+#include "esn/network_nsli.h"
 %}
 
 %include <std_shared_ptr.i>
@@ -12,5 +12,5 @@
 %template(Vector) std::vector<float>;
 
 %include "esn/export.h"
-%include "esn/network.hpp"
-%include "esn/network_nsli.hpp"
+%include "esn/network.h"
+%include "esn/network_nsli.h"

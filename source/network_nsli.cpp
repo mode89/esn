@@ -2,9 +2,8 @@
 #include <cstring>
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
-#include <esn/exceptions.hpp>
+#include <esn/exceptions.h>
 #include <esn/network_nsli.h>
-#include <esn/network_nsli.hpp>
 #include <network_nsli.h>
 
 namespace ESN {
@@ -281,28 +280,3 @@ namespace ESN {
     }
 
 } // namespace ESN
-
-#define SIZEOF_MEMBER( structure, member ) \
-    sizeof( ( ( structure * ) 0 )->member )
-
-void * esnCreateNetworkNSLI( esnNetworkParamsNSLI * params )
-{
-    static_assert( ( sizeof( esnNetworkParamsNSLI ) -
-        SIZEOF_MEMBER( esnNetworkParamsNSLI, structSize ) ) ==
-        sizeof( ESN::NetworkParamsNSLI ),
-        "Wrong size of esnNetworkParamsNSLI" );
-
-    if ( params->structSize != sizeof( esnNetworkParamsNSLI ) )
-        throw std::invalid_argument(
-            "esnNetworkParamsNSLI::structSize must be equal the "
-            "sizeof( esnNetworkParamsNSLI )" );
-
-    ESN::NetworkParamsNSLI p;
-    std::memcpy( &p, reinterpret_cast< char * >( params ) +
-        SIZEOF_MEMBER( esnNetworkParamsNSLI, structSize ),
-        sizeof( ESN::NetworkParamsNSLI ) );
-
-    return new ESN::NetworkNSLI( p );
-}
-
-#undef SIZEOF_MEMBER

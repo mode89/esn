@@ -2,52 +2,50 @@
 #define __ESN_NETWORK_H__
 
 #include <esn/export.h>
+#include <vector>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
+namespace ESN {
 
-ESN_EXPORT void
-esnNetworkSetInputs( void * network,
-    float * inputs, int inputCount );
+    class Network
+    {
+    public:
+        virtual ESN_EXPORT void
+        SetInputs( const std::vector< float > & ) = 0;
 
-ESN_EXPORT void
-esnNetworkSetInputScalings( void * network,
-    float * scalings, int count );
+        virtual ESN_EXPORT void
+        SetInputScalings( const std::vector< float > & ) = 0;
 
-ESN_EXPORT void
-esnNetworkSetInputBias( void * network,
-    float * bias, int count );
+        virtual ESN_EXPORT void
+        SetInputBias( const std::vector< float > & ) = 0;
 
-ESN_EXPORT void
-esnNetworkSetFeedbackScalings( void * network,
-    float * scalings, int cound );
+        virtual ESN_EXPORT void
+        SetFeedbackScalings( const std::vector< float > & ) = 0;
 
-ESN_EXPORT int
-esnNetworkStep( void * network,
-    float step );
+        virtual ESN_EXPORT void
+        Step( float step ) = 0;
 
-ESN_EXPORT void
-esnNetworkCaptureTransformedInput( void * network,
-    float * input, int inputCount );
+        virtual ESN_EXPORT void
+        CaptureTransformedInput( std::vector< float > & input ) = 0;
 
-ESN_EXPORT void
-esnNetworkCaptureActivations( void * network,
-    float * activations, int neuronCount );
+        virtual ESN_EXPORT void
+        CaptureActivations( std::vector< float > & activations ) = 0;
 
-ESN_EXPORT void
-esnNetworkCaptureOutput( void * network,
-    float * outputs, int outputCount );
+        virtual ESN_EXPORT void
+        CaptureOutput( std::vector< float > & output ) = 0;
 
-ESN_EXPORT void
-esnNetworkTrainOnline( void * network,
-    float * outputs, int outputCount, bool forceOutpus );
+        virtual ESN_EXPORT void
+        Train(
+            const std::vector< std::vector< float > > & inputs,
+            const std::vector< std::vector< float > > & outputs ) = 0;
 
-ESN_EXPORT void
-esnNetworkDestruct( void * network );
+        virtual ESN_EXPORT void
+        TrainOnline(
+            const std::vector< float > & output,
+            bool forceOutput = false ) = 0;
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+        virtual ESN_EXPORT ~Network() {}
+    };
+
+} // namespace ESN
 
 #endif // __ESN_NETWORK_H__

@@ -2,12 +2,14 @@
 #define __ESN_NETWORK_NSLI_H__
 
 #include <esn/export.h>
+#include <memory>
 
-extern "C" {
+namespace ESN {
 
-    struct esnNetworkParamsNSLI
+    class Network;
+
+    struct NetworkParamsNSLI
     {
-        unsigned structSize;
         unsigned inputCount;
         unsigned neuronCount;
         unsigned outputCount;
@@ -20,11 +22,26 @@ extern "C" {
         float onlineTrainingForgettingFactor;
         float onlineTrainingInitialCovariance;
         bool hasOutputFeedback;
+
+        NetworkParamsNSLI()
+            : inputCount( 0 )
+            , neuronCount( 0 )
+            , outputCount( 0 )
+            , leakingRateMin( 0.1f )
+            , leakingRateMax( 1.0f )
+            , useOrthonormalMatrix( true )
+            , spectralRadius( 1.0f )
+            , connectivity( 1.0f )
+            , linearOutput( false )
+            , onlineTrainingForgettingFactor( 1.0f )
+            , onlineTrainingInitialCovariance( 1000.0f )
+            , hasOutputFeedback(true)
+        {}
     };
 
-    ESN_EXPORT void *
-    esnCreateNetworkNSLI( esnNetworkParamsNSLI * );
+    ESN_EXPORT std::shared_ptr<Network>
+    CreateNetwork(const NetworkParamsNSLI &);
 
-} // export "C"
+} // namespace ESN
 
 #endif // __ESN_NETWORK_NSLI_H__

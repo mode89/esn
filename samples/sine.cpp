@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include <esn/esn.hpp>
+#include <esn/esn.h>
 #include <iomanip>
 #include <iostream>
 #include <math.h>

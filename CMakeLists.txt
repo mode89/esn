@@ -26,10 +26,6 @@ cmake_minimum_required(VERSION 3.3)
 
     find_package(Eigen3)
 
-# Source files
-
-    file(GLOB SRC_FILES source/*.cpp)
-
 # Includes
 
     include_directories(include)
@@ -43,7 +39,10 @@ cmake_minimum_required(VERSION 3.3)
 
 # Target
 
-    add_library(esn SHARED ${SRC_FILES})
+    add_library(esn SHARED
+        source/adaptive_filter_rls.cpp
+        source/network_nsli.cpp
+    )
 
 # Linking
 

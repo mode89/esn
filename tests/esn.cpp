@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <esn/network_nsli.hpp>
-#include <esn/network.hpp>
+#include <esn/network_nsli.h>
+#include <esn/network.h>
 #include <random>
 
 std::default_random_engine sRandomEngine;
