@@ -17,6 +17,7 @@
             -I"${CMAKE_SOURCE_DIR}/include"
             -o ${ESN_WRAP_CPP}
             "${CMAKE_CURRENT_SOURCE_DIR}/esn.i"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/esn.i"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
 
