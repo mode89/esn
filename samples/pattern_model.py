@@ -65,13 +65,13 @@ class Signal :
 class Model :
 
     def __init__( self, neuron_count ) :
-        self.network = esn.Network(
-                ins=1,
-                neurons=neuron_count,
-                outs=1,
-                cnctvty=CONNECTIVITY,
-                use_orth_mat=USE_ORTHONORMAL_MATRIX
-            )
+        params = esn.NetworkParamsNSLI()
+        params.inputCount = 1
+        params.neuronCount = neuron_count
+        params.outputCount = 1
+        params.connectivity = CONNECTIVITY
+        params.useOrthonormalMatrix = USE_ORTHONORMAL_MATRIX
+        self.network = esn.CreateNetwork(params)
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         if SEED > 0 :
             self.noise.seed( SEED + 2 )
@@ -90,9 +90,11 @@ class Model :
         if FALSE_PATTERN :
             self.false_pattern.step( step )
             self.input += self.false_pattern.value
-        self.network.set_inputs( [ self.input ] )
-        self.network.step( step )
-        self.output = self.network.capture_output( 1 )[ 0 ]
+        self.network.SetInputs([self.input])
+        self.network.Step(step)
+        outputs = esn.Vector(1)
+        self.network.CaptureOutput(outputs)
+        self.output = outputs[0]
         self.train_output = self.train_pulse( self.time - \
             self.pattern.back_edge )
         if self.time > WASHOUT_TIME and self.time < TRAIN_TIME :
@@ -114,16 +116,16 @@ class Model :
 
         @staticmethod
         def continuous( model ) :
-            model.network.train_online( [ model.train_output ],
-                TEACHER_FORCING )
+            model.network.TrainOnline(
+                [model.train_output], TEACHER_FORCING)
 
         @staticmethod
         def discontinuous( model ) :
             if model.time > model.pattern.back_edge and \
                 model.time < ( model.pattern.back_edge + \
                     OUTPUT_PULSE_LENGTH ) :
-                model.network.train_online( [ model.train_output ],
-                    TEACHER_FORCING )
+                model.network.TrainOnline(
+                    [model.train_output], TEACHER_FORCING)
             elif model.output > 0.3 or model.output < -0.3:
-                model.network.train_online( [ model.train_output ],
-                    TEACHER_FORCING )
+                model.network.TrainOnline(
+                    [model.train_output], TEACHER_FORCING)

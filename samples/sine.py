@@ -19,8 +19,12 @@ SIM_STEP = 0.001
 TRAIN_TIME = 1 / SINE_FREQ
 STEPS_PER_FRAME = 20
 
-network = esn.Network(
-    ins=1, neurons=NEURON_COUNT, outs=1, cnctvty=CONNECTIVITY)
+params = esn.NetworkParamsNSLI()
+params.inputCount = 1
+params.neuronCount = NEURON_COUNT
+params.outputCount = 1
+params.connectivity = CONNECTIVITY
+network = esn.CreateNetwork(params);
 
 def simulate( frame ) :
 
@@ -28,11 +32,12 @@ def simulate( frame ) :
 
     sine = sin( 2 * pi * SINE_FREQ * time ) * SINE_AMPLITUDE
 
-    network.step( SIM_STEP )
-    output = network.capture_output( 1 )
+    network.Step(SIM_STEP)
+    output = esn.Vector(1)
+    network.CaptureOutput(output)
 
     if time < TRAIN_TIME :
-        network.train_online( [ sine ], True )
+        network.TrainOnline([sine], True)
 
     print( "%10s %10s %10s" %
             (
