@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.3)
 
     option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" OFF)
     option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
+    option(ESN_MAKE_PYTHON_BINDING "Build Python binding module" OFF)
 
 # CMake configuration
 
@@ -54,6 +55,9 @@ cmake_minimum_required(VERSION 3.3)
 
 # Subdirectoris
 
-    add_subdirectory(python)
+    if(ESN_MAKE_PYTHON_BINDING)
+        add_subdirectory(python)
+    endif()
+
     add_subdirectory(samples)
     add_subdirectory(tests)
