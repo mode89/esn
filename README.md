@@ -7,7 +7,7 @@ ESN library implements simulation of [Echo State Networks].
 * Uniformly distributed leaking rate
 * Customizable connectivity between neurons
 * Input/output scaling
-* C/C++/Python
+* C++/Python
 * Linux/Windows
 * Using [Eigen] library for linear algebra computation
 

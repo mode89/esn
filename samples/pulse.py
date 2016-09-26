@@ -30,13 +30,12 @@ STEPS_PER_FRAME = 20
 class Model :
 
     def __init__( self ) :
-
-        self.network = esn.Network(
-            ins=1,
-            neurons=NEURON_COUNT,
-            outs=1,
-            cnctvty=CONNECTIVITY
-        )
+        params = esn.NetworkParamsNSLI()
+        params.inputCount = 1
+        params.neuronCount = NEURON_COUNT
+        params.outputCount = 1
+        params.connectivity = CONNECTIVITY
+        self.network = esn.CreateNetwork(params)
 
         self.inputState = False
         self.inputs = [ 0 ]
@@ -78,23 +77,24 @@ class Model :
         referenceOutput = self.pulse( time - self.outputPulseStart,
             OUTPUT_PULSE_WIDTH, self.outputPulseAmplitude );
 
-        self.network.set_inputs( self.inputs )
-        self.network.step( SIM_STEP )
-        output = self.network.capture_output( 1 )
+        self.network.SetInputs(self.inputs)
+        self.network.Step(SIM_STEP)
+        outputs = esn.Vector(1)
+        self.network.CaptureOutput(outputs)
 
         if self.outputPulseCount < TRAIN_PULSE_COUNT :
-            self.network.train_online( [ referenceOutput ], True );
+            self.network.TrainOnline([referenceOutput], True);
 
         print( "%10s %7s %10s %10s" %
                 (
                     str( "%0.5f" % time ),
                     str( "%r" % self.inputState ),
                     str( "%0.5f" % referenceOutput ),
-                    str( "%0.5f" % output[0] )
+                    str( "%0.5f" % outputs[0] )
                 )
             )
 
-        return time, self.inputs[0], referenceOutput, output[0]
+        return time, self.inputs[0], referenceOutput, outputs[0]
 
 model = Model()
 

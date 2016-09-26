@@ -1,0 +1,16 @@
+from distutils.core import setup, Extension
+
+setup(
+    name="esn",
+    py_modules=["esn"],
+    ext_modules=[
+        Extension(
+            name="_esn",
+            sources=["${ESN_WRAP_CPP}"],
+            include_dirs=["${CMAKE_SOURCE_DIR}/include"],
+            library_dirs=["${ESN_LIBRARY_DIR}"],
+            libraries=["esn"],
+            extra_compile_args=["-std=c++11"]
+        )
+    ]
+)

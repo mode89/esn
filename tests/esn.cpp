@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <esn/network_nsli.hpp>
-#include <esn/network.hpp>
+#include <esn/network_nsli.h>
+#include <esn/network.h>
 #include <random>
 
 std::default_random_engine sRandomEngine;
@@ -18,7 +18,7 @@ TEST( ESN, CreateNetworkNSLI )
     params.inputCount = 10;
     params.neuronCount = 100;
     params.outputCount = 10;
-    std::unique_ptr< ESN::Network > network = CreateNetwork( params );
+    std::shared_ptr<ESN::Network> network = CreateNetwork(params);
 }
 
 TEST(ESN, SetInputs)
@@ -43,7 +43,7 @@ TEST( ESN, StepNSLI )
     params.inputCount = 11;
     params.neuronCount = 100;
     params.outputCount = 15;
-    std::unique_ptr< ESN::Network > network = CreateNetwork( params );
+    std::shared_ptr<ESN::Network> network = CreateNetwork(params);
     network->Step( 0.1f );
 }
 

@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.3)
 
     option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" OFF)
     option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
+    option(ESN_MAKE_PYTHON_BINDING "Build Python binding module" OFF)
 
 # CMake configuration
 
@@ -26,10 +27,6 @@ cmake_minimum_required(VERSION 3.3)
 
     find_package(Eigen3)
 
-# Source files
-
-    file(GLOB SRC_FILES source/*.cpp)
-
 # Includes
 
     include_directories(include)
@@ -43,7 +40,10 @@ cmake_minimum_required(VERSION 3.3)
 
 # Target
 
-    add_library(esn SHARED ${SRC_FILES})
+    add_library(esn SHARED
+        source/adaptive_filter_rls.cpp
+        source/network_nsli.cpp
+    )
 
 # Linking
 
@@ -55,6 +55,9 @@ cmake_minimum_required(VERSION 3.3)
 
 # Subdirectoris
 
-    add_subdirectory(python)
+    if(ESN_MAKE_PYTHON_BINDING)
+        add_subdirectory(python)
+    endif()
+
     add_subdirectory(samples)
     add_subdirectory(tests)
