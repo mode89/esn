@@ -44,6 +44,8 @@ if `OFF`, CMake downloads Eigen library during configuration step.
 * `ESN_USE_SYSTEM_GTEST` : Default is `OFF`.
 If `ON`, ESN library uses system installed version of Google Test library;
 If `OFF`, CMake downloads Google Test library during configuration step.
+* `ESN_MAKE_PYTHON_BINDING` : Default is `OFF`.
+Generate Python binding using SWIG.
 
 Build and install
 ```sh
