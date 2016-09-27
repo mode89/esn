@@ -72,14 +72,13 @@ namespace ESN {
         {
             auto svd = randomWeights.jacobiSvd(
                 Eigen::ComputeFullU | Eigen::ComputeFullV );
-            mW = ( svd.matrixU() * svd.matrixV() ).sparseView();
+            mW = svd.matrixU() * svd.matrixV();
         }
         else
         {
             float spectralRadius =
                 randomWeights.eigenvalues().cwiseAbs().maxCoeff();
-            mW = ( randomWeights / spectralRadius *
-                params.spectralRadius ).sparseView() ;
+            mW = randomWeights / spectralRadius * params.spectralRadius;
         }
 
         mWInScaling = Eigen::VectorXf::Constant( params.inputCount, 1.0f );

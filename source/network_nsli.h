@@ -70,7 +70,7 @@ namespace ESN {
         Eigen::VectorXf mWInScaling;
         Eigen::VectorXf mWInBias;
         Eigen::VectorXf mX;
-        Eigen::SparseMatrix< float > mW;
+        Eigen::MatrixXf mW;
         Eigen::VectorXf mLeakingRate;
         Eigen::VectorXf mOneMinusLeakingRate;
         Eigen::VectorXf mOut;
