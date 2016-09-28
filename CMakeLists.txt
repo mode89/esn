@@ -50,6 +50,7 @@ cmake_minimum_required(VERSION 3.3)
     target_link_libraries(esn
         ${EIGEN3_LIBRARY}
         cblas
+        clapack
     )
 
 # Install
