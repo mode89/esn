@@ -16,6 +16,12 @@ void RandomUniform(float * v, int size, float a, float b)
         v[i] = dist(sRandomEngine);
 }
 
+void Constant(float * v, int size, float value)
+{
+    for (int i = 0; i < size; ++ i)
+        v[i] = value;
+}
+
 namespace ESN {
 
     std::shared_ptr<Network> CreateNetwork(
@@ -38,7 +44,7 @@ namespace ESN {
         , mOutBias(params.outputCount)
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB(params.neuronCount, params.outputCount)
-        , mWFBScaling()
+        , mWFBScaling(params.outputCount)
         , mAdaptiveFilter(params.outputCount)
     {
         if ( params.inputCount <= 0 )
@@ -95,21 +101,20 @@ namespace ESN {
             mW = randomWeights / spectralRadius * params.spectralRadius;
         }
 
-        mWInScaling = Eigen::VectorXf::Constant( params.inputCount, 1.0f );
-        mWInBias = Eigen::VectorXf::Zero( params.inputCount );
+        Constant(mWInScaling.data(), params.inputCount, 1.0f);
+        Constant(mWInBias.data(), params.inputCount, 0.0f);
 
         mWOut = Eigen::MatrixXf::Zero(
             params.outputCount, params.neuronCount );
 
-        mOutScale = Eigen::VectorXf::Constant(params.outputCount, 1.0f);
-        mOutBias = Eigen::VectorXf::Zero(params.outputCount);
+        Constant(mOutScale.data(), params.outputCount, 1.0f);
+        Constant(mOutBias.data(), params.outputCount, 0.0f);
 
         if (params.hasOutputFeedback)
         {
             RandomUniform(mWFB.data(),
                 params.neuronCount * params.outputCount, -1.0f, 1.0f);
-            mWFBScaling = Eigen::VectorXf::Constant(
-                params.outputCount, 1.0f);
+            Constant(mWFBScaling.data(), params.outputCount, 1.0f);
         }
 
         RandomUniform(mLeakingRate.data(), params.neuronCount,
