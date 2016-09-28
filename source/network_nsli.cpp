@@ -1,11 +1,15 @@
 #include <cmath>
 #include <cstring>
 #include <Eigen/Eigenvalues>
-#include <Eigen/SVD>
 #include <esn/exceptions.h>
 #include <esn/network_nsli.h>
 #include <network_nsli.h>
 #include <random>
+
+extern "C" {
+#include <cblas/cblas.h>
+#include <clapack/clapack.h>
+}
 
 std::default_random_engine sRandomEngine;
 
@@ -90,9 +94,24 @@ namespace ESN {
 
         if ( params.useOrthonormalMatrix )
         {
-            auto svd = randomWeights.jacobiSvd(
-                Eigen::ComputeFullU | Eigen::ComputeFullV );
-            mW = svd.matrixU() * svd.matrixV();
+            int n = params.neuronCount;
+            float * A = randomWeights.data();
+
+            char job = 'A';
+            std::vector<float> s(n);
+            std::vector<float> u(n * n);
+            std::vector<float> vt(n * n);
+            int lwork = 5 * n;
+            std::vector<float> work(lwork);
+            int info = 0;
+
+            sgesvd_(&job, &job, &n, &n, A, &n, s.data(), u.data(), &n,
+                vt.data(), &n, work.data(), &lwork, &info);
+            if (info != 0)
+                throw std::runtime_error("Failed to calculate SVD");
+
+            cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n,
+                1.0f, u.data(), n, vt.data(), n, 0.0f, mW.data(), n);
         }
         else
         {
