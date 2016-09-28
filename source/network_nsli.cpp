@@ -5,6 +5,16 @@
 #include <esn/exceptions.h>
 #include <esn/network_nsli.h>
 #include <network_nsli.h>
+#include <random>
+
+std::default_random_engine sRandomEngine;
+
+void RandomUniform(float * v, int size, float a, float b)
+{
+    std::uniform_real_distribution<float> dist(a, b);
+    for (int i = 0; i < size; ++ i)
+        v[i] = dist(sRandomEngine);
+}
 
 namespace ESN {
 
@@ -22,11 +32,12 @@ namespace ESN {
         , mWInBias( params.inputCount )
         , mX( params.neuronCount )
         , mW( params.neuronCount, params.neuronCount )
+        , mLeakingRate(params.neuronCount)
         , mOut( params.outputCount )
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
         , mWOut( params.outputCount, params.neuronCount )
-        , mWFB()
+        , mWFB(params.neuronCount, params.outputCount)
         , mWFBScaling()
         , mAdaptiveFilter(params.outputCount)
     {
@@ -59,15 +70,18 @@ namespace ESN {
                 "NetworkParamsNSLI::connectivity must be within "
                 "interval (0,1]" );
 
-        mWIn = Eigen::MatrixXf::Random(
-            params.neuronCount, params.inputCount );
+        RandomUniform(mWIn.data(),
+            params.neuronCount * params.inputCount, -1.0f, 1.0f);
 
-        Eigen::MatrixXf randomWeights =
-            ( Eigen::MatrixXf::Random( params.neuronCount,
-                params.neuronCount ).array().abs()
-                    <= params.connectivity ).cast< float >() *
-            Eigen::MatrixXf::Random( params.neuronCount,
-                params.neuronCount ).array();
+        int neuronCountSqr = params.neuronCount * params.neuronCount;
+        Eigen::MatrixXf randomWeights(
+            params.neuronCount, params.neuronCount);
+        RandomUniform(randomWeights.data(), neuronCountSqr, -1.0f, 1.0f);
+        std::uniform_real_distribution<float> uniDist;
+        for (int i = 0; i < neuronCountSqr; ++ i)
+            if (uniDist(sRandomEngine) > params.connectivity)
+                randomWeights.data()[i] = 0.0f;
+
         if ( params.useOrthonormalMatrix )
         {
             auto svd = randomWeights.jacobiSvd(
@@ -92,19 +106,18 @@ namespace ESN {
 
         if (params.hasOutputFeedback)
         {
-            mWFB = Eigen::MatrixXf::Random(
-                params.neuronCount, params.outputCount);
+            RandomUniform(mWFB.data(),
+                params.neuronCount * params.outputCount, -1.0f, 1.0f);
             mWFBScaling = Eigen::VectorXf::Constant(
                 params.outputCount, 1.0f);
         }
 
-        mLeakingRate = ( Eigen::ArrayXf::Random( params.neuronCount ) *
-            ( mParams.leakingRateMax - mParams.leakingRateMin ) +
-            ( mParams.leakingRateMin + mParams.leakingRateMax ) ) / 2.0f;
+        RandomUniform(mLeakingRate.data(), params.neuronCount,
+            params.leakingRateMin, params.leakingRateMax);
         mOneMinusLeakingRate = 1.0f - mLeakingRate.array();
 
         mIn = Eigen::VectorXf::Zero( params.inputCount );
-        mX = Eigen::VectorXf::Random( params.neuronCount );
+        RandomUniform(mX.data(), params.neuronCount, -1.0f, 1.0f);
         mOut = Eigen::VectorXf::Zero( params.outputCount );
 
         for (int i = 0; i < params.outputCount; ++i)
