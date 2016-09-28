@@ -47,7 +47,10 @@ cmake_minimum_required(VERSION 3.3)
 
 # Linking
 
-    target_link_libraries(esn ${EIGEN3_LIBRARY})
+    target_link_libraries(esn
+        ${EIGEN3_LIBRARY}
+        cblas
+    )
 
 # Install
 
