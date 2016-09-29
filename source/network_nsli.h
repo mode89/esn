@@ -79,6 +79,7 @@ namespace ESN {
         Eigen::MatrixXf mWOut;
         Eigen::MatrixXf mWFB;
         Eigen::VectorXf mWFBScaling;
+        Eigen::VectorXf mTemp;
         std::vector<std::shared_ptr<AdaptiveFilterRLS>> mAdaptiveFilter;
     };
 

@@ -26,6 +26,18 @@ void Constant(float * v, int size, float value)
         v[i] = value;
 }
 
+static inline void TanhEwise(float * v, int size)
+{
+    for (int i = 0; i < size; ++ i)
+        v[i] = std::tanh(v[i]);
+}
+
+static inline void ProductEwise(float * out, float * in, int size)
+{
+    for (int i = 0; i < size; ++ i)
+        out[i] *= in[i];
+}
+
 namespace ESN {
 
     std::shared_ptr<Network> CreateNetwork(
@@ -49,6 +61,7 @@ namespace ESN {
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB(params.neuronCount, params.outputCount)
         , mWFBScaling(params.outputCount)
+        , mTemp(params.neuronCount)
         , mAdaptiveFilter(params.outputCount)
     {
         if ( params.inputCount <= 0 )
@@ -222,41 +235,58 @@ namespace ESN {
             throw std::invalid_argument(
                 "Step size must be positive value" );
 
-        auto tanh = [] ( float x ) -> float { return std::tanh( x ); };
+        // mTemp = mW * mX
+        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
+            mParams.neuronCount, 1.0f, mW.data(), mParams.neuronCount,
+            mX.data(), 1, 0.0f, mTemp.data(), 1);
 
-        #define TEMP mWIn * mIn + mW * mX
+        // mTemp = mWIn * mIn + mTemp
+        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
+            mParams.inputCount, 1.0f, mWIn.data(), mParams.neuronCount,
+            mIn.data(), 1, 1.0f, mTemp.data(), 1);
 
-        #define CALC_X(val) \
-            mX = mOneMinusLeakingRate.cwiseProduct(mX) + \
-                mLeakingRate.cwiseProduct((val).unaryExpr(tanh))
-
-        #define CALC_X_WITH_FB(val) \
-            if (mParams.hasOutputFeedback) \
-                CALC_X(TEMP + val); \
-            else \
-                CALC_X(TEMP)
-
-        if ( mParams.linearOutput )
+        if (mParams.hasOutputFeedback)
         {
-            CALC_X_WITH_FB(
-                mWFB * mOut.unaryExpr(tanh).cwiseProduct(mWFBScaling));
-            mOut = mWOut * mX;
-        }
-        else
-        {
-            CALC_X_WITH_FB(
-                mWFB * mOut.cwiseProduct(mWFBScaling));
-            mOut = ( mWOut * mX ).unaryExpr( tanh );
+            if (mParams.linearOutput)
+            {
+                // mOut[i] = tanh(mOut[i])
+                TanhEwise(mOut.data(), mParams.outputCount);
+            }
+
+            // mOut[i] *= mWFBScaling[i]
+            ProductEwise(mOut.data(), mWFBScaling.data(),
+                mParams.outputCount);
+
+            // mTemp = mWFB * mOut + mTemp
+            cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
+                mParams.outputCount, 1.0f, mWFB.data(), mParams.neuronCount,
+                mOut.data(), 1, 1.0f, mTemp.data(), 1);
         }
 
-        #undef TEMP
-        #undef CALC_X
-        #undef CALC_X_WITH_FB
+        // mTemp[i] = tanh(mTemp[i])
+        TanhEwise(mTemp.data(), mParams.neuronCount);
 
-        auto isnotfinite =
-            [] (float n) -> bool { return !std::isfinite(n); };
-        if (mOut.unaryExpr(isnotfinite).any())
-            throw OutputIsNotFinite();
+        // mX[i] *= mOneMinusLeakingRate[i]
+        ProductEwise(mX.data(), mOneMinusLeakingRate.data(),
+            mParams.neuronCount);
+
+        // mX = mLeakingRate[i] * mTemp[i] + mX;
+        cblas_ssbmv(CblasColMajor, CblasLower, mParams.neuronCount, 0,
+            1.0f, mLeakingRate.data(), 1, mTemp.data(), 1,
+            1.0f, mX.data(), 1);
+
+        // mOut = mWOut * mX
+        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.outputCount,
+            mParams.neuronCount, 1.0f, mWOut.data(), mParams.outputCount,
+            mX.data(), 1, 0.0f, mOut.data(), 1);
+
+        if (!mParams.linearOutput)
+            // mOut[i] = tanh(mOut[i])
+            TanhEwise(mOut.data(), mParams.outputCount);
+
+        for (int i = 0; i < mParams.outputCount; ++ i)
+            if (!std::isfinite(mOut(i)))
+                throw OutputIsNotFinite();
     }
 
     void NetworkNSLI::CaptureTransformedInput(
