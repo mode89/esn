@@ -192,7 +192,7 @@ namespace ESN {
 
         #define CALC_X(val) \
             mX = mOneMinusLeakingRate.cwiseProduct(mX) + \
-                mLeakingRate.cwiseProduct(val).unaryExpr(tanh)
+                mLeakingRate.cwiseProduct((val).unaryExpr(tanh))
 
         #define CALC_X_WITH_FB(val) \
             if (mParams.hasOutputFeedback) \
