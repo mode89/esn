@@ -123,8 +123,8 @@ namespace ESN {
         Constant(mWInScaling.data(), params.inputCount, 1.0f);
         Constant(mWInBias.data(), params.inputCount, 0.0f);
 
-        mWOut = Eigen::MatrixXf::Zero(
-            params.outputCount, params.neuronCount );
+        Constant(mWOut.data(),
+            params.outputCount * params.neuronCount, 0.0f);
 
         Constant(mOutScale.data(), params.outputCount, 1.0f);
         Constant(mOutBias.data(), params.outputCount, 0.0f);
@@ -140,9 +140,9 @@ namespace ESN {
             params.leakingRateMin, params.leakingRateMax);
         mOneMinusLeakingRate = 1.0f - mLeakingRate.array();
 
-        mIn = Eigen::VectorXf::Zero( params.inputCount );
+        Constant(mIn.data(), params.inputCount, 0.0f);
         RandomUniform(mX.data(), params.neuronCount, -1.0f, 1.0f);
-        mOut = Eigen::VectorXf::Zero( params.outputCount );
+        Constant(mOut.data(), params.outputCount, 0.0f);
 
         for (int i = 0; i < params.outputCount; ++i)
             mAdaptiveFilter[i] = std::make_shared<AdaptiveFilterRLS>(
