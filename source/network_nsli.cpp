@@ -257,35 +257,6 @@ namespace ESN {
             output[i] = mOut(i) * mOutScale(i) + mOutBias(i);
     }
 
-    void NetworkNSLI::Train(
-        const std::vector< std::vector< float > > & inputs,
-        const std::vector< std::vector< float > > & outputs )
-    {
-        if ( inputs.size() == 0 )
-            throw std::invalid_argument(
-                "Number of samples must be not null" );
-        if ( inputs.size() != outputs.size() )
-            throw std::invalid_argument(
-                "Number of input and output samples must be equal" );
-        const unsigned kSampleCount = inputs.size();
-
-        Eigen::MatrixXf matX( mParams.neuronCount, kSampleCount );
-        Eigen::MatrixXf matY( mParams.outputCount, kSampleCount );
-        for ( int i = 0; i < kSampleCount; ++ i )
-        {
-            SetInputs( inputs[i] );
-            Step( 0.1f );
-            matX.col( i ) = mX;
-            matY.col( i ) = Eigen::Map< Eigen::VectorXf >(
-                const_cast< float * >( outputs[i].data() ),
-                    mParams.outputCount );
-        }
-
-        Eigen::MatrixXf matXT = matX.transpose();
-
-        mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
-    }
-
     void NetworkNSLI::TrainSingleOutputOnline(
         unsigned index, float value, bool force)
     {

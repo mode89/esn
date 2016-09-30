@@ -47,11 +47,6 @@ namespace ESN {
         CaptureOutput( std::vector< float > & output );
 
         void
-        Train(
-            const std::vector< std::vector< float > > & inputs,
-            const std::vector< std::vector< float > > & outputs );
-
-        void
         TrainOnline(
             const std::vector< float > & output,
             bool forceOutput );

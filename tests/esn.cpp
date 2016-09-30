@@ -47,29 +47,6 @@ TEST( ESN, StepNSLI )
     network->Step( 0.1f );
 }
 
-TEST( ESN, TrainNSLI )
-{
-    const unsigned kSampleCount = 100;
-
-    ESN::NetworkParamsNSLI params;
-    params.inputCount = 1;
-    params.neuronCount = 100;
-    params.outputCount = 1;
-    auto network = CreateNetwork( params );
-
-    std::vector< std::vector< float > > inputs( kSampleCount );
-    std::vector< std::vector< float > > outputs( kSampleCount );
-    for ( int i = 0; i < kSampleCount; ++ i )
-    {
-        inputs[i].resize( params.inputCount );
-        inputs[i][0] = 1.0f;
-        outputs[i].resize( params.outputCount );
-        outputs[i][0] = 1.0f;
-    }
-
-    network->Train( inputs, outputs );
-}
-
 TEST(ESN, TrainOnline)
 {
     ESN::NetworkParamsNSLI params;
