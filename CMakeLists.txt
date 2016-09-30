@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.3)
     option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" OFF)
     option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
     option(ESN_MAKE_PYTHON_BINDING "Build Python binding module" OFF)
+    option(ESN_BUILD_TESTS "Build ESN tests" ON)
 
 # CMake configuration
 
@@ -19,7 +20,7 @@ cmake_minimum_required(VERSION 3.3)
         include(Eigen)
     endif()
 
-    if(NOT ESN_USE_SYSTEM_GTEST)
+    if(ESN_BUILD_TESTS AND NOT ESN_USE_SYSTEM_GTEST)
         include(GTest)
     endif()
 
@@ -60,4 +61,7 @@ cmake_minimum_required(VERSION 3.3)
     endif()
 
     add_subdirectory(samples)
-    add_subdirectory(tests)
+
+    if(ESN_BUILD_TESTS)
+        add_subdirectory(tests)
+    endif()
