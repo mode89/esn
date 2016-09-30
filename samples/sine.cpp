@@ -21,6 +21,9 @@ int main()
     params.leakingRateMax = kLeakingRate;
     auto network = ESN::CreateNetwork(params);
 
+    ESN::TrainerParams trainerParams;
+    auto trainer = ESN::CreateTrainer(trainerParams, network);
+
     std::vector< float > output( 1 );
     std::vector< float > actualOutput( 1 );
     for ( float time = 0.0f; true; time += kSimulationStep )
@@ -33,7 +36,7 @@ int main()
         float error = fabs( ( actualOutput[0] - output[0] ) / output[0] );
 
         if ( time < kTrainingTime )
-            network->TrainOnline( output, true );
+            trainer->TrainOnline(output, true);
 
         std::cout << std::setw( 14 ) << time;
         std::cout << std::setw( 14 ) << output[0];

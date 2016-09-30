@@ -26,6 +26,9 @@ params.outputCount = 1
 params.connectivity = CONNECTIVITY
 network = esn.CreateNetwork(params);
 
+trainerParams = esn.TrainerParams()
+trainer = esn.CreateTrainer(trainerParams, network)
+
 def simulate( frame ) :
 
     time = frame * SIM_STEP
@@ -37,7 +40,7 @@ def simulate( frame ) :
     network.CaptureOutput(output)
 
     if time < TRAIN_TIME :
-        network.TrainOnline([sine], True)
+        trainer.TrainOnline([sine], True)
 
     print( "%10s %10s %10s" %
             (

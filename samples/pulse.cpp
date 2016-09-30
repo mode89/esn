@@ -30,6 +30,9 @@ int main()
     params.outputCount = 1;
     auto network = ESN::CreateNetwork( params );
 
+    ESN::TrainerParams trainerParams;
+    auto trainer = ESN::CreateTrainer(trainerParams, network);
+
     bool inputState = false;
     std::vector< float > input( 1 );
     float currentIntervalWidth = 0.0f;
@@ -75,7 +78,7 @@ int main()
         network->CaptureOutput( output );
 
         if ( outputPulseCount < kTrainPulseCount )
-            network->TrainOnline( referenceOutput, true );
+            trainer->TrainOnline(referenceOutput, true);
 
         std::cout <<
             std::setw( 15 ) << time <<

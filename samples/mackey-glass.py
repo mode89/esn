@@ -42,6 +42,9 @@ if __name__ == "__main__":
     params.connectivity = CONNECTIVITY
     network = esn.CreateNetwork(params);
 
+    trainerParams = esn.TrainerParams()
+    trainer = esn.CreateTrainer(trainerParams, network)
+
     time = 0.0
 
     print("Washing out ...")
@@ -54,7 +57,7 @@ if __name__ == "__main__":
     while time < TRAIN_TIME:
         value = solver()
         network.Step(STEP)
-        network.TrainOnline([value], True)
+        trainer.TrainOnline([value], True)
         time = time + STEP
 
     figure = pyplot.figure()

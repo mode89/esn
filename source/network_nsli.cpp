@@ -3,7 +3,6 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
 #include <esn/exceptions.h>
-#include <esn/network_nsli.h>
 #include <network_nsli.h>
 
 namespace ESN {
@@ -28,7 +27,6 @@ namespace ESN {
         , mWOut( params.outputCount, params.neuronCount )
         , mWFB()
         , mWFBScaling()
-        , mAdaptiveFilter(params.outputCount)
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -107,12 +105,6 @@ namespace ESN {
         mIn = Eigen::VectorXf::Zero( params.inputCount );
         mX = Eigen::VectorXf::Random( params.neuronCount );
         mOut = Eigen::VectorXf::Zero( params.outputCount );
-
-        for (int i = 0; i < params.outputCount; ++i)
-            mAdaptiveFilter[i] = std::make_shared<AdaptiveFilterRLS>(
-                params.neuronCount,
-                params.onlineTrainingForgettingFactor,
-                params.onlineTrainingInitialCovariance);
     }
 
     NetworkNSLI::~NetworkNSLI()
@@ -255,32 +247,6 @@ namespace ESN {
 
         for ( int i = 0; i < mParams.outputCount; ++ i )
             output[i] = mOut(i) * mOutScale(i) + mOutBias(i);
-    }
-
-    void NetworkNSLI::TrainSingleOutputOnline(
-        unsigned index, float value, bool force)
-    {
-        // Calculate output without bias and scaling
-        float _value = (value - mOutBias(index)) / mOutScale(index);
-
-        Eigen::VectorXf w = mWOut.row(index).transpose();
-        if (!mParams.linearOutput)
-            mAdaptiveFilter[index]->Train(w, std::atanh(mOut(index)),
-                std::atanh(_value), mX);
-        else
-            mAdaptiveFilter[index]->Train(w, mOut(index), _value, mX);
-
-        mWOut.row(index) = w.transpose();
-
-        if (force)
-            mOut(index) = _value;
-    }
-
-    void NetworkNSLI::TrainOnline(
-        const std::vector<float> & output, bool forceOutput)
-    {
-        for (unsigned i = 0; i < mParams.outputCount; ++ i)
-            TrainSingleOutputOnline(i, output[i], forceOutput);
     }
 
 } // namespace ESN

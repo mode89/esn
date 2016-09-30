@@ -3,5 +3,6 @@
 
 #include <esn/network_nsli.h>
 #include <esn/network.h>
+#include <esn/trainer.h>
 
 #endif // __ESN_ESN_H__
