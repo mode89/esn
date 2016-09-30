@@ -39,20 +39,6 @@ namespace ESN {
         virtual ESN_EXPORT void
         CaptureOutput( std::vector< float > & output ) = 0;
 
-        virtual ESN_EXPORT void
-        Train(
-            const std::vector< std::vector< float > > & inputs,
-            const std::vector< std::vector< float > > & outputs ) = 0;
-
-        virtual ESN_EXPORT void
-        TrainSingleOutputOnline(
-            unsigned index, float value, bool force) = 0;
-
-        virtual ESN_EXPORT void
-        TrainOnline(
-            const std::vector< float > & output,
-            bool forceOutput = false ) = 0;
-
         virtual ESN_EXPORT ~Network() {}
     };
 

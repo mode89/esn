@@ -72,6 +72,8 @@ class Model :
         params.connectivity = CONNECTIVITY
         params.useOrthonormalMatrix = USE_ORTHONORMAL_MATRIX
         self.network = esn.CreateNetwork(params)
+        trainerParams = esn.TrainerParams()
+        self.trainer = esn.CreateTrainer(trainerParams, self.network)
         self.noise = signals.PerlinNoise( persistence=0.5, octave_count=8 )
         if SEED > 0 :
             self.noise.seed( SEED + 2 )
@@ -116,7 +118,7 @@ class Model :
 
         @staticmethod
         def continuous( model ) :
-            model.network.TrainOnline(
+            model.trainer.TrainOnline(
                 [model.train_output], TEACHER_FORCING)
 
         @staticmethod
@@ -124,8 +126,8 @@ class Model :
             if model.time > model.pattern.back_edge and \
                 model.time < ( model.pattern.back_edge + \
                     OUTPUT_PULSE_LENGTH ) :
-                model.network.TrainOnline(
+                model.trainer.TrainOnline(
                     [model.train_output], TEACHER_FORCING)
             elif model.output > 0.3 or model.output < -0.3:
-                model.network.TrainOnline(
+                model.trainer.TrainOnline(
                     [model.train_output], TEACHER_FORCING)

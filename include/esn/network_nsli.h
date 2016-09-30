@@ -19,8 +19,6 @@ namespace ESN {
         float spectralRadius;
         float connectivity;
         bool linearOutput;
-        float onlineTrainingForgettingFactor;
-        float onlineTrainingInitialCovariance;
         bool hasOutputFeedback;
 
         NetworkParamsNSLI()
@@ -33,8 +31,6 @@ namespace ESN {
             , spectralRadius( 1.0f )
             , connectivity( 1.0f )
             , linearOutput( false )
-            , onlineTrainingForgettingFactor( 1.0f )
-            , onlineTrainingInitialCovariance( 1000.0f )
             , hasOutputFeedback(true)
         {}
     };

@@ -3,11 +3,9 @@
 
 #include <Eigen/Sparse>
 #include <esn/network.h>
-#include <adaptive_filter_rls.h>
+#include <esn/network_nsli.h>
 
 namespace ESN {
-
-    struct NetworkParamsNSLI;
 
     /**
      * Implementation of a network based on non-spiking linear integrator
@@ -15,6 +13,8 @@ namespace ESN {
      */
     class NetworkNSLI : public Network
     {
+        friend class TrainerImpl;
+
     public:
         void
         SetInputs( const std::vector< float > & );
@@ -46,19 +46,6 @@ namespace ESN {
         void
         CaptureOutput( std::vector< float > & output );
 
-        void
-        Train(
-            const std::vector< std::vector< float > > & inputs,
-            const std::vector< std::vector< float > > & outputs );
-
-        void
-        TrainOnline(
-            const std::vector< float > & output,
-            bool forceOutput );
-
-        void
-        TrainSingleOutputOnline(unsigned index, float value, bool force);
-
     public:
         NetworkNSLI( const NetworkParamsNSLI & );
         ~NetworkNSLI();
@@ -80,7 +67,6 @@ namespace ESN {
         Eigen::MatrixXf mWFB;
         Eigen::VectorXf mWFBScaling;
         Eigen::VectorXf mTemp;
-        std::vector<std::shared_ptr<AdaptiveFilterRLS>> mAdaptiveFilter;
     };
 
 } // namespace ESN

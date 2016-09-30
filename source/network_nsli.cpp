@@ -2,7 +2,6 @@
 #include <cstring>
 #include <Eigen/Eigenvalues>
 #include <esn/exceptions.h>
-#include <esn/network_nsli.h>
 #include <network_nsli.h>
 #include <random>
 
@@ -62,7 +61,6 @@ namespace ESN {
         , mWFB(params.neuronCount, params.outputCount)
         , mWFBScaling(params.outputCount)
         , mTemp(params.neuronCount)
-        , mAdaptiveFilter(params.outputCount)
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -156,12 +154,6 @@ namespace ESN {
         Constant(mIn.data(), params.inputCount, 0.0f);
         RandomUniform(mX.data(), params.neuronCount, -1.0f, 1.0f);
         Constant(mOut.data(), params.outputCount, 0.0f);
-
-        for (int i = 0; i < params.outputCount; ++i)
-            mAdaptiveFilter[i] = std::make_shared<AdaptiveFilterRLS>(
-                params.neuronCount,
-                params.onlineTrainingForgettingFactor,
-                params.onlineTrainingInitialCovariance);
     }
 
     NetworkNSLI::~NetworkNSLI()
@@ -321,61 +313,6 @@ namespace ESN {
 
         for ( int i = 0; i < mParams.outputCount; ++ i )
             output[i] = mOut(i) * mOutScale(i) + mOutBias(i);
-    }
-
-    void NetworkNSLI::Train(
-        const std::vector< std::vector< float > > & inputs,
-        const std::vector< std::vector< float > > & outputs )
-    {
-        if ( inputs.size() == 0 )
-            throw std::invalid_argument(
-                "Number of samples must be not null" );
-        if ( inputs.size() != outputs.size() )
-            throw std::invalid_argument(
-                "Number of input and output samples must be equal" );
-        const unsigned kSampleCount = inputs.size();
-
-        Eigen::MatrixXf matX( mParams.neuronCount, kSampleCount );
-        Eigen::MatrixXf matY( mParams.outputCount, kSampleCount );
-        for ( int i = 0; i < kSampleCount; ++ i )
-        {
-            SetInputs( inputs[i] );
-            Step( 0.1f );
-            matX.col( i ) = mX;
-            matY.col( i ) = Eigen::Map< Eigen::VectorXf >(
-                const_cast< float * >( outputs[i].data() ),
-                    mParams.outputCount );
-        }
-
-        Eigen::MatrixXf matXT = matX.transpose();
-
-        mWOut = ( matY * matXT * ( matX * matXT ).inverse() );
-    }
-
-    void NetworkNSLI::TrainSingleOutputOnline(
-        unsigned index, float value, bool force)
-    {
-        // Calculate output without bias and scaling
-        float _value = (value - mOutBias(index)) / mOutScale(index);
-
-        Eigen::VectorXf w = mWOut.row(index).transpose();
-        if (!mParams.linearOutput)
-            mAdaptiveFilter[index]->Train(w, std::atanh(mOut(index)),
-                std::atanh(_value), mX);
-        else
-            mAdaptiveFilter[index]->Train(w, mOut(index), _value, mX);
-
-        mWOut.row(index) = w.transpose();
-
-        if (force)
-            mOut(index) = _value;
-    }
-
-    void NetworkNSLI::TrainOnline(
-        const std::vector<float> & output, bool forceOutput)
-    {
-        for (unsigned i = 0; i < mParams.outputCount; ++ i)
-            TrainSingleOutputOnline(i, output[i], forceOutput);
     }
 
 } // namespace ESN
