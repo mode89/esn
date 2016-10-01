@@ -26,12 +26,14 @@ cmake_minimum_required(VERSION 3.3)
 
 # Find dependencies
 
+    find_package(CBLAS)
     find_package(Eigen3)
 
 # Includes
 
     include_directories(include)
     include_directories(source)
+    include_directories(${CBLAS_INCLUDE_DIR})
 
 # Flags
 
@@ -51,7 +53,7 @@ cmake_minimum_required(VERSION 3.3)
 
     target_link_libraries(esn
         ${EIGEN3_LIBRARY}
-        cblas
+        ${CBLAS_LIBRARY}
         clapack
     )
 
