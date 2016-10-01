@@ -7,8 +7,8 @@
 
 extern "C" {
 #include <cblas/cblas.h>
-#include <clapack/clapack.h>
 }
+#include <lapacke.h>
 
 std::default_random_engine sRandomEngine;
 
@@ -106,18 +106,15 @@ namespace ESN {
         if ( params.useOrthonormalMatrix )
         {
             int n = params.neuronCount;
-            float * A = randomWeights.data();
 
-            char job = 'A';
             std::vector<float> s(n);
             std::vector<float> u(n * n);
             std::vector<float> vt(n * n);
-            int lwork = 5 * n;
-            std::vector<float> work(lwork);
-            int info = 0;
+            std::vector<float> superb(n);
 
-            sgesvd_(&job, &job, &n, &n, A, &n, s.data(), u.data(), &n,
-                vt.data(), &n, work.data(), &lwork, &info);
+            int info = LAPACKE_sgesvd(LAPACK_COL_MAJOR, 'A', 'A', n, n,
+                randomWeights.data(), n, s.data(), u.data(), n,
+                vt.data(), n, superb.data());
             if (info != 0)
                 throw std::runtime_error("Failed to calculate SVD");
 
