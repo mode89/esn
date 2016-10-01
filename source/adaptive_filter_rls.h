@@ -19,11 +19,13 @@ namespace ESN {
             Eigen::VectorXf & w,
             float actualOutput,
             float referenceOutput,
-            Eigen::VectorXf input );
+            const Eigen::VectorXf & input);
 
     private:
         const float mForgettingFactor;
         Eigen::MatrixXf mP;
+        Eigen::VectorXf mTemp;
+        Eigen::VectorXf mK;
     };
 
 } // namespace ESN
