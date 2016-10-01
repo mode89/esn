@@ -110,11 +110,10 @@ namespace ESN {
             std::vector<float> s(n);
             std::vector<float> u(n * n);
             std::vector<float> vt(n * n);
-            std::vector<float> superb(n);
 
-            int info = LAPACKE_sgesvd(LAPACK_COL_MAJOR, 'A', 'A', n, n,
+            int info = LAPACKE_sgesdd(LAPACK_COL_MAJOR, 'A', n, n,
                 randomWeights.data(), n, s.data(), u.data(), n,
-                vt.data(), n, superb.data());
+                vt.data(), n);
             if (info != 0)
                 throw std::runtime_error("Failed to calculate SVD");
 
