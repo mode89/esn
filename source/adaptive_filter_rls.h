@@ -1,8 +1,8 @@
 #ifndef __ESN_ADAPTIVE_FILTER_RLS_H__
 #define __ESN_ADAPTIVE_FILTER_RLS_H__
 
-#include <Eigen/Dense>
 #include <esn/export.h>
+#include <vector>
 
 namespace ESN {
 
@@ -16,16 +16,17 @@ namespace ESN {
 
         ESN_EXPORT void
         Train(
-            Eigen::VectorXf & w,
+            float * w,
             float actualOutput,
             float referenceOutput,
-            const Eigen::VectorXf & input);
+            const float * input);
 
     private:
         const float mForgettingFactor;
-        Eigen::MatrixXf mP;
-        Eigen::VectorXf mTemp;
-        Eigen::VectorXf mK;
+        const unsigned mInputCount;
+        std::vector<float> mP;
+        std::vector<float> mTemp;
+        std::vector<float> mK;
     };
 
 } // namespace ESN

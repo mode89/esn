@@ -35,11 +35,12 @@ namespace ESN {
         Eigen::VectorXf w = mNetwork->mWOut.row(index).transpose();
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
-                w, std::atanh(mNetwork->mOut(index)),
-                std::atanh(_value), mNetwork->mX);
+                w.data(), std::atanh(mNetwork->mOut(index)),
+                std::atanh(_value), mNetwork->mX.data());
         else
             mAdaptiveFilter[index]->Train(
-                w, mNetwork->mOut(index), _value, mNetwork->mX);
+                w.data(), mNetwork->mOut(index),
+                _value, mNetwork->mX.data());
 
         mNetwork->mWOut.row(index) = w.transpose();
 
