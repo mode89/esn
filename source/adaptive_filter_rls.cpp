@@ -7,6 +7,8 @@ namespace ESN {
         : mForgettingFactor( forgettingFactor )
         , mP( Eigen::MatrixXf::Identity(
             inputCount, inputCount ) * regularization )
+        , mTemp(inputCount)
+        , mK(inputCount)
     {
     }
 
@@ -14,13 +16,12 @@ namespace ESN {
         Eigen::VectorXf & w,
         float actualOutput,
         float referenceOutput,
-        Eigen::VectorXf input )
+        const Eigen::VectorXf & input)
     {
-        auto inT_P = input.transpose() * mP;
-        Eigen::VectorXf K = mP * input /
-            ( mForgettingFactor + inT_P.dot( input ) );
-        mP = 1 / mForgettingFactor * ( mP - K * inT_P );
-        w += ( referenceOutput - actualOutput ) * K;
+        mTemp = mP.transpose() * input;
+        mK = mP * input / (mForgettingFactor + mTemp.dot(input));
+        mP = 1 / mForgettingFactor * (mP - mK * mTemp.transpose());
+        w += ( referenceOutput - actualOutput ) * mK;
     }
 
 } // namespace ESN
