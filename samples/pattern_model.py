@@ -14,7 +14,6 @@ VARIABLE_MAGNITUDE = True
 FALSE_PATTERN = True
 CONNECTIVITY = 0.5
 TEACHER_FORCING = False
-USE_ORTHONORMAL_MATRIX = True
 TRAINING_STRATEGY = "discontinuous"
 
 class Signal :
@@ -70,7 +69,6 @@ class Model :
         params.neuronCount = neuron_count
         params.outputCount = 1
         params.connectivity = CONNECTIVITY
-        params.useOrthonormalMatrix = USE_ORTHONORMAL_MATRIX
         self.network = esn.CreateNetwork(params)
         trainerParams = esn.TrainerParams()
         self.trainer = esn.CreateTrainer(trainerParams, self.network)

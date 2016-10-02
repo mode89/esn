@@ -1,6 +1,5 @@
 #include <cmath>
 #include <cstring>
-#include <Eigen/Eigenvalues>
 #include <esn/exceptions.h>
 #include <network_nsli.h>
 #include <random>
@@ -94,6 +93,8 @@ namespace ESN {
         RandomUniform(mWIn.data(),
             params.neuronCount * params.inputCount, -1.0f, 1.0f);
 
+        // Generate weight matrix as random orthonormal matrix
+
         int neuronCountSqr = params.neuronCount * params.neuronCount;
         Eigen::MatrixXf randomWeights(
             params.neuronCount, params.neuronCount);
@@ -103,29 +104,21 @@ namespace ESN {
             if (uniDist(sRandomEngine) > params.connectivity)
                 randomWeights.data()[i] = 0.0f;
 
-        if ( params.useOrthonormalMatrix )
-        {
-            int n = params.neuronCount;
+        std::vector<float> s(params.neuronCount);
+        std::vector<float> u(params.neuronCount * params.neuronCount);
+        std::vector<float> vt(params.neuronCount * params.neuronCount);
 
-            std::vector<float> s(n);
-            std::vector<float> u(n * n);
-            std::vector<float> vt(n * n);
+        int info = LAPACKE_sgesdd(LAPACK_COL_MAJOR, 'A',
+            params.neuronCount, params.neuronCount, randomWeights.data(),
+            params.neuronCount, s.data(), u.data(), params.neuronCount,
+            vt.data(), params.neuronCount);
+        if (info != 0)
+            throw std::runtime_error("Failed to calculate SVD");
 
-            int info = LAPACKE_sgesdd(LAPACK_COL_MAJOR, 'A', n, n,
-                randomWeights.data(), n, s.data(), u.data(), n,
-                vt.data(), n);
-            if (info != 0)
-                throw std::runtime_error("Failed to calculate SVD");
-
-            cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n,
-                1.0f, u.data(), n, vt.data(), n, 0.0f, mW.data(), n);
-        }
-        else
-        {
-            float spectralRadius =
-                randomWeights.eigenvalues().cwiseAbs().maxCoeff();
-            mW = randomWeights / spectralRadius * params.spectralRadius;
-        }
+        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
+            params.neuronCount, params.neuronCount, params.neuronCount,
+            1.0f, u.data(), params.neuronCount, vt.data(),
+            params.neuronCount, 0.0f, mW.data(), params.neuronCount);
 
         Constant(mWInScaling.data(), params.inputCount, 1.0f);
         Constant(mWInBias.data(), params.inputCount, 0.0f);

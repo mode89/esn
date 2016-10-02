@@ -15,8 +15,6 @@ namespace ESN {
         unsigned outputCount;
         float leakingRateMin;
         float leakingRateMax;
-        bool useOrthonormalMatrix;
-        float spectralRadius;
         float connectivity;
         bool linearOutput;
         bool hasOutputFeedback;
@@ -27,8 +25,6 @@ namespace ESN {
             , outputCount( 0 )
             , leakingRateMin( 0.1f )
             , leakingRateMax( 1.0f )
-            , useOrthonormalMatrix( true )
-            , spectralRadius( 1.0f )
             , connectivity( 1.0f )
             , linearOutput( false )
             , hasOutputFeedback(true)
