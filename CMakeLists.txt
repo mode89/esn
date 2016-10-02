@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.3)
 
 # Options
 
-    option(ESN_USE_SYSTEM_EIGEN "ESN library uses system Eigen library" OFF)
     option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
     option(ESN_MAKE_PYTHON_BINDING "Build Python binding module" OFF)
     option(ESN_BUILD_TESTS "Build ESN tests" ON)
@@ -16,10 +15,6 @@ cmake_minimum_required(VERSION 3.3)
 
 # External projects
 
-    if(NOT ESN_USE_SYSTEM_EIGEN)
-        include(Eigen)
-    endif()
-
     if(ESN_BUILD_TESTS AND NOT ESN_USE_SYSTEM_GTEST)
         include(GTest)
     endif()
@@ -27,7 +22,6 @@ cmake_minimum_required(VERSION 3.3)
 # Find dependencies
 
     find_package(CBLAS)
-    find_package(Eigen3)
     find_package(LAPACK)
     find_package(LAPACKE)
 
@@ -55,7 +49,6 @@ cmake_minimum_required(VERSION 3.3)
 # Linking
 
     target_link_libraries(esn
-        ${EIGEN3_LIBRARY}
         ${CBLAS_LIBRARY}
         ${LAPACKE_LIBRARY}
         ${LAPACK_LIBRARIES}
