@@ -1,6 +1,11 @@
 #include <adaptive_filter_rls.h>
+#include <cmath>
 #include <network_nsli.h>
 #include <trainer_impl.h>
+
+extern "C" {
+#include <cblas.h>
+}
 
 namespace ESN {
 
@@ -29,23 +34,31 @@ namespace ESN {
         unsigned index, float value, bool force)
     {
         // Calculate output without bias and scaling
-        float _value = (value - mNetwork->mOutBias(index)) /
-            mNetwork->mOutScale(index);
+        float _value = (value - mNetwork->mOutBias[index]) /
+            mNetwork->mOutScale[index];
 
-        Eigen::VectorXf w = mNetwork->mWOut.row(index).transpose();
+        // Extract row of weights corresponding to the output
+        const int neuronCount = mNetwork->mParams.neuronCount;
+        const int outputCount = mNetwork->mParams.outputCount;
+        std::vector<float> w(neuronCount);
+        cblas_scopy(neuronCount,
+            &mNetwork->mWOut[index], outputCount, w.data(), 1);
+
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
-                w.data(), std::atanh(mNetwork->mOut(index)),
+                w.data(), std::atanh(mNetwork->mOut[index]),
                 std::atanh(_value), mNetwork->mX.data());
         else
             mAdaptiveFilter[index]->Train(
-                w.data(), mNetwork->mOut(index),
+                w.data(), mNetwork->mOut[index],
                 _value, mNetwork->mX.data());
 
-        mNetwork->mWOut.row(index) = w.transpose();
+        // Write back the row of weights
+        cblas_scopy(neuronCount,
+            w.data(), 1, &mNetwork->mWOut[index], outputCount);
 
         if (force)
-            mNetwork->mOut(index) = _value;
+            mNetwork->mOut[index] = _value;
     }
 
     void TrainerImpl::TrainOnline(

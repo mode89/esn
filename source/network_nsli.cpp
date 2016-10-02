@@ -30,10 +30,17 @@ static inline void TanhEwise(float * v, int size)
         v[i] = std::tanh(v[i]);
 }
 
-static inline void ProductEwise(float * out, float * in, int size)
+static inline void ProductEwise(float * out, const float * in, int size)
 {
     for (int i = 0; i < size; ++ i)
         out[i] *= in[i];
+}
+
+static inline void SumEwise(
+    float * out, const float * a, const float * b, int size)
+{
+    for (int i = 0; i < size; ++ i)
+        out[i] = a[i] + b[i];
 }
 
 namespace ESN {
@@ -45,19 +52,20 @@ namespace ESN {
     }
 
     NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
-        : mParams( params )
-        , mIn( params.inputCount )
-        , mWIn( params.neuronCount, params.inputCount )
-        , mWInScaling( params.inputCount )
-        , mWInBias( params.inputCount )
-        , mX( params.neuronCount )
-        , mW( params.neuronCount, params.neuronCount )
+        : mParams(params)
+        , mIn(params.inputCount)
+        , mWIn(params.neuronCount * params.inputCount)
+        , mWInScaling(params.inputCount)
+        , mWInBias(params.inputCount)
+        , mX(params.neuronCount)
+        , mW(params.neuronCount * params.neuronCount)
         , mLeakingRate(params.neuronCount)
-        , mOut( params.outputCount )
+        , mOneMinusLeakingRate(params.neuronCount)
+        , mOut(params.outputCount)
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
-        , mWOut( params.outputCount, params.neuronCount )
-        , mWFB(params.neuronCount, params.outputCount)
+        , mWOut(params.outputCount * params.neuronCount)
+        , mWFB(params.neuronCount * params.outputCount)
         , mWFBScaling(params.outputCount)
         , mTemp(params.neuronCount)
     {
@@ -96,20 +104,18 @@ namespace ESN {
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
-        Eigen::MatrixXf randomWeights(
-            params.neuronCount, params.neuronCount);
-        RandomUniform(randomWeights.data(), neuronCountSqr, -1.0f, 1.0f);
+        RandomUniform(mW.data(), neuronCountSqr, -1.0f, 1.0f);
         std::uniform_real_distribution<float> uniDist;
         for (int i = 0; i < neuronCountSqr; ++ i)
             if (uniDist(sRandomEngine) > params.connectivity)
-                randomWeights.data()[i] = 0.0f;
+                mW[i] = 0.0f;
 
         std::vector<float> s(params.neuronCount);
         std::vector<float> u(params.neuronCount * params.neuronCount);
         std::vector<float> vt(params.neuronCount * params.neuronCount);
 
         int info = LAPACKE_sgesdd(LAPACK_COL_MAJOR, 'A',
-            params.neuronCount, params.neuronCount, randomWeights.data(),
+            params.neuronCount, params.neuronCount, mW.data(),
             params.neuronCount, s.data(), u.data(), params.neuronCount,
             vt.data(), params.neuronCount);
         if (info != 0)
@@ -138,7 +144,10 @@ namespace ESN {
 
         RandomUniform(mLeakingRate.data(), params.neuronCount,
             params.leakingRateMin, params.leakingRateMax);
-        mOneMinusLeakingRate = 1.0f - mLeakingRate.array();
+        // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
+        Constant(mOneMinusLeakingRate.data(), params.neuronCount, 1.0f);
+        cblas_saxpy(params.neuronCount, -1.0f, mLeakingRate.data(), 1,
+            mOneMinusLeakingRate.data(), 1);
 
         Constant(mIn.data(), params.inputCount, 0.0f);
         RandomUniform(mX.data(), params.neuronCount, -1.0f, 1.0f);
@@ -151,11 +160,11 @@ namespace ESN {
 
     void NetworkNSLI::SetInputs( const std::vector< float > & inputs )
     {
-        if ( inputs.size() != mIn.rows() )
+        if (inputs.size() != mParams.inputCount)
             throw std::invalid_argument( "Wrong size of the input vector" );
-        mIn = (Eigen::Map<Eigen::VectorXf>(
-            const_cast<float*>(inputs.data()), inputs.size()) +
-            mWInBias).cwiseProduct(mWInScaling);
+
+        SumEwise(mIn.data(), inputs.data(), mWInBias.data(), inputs.size());
+        ProductEwise(mIn.data(), mWInScaling.data(), inputs.size());
     }
 
     void NetworkNSLI::SetInputScalings(
@@ -164,8 +173,9 @@ namespace ESN {
         if ( scalings.size() != mParams.inputCount )
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
-        mWInScaling = Eigen::Map< Eigen::VectorXf >(
-            const_cast< float * >( scalings.data() ), scalings.size() );
+
+        cblas_scopy(mParams.inputCount,
+            scalings.data(), 1, mWInScaling.data(), 1);
     }
 
     void NetworkNSLI::SetInputBias(
@@ -174,8 +184,9 @@ namespace ESN {
         if ( bias.size() != mParams.inputCount )
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
-        mWInBias = Eigen::Map< Eigen::VectorXf >(
-            const_cast< float * >( bias.data() ), bias.size() );
+
+        cblas_scopy(mParams.inputCount,
+            bias.data(), 1, mWInBias.data(), 1);
     }
 
     void NetworkNSLI::SetOutputScale(const std::vector<float> & scale)
@@ -183,8 +194,9 @@ namespace ESN {
         if (scale.size() != mParams.outputCount)
             throw std::invalid_argument(
                 "Wrong size of the output scale vector");
-        mOutScale = Eigen::Map<Eigen::VectorXf>(
-            const_cast<float*>(scale.data()), scale.size());
+
+        cblas_scopy(mParams.outputCount,
+            scale.data(), 1, mOutScale.data(), 1);
     }
 
     void NetworkNSLI::SetOutputBias(const std::vector<float> & bias)
@@ -192,8 +204,9 @@ namespace ESN {
         if (bias.size() != mParams.outputCount)
             throw std::invalid_argument(
                 "Wrong size of the output bias vector");
-        mOutBias = Eigen::Map<Eigen::VectorXf>(
-            const_cast<float*>(bias.data()), bias.size());
+
+        cblas_scopy(mParams.outputCount,
+            bias.data(), 1, mOutBias.data(), 1);
     }
 
     void NetworkNSLI::SetFeedbackScalings(
@@ -206,8 +219,9 @@ namespace ESN {
         if ( scalings.size() != mParams.outputCount )
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
-        mWFBScaling = Eigen::Map< Eigen::VectorXf >(
-            const_cast< float * >( scalings.data() ), scalings.size() );
+
+        cblas_scopy(mParams.outputCount,
+            scalings.data(), 1, mWFBScaling.data(), 1);
     }
 
     void NetworkNSLI::Step( float step )
@@ -266,7 +280,7 @@ namespace ESN {
             TanhEwise(mOut.data(), mParams.outputCount);
 
         for (int i = 0; i < mParams.outputCount; ++ i)
-            if (!std::isfinite(mOut(i)))
+            if (!std::isfinite(mOut[i]))
                 throw OutputIsNotFinite();
     }
 
@@ -277,8 +291,9 @@ namespace ESN {
             throw std::invalid_argument(
                 "Size of the vector must be equal to "
                 "the number of inputs" );
-        for ( int i = 0; i < mParams.inputCount; ++ i )
-            input[ i ] = mIn( i );
+
+        cblas_scopy(mParams.inputCount,
+            mIn.data(), 1, input.data(), 1);
     }
 
     void NetworkNSLI::CaptureActivations(
@@ -289,8 +304,8 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of neurons" );
 
-        for ( int i = 0; i < mParams.neuronCount; ++ i )
-            activations[ i ] = mX( i );
+        cblas_scopy(mParams.neuronCount,
+            mX.data(), 1, activations.data(), 1);
     }
 
     void NetworkNSLI::CaptureOutput( std::vector< float > & output )
@@ -300,8 +315,8 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of outputs" );
 
-        for ( int i = 0; i < mParams.outputCount; ++ i )
-            output[i] = mOut(i) * mOutScale(i) + mOutBias(i);
+        for (int i = 0; i < mParams.outputCount; ++ i)
+            output[i] = mOut[i] * mOutScale[i] + mOutBias[i];
     }
 
 } // namespace ESN
