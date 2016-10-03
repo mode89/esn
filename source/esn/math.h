@@ -6,11 +6,8 @@ extern "C" {
 }
 
 #include <lapacke.h>
-#include <random>
 
 namespace ESN {
-
-    extern std::default_random_engine sRandomEngine;
 
     void RandomUniform(float * v, int size, float a, float b);
     void Constant(float * v, int size, float value);

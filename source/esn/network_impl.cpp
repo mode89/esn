@@ -66,9 +66,10 @@ namespace ESN {
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
         RandomUniform(mW.data(), neuronCountSqr, -1.0f, 1.0f);
-        std::uniform_real_distribution<float> uniDist;
+        std::vector<float> conn(neuronCountSqr);
+        RandomUniform(conn.data(), neuronCountSqr, 0.0f, 1.0f);
         for (int i = 0; i < neuronCountSqr; ++ i)
-            if (uniDist(sRandomEngine) > params.connectivity)
+            if (conn[i] > params.connectivity)
                 mW[i] = 0.0f;
 
         std::vector<float> s(params.neuronCount);

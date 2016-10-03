@@ -41,8 +41,8 @@ cmake_minimum_required(VERSION 3.3)
 # Target
 
     add_library(esn SHARED
+        source/cblas/math.cpp
         source/esn/adaptive_filter_rls.cpp
-        source/esn/math.cpp
         source/esn/network_impl.cpp
         source/esn/trainer_impl.cpp
     )

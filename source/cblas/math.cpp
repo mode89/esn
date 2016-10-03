@@ -1,4 +1,5 @@
 #include <esn/math.h>
+#include <random>
 
 namespace ESN {
 
@@ -35,4 +36,4 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
-} // namespace
+} // namespace ESN
