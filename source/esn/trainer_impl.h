@@ -6,7 +6,7 @@
 namespace ESN {
 
     class AdaptiveFilterRLS;
-    class NetworkNSLI;
+    class NetworkImpl;
 
     class TrainerImpl: public Trainer
     {
@@ -26,7 +26,7 @@ namespace ESN {
 
     private:
         TrainerParams mParams;
-        std::shared_ptr<NetworkNSLI> mNetwork;
+        std::shared_ptr<NetworkImpl> mNetwork;
         std::vector<std::shared_ptr<AdaptiveFilterRLS>> mAdaptiveFilter;
     };
 

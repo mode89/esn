@@ -1,4 +1,4 @@
-#include <adaptive_filter_rls.h>
+#include <esn/adaptive_filter_rls.h>
 #include <esn/math.h>
 
 namespace ESN {

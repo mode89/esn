@@ -1,8 +1,8 @@
-#include <adaptive_filter_rls.h>
 #include <cmath>
+#include <esn/adaptive_filter_rls.h>
 #include <esn/math.h>
-#include <network_nsli.h>
-#include <trainer_impl.h>
+#include <esn/network_impl.h>
+#include <esn/trainer_impl.h>
 
 namespace ESN {
 
@@ -17,7 +17,7 @@ namespace ESN {
         const TrainerParams & params,
         const std::shared_ptr<Network> & network)
         : mParams(params)
-        , mNetwork(std::static_pointer_cast<NetworkNSLI>(network))
+        , mNetwork(std::static_pointer_cast<NetworkImpl>(network))
         , mAdaptiveFilter(mNetwork->mParams.outputCount)
     {
         for (int i = 0; i < mNetwork->mParams.outputCount; ++i)

@@ -64,7 +64,7 @@ class Signal :
 class Model :
 
     def __init__( self, neuron_count ) :
-        params = esn.NetworkParamsNSLI()
+        params = esn.NetworkParams()
         params.inputCount = 1
         params.neuronCount = neuron_count
         params.outputCount = 1

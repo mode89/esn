@@ -1,8 +1,7 @@
-#ifndef __ESN_SOURCE_NETWORK_NSLI_H__
-#define __ESN_SOURCE_NETWORK_NSLI_H__
+#ifndef __ESN_SOURCE_NETWORK_IMPL_H__
+#define __ESN_SOURCE_NETWORK_IMPL_H__
 
 #include <esn/network.h>
-#include <esn/network_nsli.h>
 
 namespace ESN {
 
@@ -10,7 +9,7 @@ namespace ESN {
      * Implementation of a network based on non-spiking linear integrator
      * neurons.
      */
-    class NetworkNSLI : public Network
+    class NetworkImpl : public Network
     {
         friend class TrainerImpl;
 
@@ -46,11 +45,11 @@ namespace ESN {
         CaptureOutput( std::vector< float > & output );
 
     public:
-        NetworkNSLI( const NetworkParamsNSLI & );
-        ~NetworkNSLI();
+        NetworkImpl(const NetworkParams &);
+        ~NetworkImpl();
 
     private:
-        NetworkParamsNSLI mParams;
+        NetworkParams mParams;
         std::vector<float> mIn;
         std::vector<float> mWIn;
         std::vector<float> mWInScaling;
@@ -70,4 +69,4 @@ namespace ESN {
 
 } // namespace ESN
 
-#endif // __ESN_SOURCE_NETWORK_NSLI_H__
+#endif // __ESN_SOURCE_NETWORK_IMPL_H__

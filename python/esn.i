@@ -2,7 +2,6 @@
 
 %{
 #include "esn/network.h"
-#include "esn/network_nsli.h"
 #include "esn/trainer.h"
 %}
 
@@ -15,5 +14,4 @@
 
 %include "esn/export.h"
 %include "esn/network.h"
-%include "esn/network_nsli.h"
 %include "esn/trainer.h"

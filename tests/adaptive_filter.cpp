@@ -1,57 +1,64 @@
 #include <cmath>
-#include <Eigen/Dense>
+#include <esn/adaptive_filter_rls.h>
+#include <esn/math.h>
 #include <gtest/gtest.h>
-#include <adaptive_filter_rls.h>
+
+const unsigned kInputCount = 100;
+const float kMaxAmplitude = 1.0f;
+const float kMaxFrequency = 10.0f;
+const float kStep = 0.1f * 1.0f / kMaxFrequency;
 
 class ReferenceFilter
 {
 public:
     ReferenceFilter( unsigned inputCount )
-        : mW( Eigen::VectorXf::Random( inputCount ) )
-    {}
-
-    float operator()( Eigen::VectorXf inputs )
+        : mW(inputCount)
     {
-        return mW.dot( inputs );
+        ESN::RandomUniform(mW.data(), inputCount, -1.0f, 1.0f);
     }
 
-    Eigen::VectorXf mW;
+    float operator()(const std::vector<float> input)
+    {
+        return cblas_sdot(input.size(), mW.data(), 1, input.data(), 1);
+    }
+
+    std::vector<float> mW;
 };
 
 class Model
 {
-    const unsigned kInputCount = 100;
-    const float kMaxAmplitude = 1.0f;
-    const float kMaxFrequency = 10.0f;
-    const float kStep = 0.1f * 1.0f / kMaxFrequency;
-
 public:
     Model()
-        : mAmplitude( kMaxAmplitude / 2.0f *
-            ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f ) )
-        , mOmega( kMaxFrequency / 2.0f *
-            ( Eigen::VectorXf::Random( kInputCount ).array() + 1.0f ) )
-        , mInput( kInputCount )
-        , mW( Eigen::VectorXf::Random( kInputCount ) )
-        , mOutput( 0.0f )
-        , mReferenceFilter( kInputCount )
-        , mReferenceOutput( 0.0f )
-        , mTime( 0.0f )
-    {}
+        : mAmplitude(kInputCount)
+        , mOmega(kInputCount)
+        , mInput(kInputCount)
+        , mW(kInputCount)
+        , mOutput(0.0f)
+        , mReferenceFilter(kInputCount)
+        , mReferenceOutput(0.0f)
+        , mTime(0.0f)
+    {
+        ESN::RandomUniform(mAmplitude.data(), kInputCount, 0.0f,
+            kMaxAmplitude);
+        ESN::RandomUniform(mOmega.data(), kInputCount, 0.0f, kMaxFrequency);
+        ESN::RandomUniform(mW.data(), kInputCount, -1.0f, 1.0f);
+    }
 
     void Update()
     {
         mTime += kStep;
-        mInput = mAmplitude.array() * ( mOmega.array() * mTime ).unaryExpr(
-            std::ptr_fun< float, float >( std::sin ) );
-        mOutput = mW.dot( mInput );
-        mReferenceOutput = mReferenceFilter( mInput );
+
+        for (int i = 0; i < kInputCount; ++ i)
+            mInput[i] = mAmplitude[i] * std::sin(mOmega[i] * mTime);
+
+        mOutput = cblas_sdot(kInputCount, mW.data(), 1, mInput.data(), 1);
+        mReferenceOutput = mReferenceFilter(mInput);
     }
 
-    Eigen::VectorXf mAmplitude;
-    Eigen::VectorXf mOmega;
-    Eigen::VectorXf mInput;
-    Eigen::VectorXf mW;
+    std::vector<float> mAmplitude;
+    std::vector<float> mOmega;
+    std::vector<float> mInput;
+    std::vector<float> mW;
     float mOutput;
     ReferenceFilter mReferenceFilter;
     float mReferenceOutput;
@@ -72,14 +79,24 @@ TEST( AdaptiveFilter, NLMS )
     {
         model.Update();
         error = model.mReferenceOutput - model.mOutput;
-        model.mW += ( kTrainStep * error * model.mInput.transpose() /
-            model.mInput.squaredNorm() );
+
+        float inputNorm = 0.0f;
+        for (int j = 0; j < kInputCount; ++ j)
+        {
+            float input = model.mInput[j];
+            inputNorm += input * input;
+        }
+        inputNorm = std::sqrt(inputNorm);
+
+        for (int j = 0; j < kInputCount; ++ j)
+            model.mW[j] +=
+                (kTrainStep * error * model.mInput[j] / inputNorm);
     }
 
     EXPECT_TRUE( std::fabs( error / model.mOutput ) < initialError );
 }
 
-TEST( AdaptiveFilter, RLS )
+TEST(AdaptiveFilter, RLS)
 {
     const unsigned kStepCount = 1000;
     const float kRegularization = 1000.0f;
@@ -97,8 +114,8 @@ TEST( AdaptiveFilter, RLS )
     {
         model.Update();
         error = model.mReferenceOutput - model.mOutput;
-        filter.Train( model.mW, model.mOutput, model.mReferenceOutput,
-            model.mInput );
+        filter.Train(model.mW.data(), model.mOutput,
+            model.mReferenceOutput, model.mInput.data());
     }
 
     EXPECT_LT( std::fabs( error / model.mOutput ), initialError );

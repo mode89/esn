@@ -35,7 +35,7 @@ class MackayGlassSolver:
 if __name__ == "__main__":
 
     print("Creating network ...")
-    params = esn.NetworkParamsNSLI()
+    params = esn.NetworkParams()
     params.inputCount = 1
     params.neuronCount = NEURON_COUNT
     params.outputCount = 1

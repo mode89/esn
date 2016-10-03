@@ -2,17 +2,17 @@
 #include <cstring>
 #include <esn/exceptions.h>
 #include <esn/math.h>
-#include <network_nsli.h>
+#include <esn/network_impl.h>
 
 namespace ESN {
 
     std::shared_ptr<Network> CreateNetwork(
-        const NetworkParamsNSLI & params)
+        const NetworkParams & params)
     {
-        return std::shared_ptr<NetworkNSLI>(new NetworkNSLI(params));
+        return std::make_shared<NetworkImpl>(params);
     }
 
-    NetworkNSLI::NetworkNSLI( const NetworkParamsNSLI & params )
+    NetworkImpl::NetworkImpl( const NetworkParams & params )
         : mParams(params)
         , mIn(params.inputCount)
         , mWIn(params.neuronCount * params.inputCount)
@@ -32,31 +32,31 @@ namespace ESN {
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::inputCount must be not null" );
+                "NetworkParams::inputCount must be not null" );
         if ( params.neuronCount <= 0 )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::neuronCount must be not null" );
+                "NetworkParams::neuronCount must be not null" );
         if ( params.outputCount <= 0 )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::outputCount must be not null" );
+                "NetworkParams::outputCount must be not null" );
         if ( !( params.leakingRateMin > 0.0 &&
                 params.leakingRateMin <= 1.0 ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRateMin must be within "
+                "NetworkParams::leakingRateMin must be within "
                 "interval (0,1]" );
         if ( !( params.leakingRateMax > 0.0 &&
                 params.leakingRateMax <= 1.0 ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRateMax must be within "
+                "NetworkParams::leakingRateMax must be within "
                 "interval (0,1]" );
         if ( params.leakingRateMin > params.leakingRateMax )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::leakingRateMin must be less then or "
-                "equal to NetworkParamsNSLI::leakingRateMax" );
+                "NetworkParams::leakingRateMin must be less then or "
+                "equal to NetworkParams::leakingRateMax" );
         if ( !( params.connectivity > 0.0f &&
                 params.connectivity <= 1.0f ) )
             throw std::invalid_argument(
-                "NetworkParamsNSLI::connectivity must be within "
+                "NetworkParams::connectivity must be within "
                 "interval (0,1]" );
 
         RandomUniform(mWIn.data(),
@@ -115,11 +115,11 @@ namespace ESN {
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
 
-    NetworkNSLI::~NetworkNSLI()
+    NetworkImpl::~NetworkImpl()
     {
     }
 
-    void NetworkNSLI::SetInputs( const std::vector< float > & inputs )
+    void NetworkImpl::SetInputs( const std::vector< float > & inputs )
     {
         if (inputs.size() != mParams.inputCount)
             throw std::invalid_argument( "Wrong size of the input vector" );
@@ -128,7 +128,7 @@ namespace ESN {
         ProductEwise(mIn.data(), mWInScaling.data(), inputs.size());
     }
 
-    void NetworkNSLI::SetInputScalings(
+    void NetworkImpl::SetInputScalings(
         const std::vector< float > & scalings )
     {
         if ( scalings.size() != mParams.inputCount )
@@ -139,7 +139,7 @@ namespace ESN {
             scalings.data(), 1, mWInScaling.data(), 1);
     }
 
-    void NetworkNSLI::SetInputBias(
+    void NetworkImpl::SetInputBias(
         const std::vector< float > & bias )
     {
         if ( bias.size() != mParams.inputCount )
@@ -150,7 +150,7 @@ namespace ESN {
             bias.data(), 1, mWInBias.data(), 1);
     }
 
-    void NetworkNSLI::SetOutputScale(const std::vector<float> & scale)
+    void NetworkImpl::SetOutputScale(const std::vector<float> & scale)
     {
         if (scale.size() != mParams.outputCount)
             throw std::invalid_argument(
@@ -160,7 +160,7 @@ namespace ESN {
             scale.data(), 1, mOutScale.data(), 1);
     }
 
-    void NetworkNSLI::SetOutputBias(const std::vector<float> & bias)
+    void NetworkImpl::SetOutputBias(const std::vector<float> & bias)
     {
         if (bias.size() != mParams.outputCount)
             throw std::invalid_argument(
@@ -170,7 +170,7 @@ namespace ESN {
             bias.data(), 1, mOutBias.data(), 1);
     }
 
-    void NetworkNSLI::SetFeedbackScalings(
+    void NetworkImpl::SetFeedbackScalings(
         const std::vector< float > & scalings )
     {
         if (!mParams.hasOutputFeedback)
@@ -185,7 +185,7 @@ namespace ESN {
             scalings.data(), 1, mWFBScaling.data(), 1);
     }
 
-    void NetworkNSLI::Step( float step )
+    void NetworkImpl::Step( float step )
     {
         if ( step <= 0.0f )
             throw std::invalid_argument(
@@ -245,7 +245,7 @@ namespace ESN {
                 throw OutputIsNotFinite();
     }
 
-    void NetworkNSLI::CaptureTransformedInput(
+    void NetworkImpl::CaptureTransformedInput(
         std::vector< float > & input )
     {
         if ( input.size() != mParams.inputCount )
@@ -257,7 +257,7 @@ namespace ESN {
             mIn.data(), 1, input.data(), 1);
     }
 
-    void NetworkNSLI::CaptureActivations(
+    void NetworkImpl::CaptureActivations(
         std::vector< float > & activations )
     {
         if ( activations.size() != mParams.neuronCount )
@@ -269,7 +269,7 @@ namespace ESN {
             mX.data(), 1, activations.data(), 1);
     }
 
-    void NetworkNSLI::CaptureOutput( std::vector< float > & output )
+    void NetworkImpl::CaptureOutput( std::vector< float > & output )
     {
         if ( output.size() != mParams.outputCount )
             throw std::invalid_argument(

@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
-#include <esn/esn.h>
+#include <esn/network.h>
+#include <esn/trainer.h>
 #include <iomanip>
 #include <iostream>
 #include <math.h>
@@ -13,7 +14,7 @@ static const float kTrainingTime = 25.0f * 1.0f / kSineFrequency;
 
 int main()
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 1;
     params.neuronCount = kNeuronCount;
     params.outputCount = 1;

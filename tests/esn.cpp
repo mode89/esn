@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <esn/network_nsli.h>
 #include <esn/network.h>
 #include <esn/trainer.h>
 #include <random>
@@ -13,9 +12,9 @@ static void Randomize(std::vector<float> & v, float min, float max)
         val = dist(sRandomEngine);
 }
 
-TEST( ESN, CreateNetworkNSLI )
+TEST(ESN, CreateNetwork)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 10;
     params.neuronCount = 100;
     params.outputCount = 10;
@@ -24,7 +23,7 @@ TEST( ESN, CreateNetworkNSLI )
 
 TEST(ESN, SetInputs)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 25;
     params.neuronCount = 100;
     params.outputCount = 17;
@@ -38,9 +37,9 @@ TEST(ESN, SetInputs)
     }
 }
 
-TEST( ESN, StepNSLI )
+TEST(ESN, Step)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 11;
     params.neuronCount = 100;
     params.outputCount = 15;
@@ -50,7 +49,7 @@ TEST( ESN, StepNSLI )
 
 TEST(ESN, TrainOnline)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 32;
     params.neuronCount = 64;
     params.outputCount = 16;
@@ -73,7 +72,7 @@ TEST(ESN, TrainOnline)
 
 TEST(ESN, NoFeedback)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 32;
     params.neuronCount = 64;
     params.outputCount = 16;
@@ -97,7 +96,7 @@ TEST(ESN, NoFeedback)
 
 TEST(ESN, TransformOutput)
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.inputCount = 32;
     params.neuronCount = 64;
     params.outputCount = 16;

@@ -19,7 +19,7 @@ SIM_STEP = 0.001
 TRAIN_TIME = 1 / SINE_FREQ
 STEPS_PER_FRAME = 20
 
-params = esn.NetworkParamsNSLI()
+params = esn.NetworkParams()
 params.inputCount = 1
 params.neuronCount = NEURON_COUNT
 params.outputCount = 1

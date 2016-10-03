@@ -1,5 +1,6 @@
 #include <cmath>
-#include <esn/esn.h>
+#include <esn/network.h>
+#include <esn/trainer.h>
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -24,7 +25,7 @@ inline float Pulse( float x, float width, float max )
 
 int main()
 {
-    ESN::NetworkParamsNSLI params;
+    ESN::NetworkParams params;
     params.neuronCount = kNeuronCount;
     params.inputCount = 1;
     params.outputCount = 1;
