@@ -1,11 +1,8 @@
 #include <adaptive_filter_rls.h>
 #include <cmath>
+#include <esn/math.h>
 #include <network_nsli.h>
 #include <trainer_impl.h>
-
-extern "C" {
-#include <cblas.h>
-}
 
 namespace ESN {
 

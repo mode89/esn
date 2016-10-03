@@ -1,8 +1,5 @@
 #include <adaptive_filter_rls.h>
-
-extern "C" {
-#include <cblas/cblas.h>
-}
+#include <esn/math.h>
 
 namespace ESN {
 

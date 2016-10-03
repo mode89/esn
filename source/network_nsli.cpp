@@ -1,47 +1,8 @@
 #include <cmath>
 #include <cstring>
 #include <esn/exceptions.h>
+#include <esn/math.h>
 #include <network_nsli.h>
-#include <random>
-
-extern "C" {
-#include <cblas/cblas.h>
-}
-#include <lapacke.h>
-
-std::default_random_engine sRandomEngine;
-
-void RandomUniform(float * v, int size, float a, float b)
-{
-    std::uniform_real_distribution<float> dist(a, b);
-    for (int i = 0; i < size; ++ i)
-        v[i] = dist(sRandomEngine);
-}
-
-void Constant(float * v, int size, float value)
-{
-    for (int i = 0; i < size; ++ i)
-        v[i] = value;
-}
-
-static inline void TanhEwise(float * v, int size)
-{
-    for (int i = 0; i < size; ++ i)
-        v[i] = std::tanh(v[i]);
-}
-
-static inline void ProductEwise(float * out, const float * in, int size)
-{
-    for (int i = 0; i < size; ++ i)
-        out[i] *= in[i];
-}
-
-static inline void SumEwise(
-    float * out, const float * a, const float * b, int size)
-{
-    for (int i = 0; i < size; ++ i)
-        out[i] = a[i] + b[i];
-}
 
 namespace ESN {
 
