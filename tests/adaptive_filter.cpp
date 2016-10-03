@@ -19,7 +19,7 @@ public:
 
     float operator()(const std::vector<float> input)
     {
-        return cblas_sdot(input.size(), mW.data(), 1, input.data(), 1);
+        return ESN::SDOT(input.size(), mW.data(), 1, input.data(), 1);
     }
 
     std::vector<float> mW;
@@ -51,7 +51,7 @@ public:
         for (int i = 0; i < kInputCount; ++ i)
             mInput[i] = mAmplitude[i] * std::sin(mOmega[i] * mTime);
 
-        mOutput = cblas_sdot(kInputCount, mW.data(), 1, mInput.data(), 1);
+        mOutput = ESN::SDOT(kInputCount, mW.data(), 1, mInput.data(), 1);
         mReferenceOutput = mReferenceFilter(mInput);
     }
 

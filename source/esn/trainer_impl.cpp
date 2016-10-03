@@ -38,8 +38,8 @@ namespace ESN {
         const int neuronCount = mNetwork->mParams.neuronCount;
         const int outputCount = mNetwork->mParams.outputCount;
         std::vector<float> w(neuronCount);
-        cblas_scopy(neuronCount,
-            &mNetwork->mWOut[index], outputCount, w.data(), 1);
+        SCOPY(neuronCount, &mNetwork->mWOut[index],
+            outputCount, w.data(), 1);
 
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
@@ -51,8 +51,8 @@ namespace ESN {
                 _value, mNetwork->mX.data());
 
         // Write back the row of weights
-        cblas_scopy(neuronCount,
-            w.data(), 1, &mNetwork->mWOut[index], outputCount);
+        SCOPY(neuronCount, w.data(), 1,
+            &mNetwork->mWOut[index], outputCount);
 
         if (force)
             mNetwork->mOut[index] = _value;

@@ -76,17 +76,16 @@ namespace ESN {
         std::vector<float> u(params.neuronCount * params.neuronCount);
         std::vector<float> vt(params.neuronCount * params.neuronCount);
 
-        int info = LAPACKE_sgesdd(LAPACK_COL_MAJOR, 'A',
-            params.neuronCount, params.neuronCount, mW.data(),
-            params.neuronCount, s.data(), u.data(), params.neuronCount,
-            vt.data(), params.neuronCount);
+        int info = SGESDD('A', params.neuronCount, params.neuronCount,
+            mW.data(), params.neuronCount, s.data(), u.data(),
+            params.neuronCount, vt.data(), params.neuronCount);
         if (info != 0)
             throw std::runtime_error("Failed to calculate SVD");
 
-        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-            params.neuronCount, params.neuronCount, params.neuronCount,
-            1.0f, u.data(), params.neuronCount, vt.data(),
-            params.neuronCount, 0.0f, mW.data(), params.neuronCount);
+        SGEMM('N', 'T', params.neuronCount, params.neuronCount,
+            params.neuronCount, 1.0f, u.data(), params.neuronCount,
+            vt.data(), params.neuronCount, 0.0f, mW.data(),
+            params.neuronCount);
 
         Constant(mWInScaling.data(), params.inputCount, 1.0f);
         Constant(mWInBias.data(), params.inputCount, 0.0f);
@@ -108,7 +107,7 @@ namespace ESN {
             params.leakingRateMin, params.leakingRateMax);
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
         Constant(mOneMinusLeakingRate.data(), params.neuronCount, 1.0f);
-        cblas_saxpy(params.neuronCount, -1.0f, mLeakingRate.data(), 1,
+        SAXPY(params.neuronCount, -1.0f, mLeakingRate.data(), 1,
             mOneMinusLeakingRate.data(), 1);
 
         Constant(mIn.data(), params.inputCount, 0.0f);
@@ -136,8 +135,8 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        cblas_scopy(mParams.inputCount,
-            scalings.data(), 1, mWInScaling.data(), 1);
+        SCOPY(mParams.inputCount, scalings.data(), 1,
+            mWInScaling.data(), 1);
     }
 
     void NetworkImpl::SetInputBias(
@@ -147,8 +146,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        cblas_scopy(mParams.inputCount,
-            bias.data(), 1, mWInBias.data(), 1);
+        SCOPY(mParams.inputCount, bias.data(), 1, mWInBias.data(), 1);
     }
 
     void NetworkImpl::SetOutputScale(const std::vector<float> & scale)
@@ -157,8 +155,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the output scale vector");
 
-        cblas_scopy(mParams.outputCount,
-            scale.data(), 1, mOutScale.data(), 1);
+        SCOPY(mParams.outputCount, scale.data(), 1, mOutScale.data(), 1);
     }
 
     void NetworkImpl::SetOutputBias(const std::vector<float> & bias)
@@ -167,8 +164,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the output bias vector");
 
-        cblas_scopy(mParams.outputCount,
-            bias.data(), 1, mOutBias.data(), 1);
+        SCOPY(mParams.outputCount, bias.data(), 1, mOutBias.data(), 1);
     }
 
     void NetworkImpl::SetFeedbackScalings(
@@ -182,8 +178,8 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        cblas_scopy(mParams.outputCount,
-            scalings.data(), 1, mWFBScaling.data(), 1);
+        SCOPY(mParams.outputCount, scalings.data(), 1,
+            mWFBScaling.data(), 1);
     }
 
     void NetworkImpl::Step( float step )
@@ -193,14 +189,14 @@ namespace ESN {
                 "Step size must be positive value" );
 
         // mTemp = mW * mX
-        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
-            mParams.neuronCount, 1.0f, mW.data(), mParams.neuronCount,
-            mX.data(), 1, 0.0f, mTemp.data(), 1);
+        SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
+            mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
+            mTemp.data(), 1);
 
         // mTemp = mWIn * mIn + mTemp
-        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
-            mParams.inputCount, 1.0f, mWIn.data(), mParams.neuronCount,
-            mIn.data(), 1, 1.0f, mTemp.data(), 1);
+        SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
+            mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
+            mTemp.data(), 1);
 
         if (mParams.hasOutputFeedback)
         {
@@ -215,9 +211,9 @@ namespace ESN {
                 mParams.outputCount);
 
             // mTemp = mWFB * mOut + mTemp
-            cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.neuronCount,
-                mParams.outputCount, 1.0f, mWFB.data(), mParams.neuronCount,
-                mOut.data(), 1, 1.0f, mTemp.data(), 1);
+            SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
+                mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
+                mTemp.data(), 1);
         }
 
         // mTemp[i] = tanh(mTemp[i])
@@ -228,14 +224,13 @@ namespace ESN {
             mParams.neuronCount);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        cblas_ssbmv(CblasColMajor, CblasLower, mParams.neuronCount, 0,
-            1.0f, mLeakingRate.data(), 1, mTemp.data(), 1,
-            1.0f, mX.data(), 1);
+        SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
+            1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
-        cblas_sgemv(CblasColMajor, CblasNoTrans, mParams.outputCount,
-            mParams.neuronCount, 1.0f, mWOut.data(), mParams.outputCount,
-            mX.data(), 1, 0.0f, mOut.data(), 1);
+        SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
+            mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
+            mOut.data(), 1);
 
         if (!mParams.linearOutput)
             // mOut[i] = tanh(mOut[i])
@@ -254,8 +249,7 @@ namespace ESN {
                 "Size of the vector must be equal to "
                 "the number of inputs" );
 
-        cblas_scopy(mParams.inputCount,
-            mIn.data(), 1, input.data(), 1);
+        SCOPY(mParams.inputCount, mIn.data(), 1, input.data(), 1);
     }
 
     void NetworkImpl::CaptureActivations(
@@ -266,8 +260,7 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of neurons" );
 
-        cblas_scopy(mParams.neuronCount,
-            mX.data(), 1, activations.data(), 1);
+        SCOPY(mParams.neuronCount, mX.data(), 1, activations.data(), 1);
     }
 
     void NetworkImpl::CaptureOutput( std::vector< float > & output )
