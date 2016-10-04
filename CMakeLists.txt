@@ -22,6 +22,7 @@ cmake_minimum_required(VERSION 3.3)
 # Find dependencies
 
     find_package(CBLAS)
+    find_package(CUDA)
     find_package(LAPACK)
     find_package(LAPACKE)
 
@@ -30,6 +31,7 @@ cmake_minimum_required(VERSION 3.3)
     include_directories(include)
     include_directories(source)
     include_directories(${CBLAS_INCLUDE_DIR})
+    include_directories(${CUDA_INCLUDE_DIRS})
     include_directories(${LAPACKE_INCLUDE_DIR})
 
 # Flags
@@ -42,6 +44,7 @@ cmake_minimum_required(VERSION 3.3)
 
     add_library(esn SHARED
         source/cblas/math.cpp
+        source/cuda/math.cpp
         source/esn/adaptive_filter_rls.cpp
         source/esn/network_impl.cpp
         source/esn/trainer_impl.cpp
@@ -51,6 +54,7 @@ cmake_minimum_required(VERSION 3.3)
 
     target_link_libraries(esn
         ${CBLAS_LIBRARY}
+        ${CUDA_CUBLAS_LIBRARIES}
         ${LAPACKE_LIBRARY}
         ${LAPACK_LIBRARIES}
     )
