@@ -44,7 +44,7 @@ cmake_minimum_required(VERSION 3.3)
 
     add_library(esn SHARED
         source/esn/cblas/math.cpp
-        source/esn/cuda/device_pointer.cpp
+        source/esn/cuda/pointer.cpp
         source/esn/cuda/math.cpp
         source/esn/adaptive_filter_rls.cpp
         source/esn/network_impl.cpp

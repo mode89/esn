@@ -1,7 +1,7 @@
 #include <cublas_v2.h>
 #include <esn/cuda/debug.h>
-#include <esn/cuda/device_pointer.h>
 #include <esn/math.h>
+#include <esn/pointer.h>
 #include <memory>
 #include <random>
 
@@ -100,13 +100,13 @@ namespace ESN {
     void SAXPY(const int n, const float alpha, const float * x,
         const int incx, float * y, const int incy)
     {
-        DevicePointer deviceAlpha(MakeDevicePointer(sizeof(float)));
-        MemcpyHostToDevice(deviceAlpha, &alpha, sizeof(float));
+        pointer deviceAlpha = make_pointer(sizeof(float));
+        memcpy(deviceAlpha, &alpha, sizeof(float));
 
-        DevicePointer deviceX(MakeDevicePointer(n * sizeof(float)));
+        pointer deviceX = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
 
-        DevicePointer deviceY(MakeDevicePointer(n * sizeof(float)));
+        pointer deviceY = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
         VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
@@ -119,12 +119,12 @@ namespace ESN {
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {
-        DevicePointer deviceResult(MakeDevicePointer(sizeof(float)));
+        pointer deviceResult = make_pointer(sizeof(float));
 
-        DevicePointer deviceX(MakeDevicePointer(n * sizeof(float)));
+        pointer deviceX = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
 
-        DevicePointer deviceY(MakeDevicePointer(n * sizeof(float)));
+        pointer deviceY = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
         VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
@@ -132,7 +132,7 @@ namespace ESN {
             deviceY.get(), 1, deviceResult.get());
 
         float result = 0.0f;
-        MemcpyDeviceToHost(&result, deviceResult, sizeof(float));
+        memcpy(&result, deviceResult, sizeof(float));
 
         return result;
     }
