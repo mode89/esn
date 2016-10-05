@@ -100,7 +100,20 @@ namespace ESN {
     void SAXPY(const int n, const float alpha, const float * x,
         const int incx, float * y, const int incy)
     {
-        cblas_saxpy(n, alpha, x, incx, y, incy);
+        DevicePointer deviceAlpha(MakeDevicePointer(sizeof(float)));
+        MemcpyHostToDevice(deviceAlpha, &alpha, sizeof(float));
+
+        DevicePointer deviceX(MakeDevicePointer(n * sizeof(float)));
+        VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
+
+        DevicePointer deviceY(MakeDevicePointer(n * sizeof(float)));
+        VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
+
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSaxpy, GetHandle(),
+            n, deviceAlpha.get(), deviceX.get(), 1, deviceY.get(), 1);
+
+        VCB(cublasGetVector, n, sizeof(float), deviceY.get(), 1, y, incy);
     }
 
     float SDOT(const int n, const float * x, const int incx,
