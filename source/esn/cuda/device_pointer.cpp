@@ -13,4 +13,22 @@ namespace ESN {
         });
     }
 
+    void MemcpyHostToDevice(
+        const DevicePointer & devPtr,
+        const float * hostPtr,
+        int byteSize)
+    {
+        VCU(cudaMemcpy, devPtr.get(), hostPtr, byteSize,
+            cudaMemcpyHostToDevice);
+    }
+
+    void MemcpyDeviceToHost(
+        float * hostPtr,
+        const DevicePointer & devPtr,
+        int byteSize)
+    {
+        VCU(cudaMemcpy, hostPtr, devPtr.get(), byteSize,
+            cudaMemcpyDeviceToHost);
+    }
+
 } // namespace ESN
