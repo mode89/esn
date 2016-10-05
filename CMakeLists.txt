@@ -55,6 +55,7 @@ cmake_minimum_required(VERSION 3.3)
     target_link_libraries(esn
         ${CBLAS_LIBRARY}
         ${CUDA_CUBLAS_LIBRARIES}
+        ${CUDA_CUDART_LIBRARY}
         ${LAPACKE_LIBRARY}
         ${LAPACK_LIBRARIES}
     )
