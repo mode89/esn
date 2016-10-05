@@ -1,6 +1,6 @@
 #include <cublas_v2.h>
-#include <cuda_runtime.h>
 #include <esn/cuda/debug.h>
+#include <esn/cuda/device_pointer.h>
 #include <esn/math.h>
 #include <memory>
 #include <random>
@@ -106,28 +106,20 @@ namespace ESN {
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {
-        float * cudaResult = nullptr;
-        VCU(cudaMalloc, &cudaResult, sizeof(float));
+        DevicePointer deviceResult(MakeDevicePointer(sizeof(float)));
 
-        float * cudaX = nullptr;
-        VCU(cudaMalloc, &cudaX, n * sizeof(float));
-        VCB(cublasSetVector, n, sizeof(float), x, 1, cudaX, 1);
+        DevicePointer deviceX(MakeDevicePointer(n * sizeof(float)));
+        VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
 
-        float * cudaY = nullptr;
-        VCU(cudaMalloc, &cudaY, n * sizeof(float));
-        VCB(cublasSetVector, n, sizeof(float), y, 1, cudaY, 1);
+        DevicePointer deviceY(MakeDevicePointer(n * sizeof(float)));
+        VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
         VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSdot, GetHandle(),
-            n, cudaX, incx, cudaY, incy, cudaResult);
+        VCB(cublasSdot, GetHandle(), n, deviceX.get(), 1,
+            deviceY.get(), 1, deviceResult.get());
 
         float result = 0.0f;
-        VCU(cudaMemcpy, &result, cudaResult,
-            sizeof(float), cudaMemcpyDeviceToHost);
-
-        VCU(cudaFree, cudaX);
-        VCU(cudaFree, cudaY);
-        VCU(cudaFree, cudaResult);
+        MemcpyDeviceToHost(&result, deviceResult, sizeof(float));
 
         return result;
     }
