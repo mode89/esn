@@ -18,7 +18,7 @@ namespace ESN {
         VCU(cudaMemcpy, dst.get(), src, byteSize, cudaMemcpyHostToDevice);
     }
 
-    void memcpy(float * dst, const pointer & src, int byteSize)
+    void memcpy(float * dst, const const_pointer & src, int byteSize)
     {
         VCU(cudaMemcpy, dst, src.get(), byteSize, cudaMemcpyDeviceToHost);
     }
