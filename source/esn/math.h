@@ -1,6 +1,8 @@
 #ifndef __ESN_SOURCE_ESN_MATH_H__
 #define __ESN_SOURCE_ESN_MATH_H__
 
+#include <esn/pointer.h>
+
 namespace ESN {
 
     void RandomUniform(float * v, int size, float a, float b);
@@ -15,6 +17,8 @@ namespace ESN {
         const int incx, float * y, const int incy);
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy);
+    void sdot(const int n, const const_pointer & x, const int incx,
+        const const_pointer & y, const int incy, const pointer & result);
     void SGEMV(const char trans, const int m, const int n,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy);

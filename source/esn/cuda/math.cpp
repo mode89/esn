@@ -137,6 +137,14 @@ namespace ESN {
         return result;
     }
 
+    void sdot(const int n, const const_pointer & x, const int incx,
+        const const_pointer & y, const int incy, const pointer & result)
+    {
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSdot, GetHandle(),
+            n, x.get(), incx, y.get(), incy, result.get());
+    }
+
     void SGEMV(const char trans, const int m, const int n,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy)

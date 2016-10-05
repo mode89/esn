@@ -31,7 +31,14 @@ namespace ESN {
             mTemp.data(), 1);
 
         // dot = mTemp * input
-        float dot = SDOT(N, mTemp.data(), 1, input, 1);
+        pointer ptrTemp = make_pointer(N * sizeof(float));
+        memcpy(ptrTemp, mTemp.data(), N * sizeof(float));
+        pointer ptrInput = make_pointer(N * sizeof(float));
+        memcpy(ptrInput, input, N * sizeof(float));
+        pointer ptrDot = make_pointer(sizeof(float));
+        sdot(N, ptrTemp, 1, ptrInput, 1, ptrDot);
+        float dot = 0.0f;
+        memcpy(&dot, ptrDot, sizeof(float));
 
         // mK = mP * input / (mForgettingFactor + dot)
         SGEMV('N', N, N, 1.0f / (mForgettingFactor + dot), mP.data(), N,
