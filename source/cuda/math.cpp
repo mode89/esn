@@ -1,4 +1,5 @@
 #include <cublas_v2.h>
+#include <cuda_runtime.h>
 #include <esn/math.h>
 #include <memory>
 #include <random>
@@ -10,6 +11,16 @@ extern "C" {
 #include <lapacke.h>
 
 #define DEBUG(...) { printf(__VA_ARGS__); printf("\n"); }
+
+#define VCU(func, ...) { \
+        if (func(__VA_ARGS__) != cudaSuccess) \
+            DEBUG("Failed " #func "()"); \
+    }
+
+#define VCB(func, ...) { \
+        if (func(__VA_ARGS__) != CUBLAS_STATUS_SUCCESS) \
+            DEBUG("Failed " #func "()"); \
+    }
 
 namespace ESN {
 
@@ -106,7 +117,30 @@ namespace ESN {
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {
-        return cblas_sdot(n, x, incx, y, incy);
+        float * cudaResult = nullptr;
+        VCU(cudaMalloc, &cudaResult, sizeof(float));
+
+        float * cudaX = nullptr;
+        VCU(cudaMalloc, &cudaX, n * sizeof(float));
+        VCB(cublasSetVector, n, sizeof(float), x, 1, cudaX, 1);
+
+        float * cudaY = nullptr;
+        VCU(cudaMalloc, &cudaY, n * sizeof(float));
+        VCB(cublasSetVector, n, sizeof(float), y, 1, cudaY, 1);
+
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSdot, GetHandle(),
+            n, cudaX, incx, cudaY, incy, cudaResult);
+
+        float result = 0.0f;
+        VCU(cudaMemcpy, &result, cudaResult,
+            sizeof(float), cudaMemcpyDeviceToHost);
+
+        VCU(cudaFree, cudaX);
+        VCU(cudaFree, cudaY);
+        VCU(cudaFree, cudaResult);
+
+        return result;
     }
 
     void SGEMV(const char trans, const int m, const int n,
