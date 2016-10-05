@@ -52,7 +52,15 @@ namespace ESN {
             mTemp.data(), N, 1 / mForgettingFactor, mP.data(), N);
 
         // w = (referenceOutput - actualOutput) * mK + w
-        SAXPY(N, referenceOutput - actualOutput, mK.data(), 1, w, 1);
+        float alpha = referenceOutput - actualOutput;
+        pointer ptrAlpha = make_pointer(sizeof(float));
+        memcpy(ptrAlpha, &alpha, sizeof(float));
+        pointer ptrK = make_pointer(N * sizeof(float));
+        memcpy(ptrK, mK.data(), N * sizeof(float));
+        pointer ptrW = make_pointer(N * sizeof(float));
+        memcpy(ptrW, w, N * sizeof(float));
+        saxpy(N, ptrAlpha, ptrK, 1, ptrW, 1);
+        memcpy(w, ptrW, N * sizeof(float));
     }
 
 } // namespace ESN

@@ -15,6 +15,9 @@ namespace ESN {
         const int incy);
     void SAXPY(const int n, const float alpha, const float * x,
         const int incx, float * y, const int incy);
+    void saxpy(const int h, const const_pointer & alpha,
+        const const_pointer & x, const int incx, const pointer & y,
+        const int incy);
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy);
     void sdot(const int n, const const_pointer & x, const int incx,

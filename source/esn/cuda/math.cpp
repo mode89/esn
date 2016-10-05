@@ -116,6 +116,15 @@ namespace ESN {
         VCB(cublasGetVector, n, sizeof(float), deviceY.get(), 1, y, incy);
     }
 
+    void saxpy(const int n, const const_pointer & alpha,
+        const const_pointer & x, const int incx, const pointer & y,
+        const int incy)
+    {
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSaxpy, GetHandle(),
+            n, alpha.get(), x.get(), incx, y.get(), incy);
+    }
+
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {
