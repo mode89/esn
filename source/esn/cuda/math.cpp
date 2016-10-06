@@ -15,7 +15,7 @@ namespace ESN {
 
     std::default_random_engine sRandomEngine;
 
-    static cublasHandle_t & GetHandle()
+    static cublasHandle_t & get_cublas_handle()
     {
         static auto deleter = [] (cublasHandle_t * h) {
             DEBUG("Destroying cuBLAS context ...");
@@ -137,8 +137,9 @@ namespace ESN {
         pointer deviceY = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSaxpy, GetHandle(),
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSaxpy, get_cublas_handle(),
             n, deviceAlpha.get(), deviceX.get(), 1, deviceY.get(), 1);
 
         VCB(cublasGetVector, n, sizeof(float), deviceY.get(), 1, y, incy);
@@ -148,8 +149,9 @@ namespace ESN {
         const const_pointer & x, const int incx, const pointer & y,
         const int incy)
     {
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSaxpy, GetHandle(),
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSaxpy, get_cublas_handle(),
             n, alpha.get(), x.get(), incx, y.get(), incy);
     }
 
@@ -164,8 +166,9 @@ namespace ESN {
         pointer deviceY = make_pointer(n * sizeof(float));
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSdot, GetHandle(), n, deviceX.get(), 1,
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSdot, get_cublas_handle(), n, deviceX.get(), 1,
             deviceY.get(), 1, deviceResult.get());
 
         float result = 0.0f;
@@ -177,8 +180,9 @@ namespace ESN {
     void sdot(const int n, const const_pointer & x, const int incx,
         const const_pointer & y, const int incy, const pointer & result)
     {
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSdot, GetHandle(),
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSdot, get_cublas_handle(),
             n, x.get(), incx, y.get(), incy, result.get());
     }
 
@@ -195,10 +199,11 @@ namespace ESN {
         const const_pointer & x, const int incx, const const_pointer & beta,
         const pointer & y, const int incy)
     {
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSgemv, GetHandle(), to_cublas_operation(trans), m, n,
-            alpha.get(), a.get(), lda, x.get(), incx, beta.get(), y.get(),
-            incy);
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemv, get_cublas_handle(), to_cublas_operation(trans),
+            m, n, alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
+            y.get(), incy);
     }
 
     void SSBMV(const char uplo, const int n, const int k,
@@ -214,9 +219,10 @@ namespace ESN {
         const const_pointer & x, const int incx, const const_pointer & beta,
         const pointer & y, const int incy)
     {
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSsbmv, GetHandle(), to_cublas_fill_mode(uplo), n, k,
-            alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSsbmv, get_cublas_handle(), to_cublas_fill_mode(uplo),
+            n, k, alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
             y.get(), incy);
     }
 
@@ -236,8 +242,9 @@ namespace ESN {
         const int ldb, const const_pointer & beta, const pointer & c,
         const int ldc)
     {
-        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSgemm, GetHandle(), to_cublas_operation(transa),
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
             to_cublas_operation(transb), m, n, k, alpha.get(), a.get(), lda,
             b.get(), ldb, beta.get(), c.get(), ldc);
     }
