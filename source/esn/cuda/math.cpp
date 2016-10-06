@@ -60,6 +60,21 @@ namespace ESN {
         }
     }
 
+    static inline cublasOperation_t to_cublas_operation(char op)
+    {
+        switch (op)
+        {
+        case 'N':
+            return CUBLAS_OP_N;
+        case 'T':
+            return CUBLAS_OP_T;
+        case 'C':
+            return CUBLAS_OP_C;
+        default:
+            DEBUG("Unknown cuBLAS operation");
+        }
+    }
+
     void RandomUniform(float * v, int size, float a, float b)
     {
         std::uniform_real_distribution<float> dist(a, b);
@@ -160,6 +175,17 @@ namespace ESN {
     {
         cblas_sgemv(CblasColMajor, ToCblasTranspose(trans), m, n, alpha,
             a, lda, x, incx, beta, y, incy);
+    }
+
+    void sgemv(const char trans, const int m, const int n,
+        const const_pointer & alpha, const const_pointer & a, const int lda,
+        const const_pointer & x, const int incx, const const_pointer & beta,
+        const pointer & y, const int incy)
+    {
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemv, GetHandle(), to_cublas_operation(trans), m, n,
+            alpha.get(), a.get(), lda, x.get(), incx, beta.get(), y.get(),
+            incy);
     }
 
     void SSBMV(const char uplo, const int n, const int k,
