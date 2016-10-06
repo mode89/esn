@@ -32,6 +32,10 @@ namespace ESN {
     void SSBMV(const char uplo, const int n, const int k,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy);
+    void ssbmv(const char uplo, const int n, const int k,
+        const const_pointer & alpha, const const_pointer & a, const int lda,
+        const const_pointer & x, const int incx, const const_pointer & beta,
+        const pointer & y, const int incy);
     void SGEMM(const char transa, const char transb, const int m,
         const int n, const int k, const float alpha, const float * a,
         const int lda, const float * b, const int ldb, const float beta,

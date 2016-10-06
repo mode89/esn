@@ -71,7 +71,20 @@ namespace ESN {
         case 'C':
             return CUBLAS_OP_C;
         default:
-            DEBUG("Unknown cuBLAS operation");
+            DEBUG("Unknown operation");
+        }
+    }
+
+    static inline cublasFillMode_t to_cublas_fill_mode(char mode)
+    {
+        switch (mode)
+        {
+        case 'L':
+            return CUBLAS_FILL_MODE_LOWER;
+        case 'U':
+            return CUBLAS_FILL_MODE_UPPER;
+        default:
+            DEBUG("Unknown fill mode");
         }
     }
 
@@ -194,6 +207,17 @@ namespace ESN {
     {
         cblas_ssbmv(CblasColMajor, ToCblasUplo(uplo), n, k, alpha, a, lda,
             x, incx, beta, y, incy);
+    }
+
+    void ssbmv(const char uplo, const int n, const int k,
+        const const_pointer & alpha, const const_pointer & a, const int lda,
+        const const_pointer & x, const int incx, const const_pointer & beta,
+        const pointer & y, const int incy)
+    {
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSsbmv, GetHandle(), to_cublas_fill_mode(uplo), n, k,
+            alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
+            y.get(), incy);
     }
 
     void SGEMM(const char transa, const char transb, const int m,
