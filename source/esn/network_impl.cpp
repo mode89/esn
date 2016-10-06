@@ -258,8 +258,16 @@ namespace ESN {
             mParams.neuronCount);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
-            1, mTemp.data(), 1, 1.0f, mX.data(), 1);
+        memcpy(ptrAlpha, 1.0f);
+        pointer ptrLeakingRate = make_pointer(mLeakingRate);
+        memcpy(ptrTemp, mTemp);
+        memcpy(ptrBeta, 1.0f);
+        memcpy(ptrX, mX);
+        ssbmv('L', mParams.neuronCount, 0, ptrAlpha, ptrLeakingRate, 1,
+            ptrTemp, 1, ptrBeta, ptrX, 1);
+        memcpy(mX, ptrX);
+        // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
+        //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
         memcpy(ptrAlpha, 1.0f);
