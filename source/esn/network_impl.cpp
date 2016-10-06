@@ -72,20 +72,25 @@ namespace ESN {
             if (conn[i] > params.connectivity)
                 mW[i] = 0.0f;
 
-        std::vector<float> s(params.neuronCount);
-        std::vector<float> u(params.neuronCount * params.neuronCount);
-        std::vector<float> vt(params.neuronCount * params.neuronCount);
-
-        int info = SGESDD('A', params.neuronCount, params.neuronCount,
-            mW.data(), params.neuronCount, s.data(), u.data(),
-            params.neuronCount, vt.data(), params.neuronCount);
+        // Find S, U, VT from equation:
+        // mW = U * S * VT
+        pointer ptrA = make_pointer(mW);
+        pointer ptrS = make_pointer(params.neuronCount * sizeof(float));
+        pointer ptrU = make_pointer(
+            params.neuronCount * params.neuronCount * sizeof(float));
+        pointer ptrVT = make_pointer(
+            params.neuronCount * params.neuronCount * sizeof(float));
+        int info = sgesvd('A', 'A', params.neuronCount, params.neuronCount,
+            ptrA, params.neuronCount, ptrS, ptrU, params.neuronCount, ptrVT,
+            params.neuronCount);
+        // int info = SGESDD('A', params.neuronCount, params.neuronCount,
+        //     mW.data(), params.neuronCount, s.data(), u.data(),
+        //     params.neuronCount, vt.data(), params.neuronCount);
         if (info != 0)
             throw std::runtime_error("Failed to calculate SVD");
 
         // mW = U * VT
         pointer ptrAlpha = make_pointer(1.0f);
-        pointer ptrU = make_pointer(u);
-        pointer ptrVT = make_pointer(vt);
         pointer ptrBeta = make_pointer(0.0f);
         pointer ptrW = make_pointer(mW);
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
