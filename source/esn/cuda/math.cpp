@@ -1,4 +1,5 @@
 #include <cublas_v2.h>
+#include <cusolverDn.h>
 #include <esn/cuda/debug.h>
 #include <esn/math.h>
 #include <esn/pointer.h>
@@ -33,6 +34,29 @@ namespace ESN {
             handle.reset(new cublasHandle_t);
             if (cublasCreate(handle.get()) != CUBLAS_STATUS_SUCCESS)
                 throw std::runtime_error("Failed to initialize cuBLAS");
+        }
+
+        return *handle;
+    }
+
+    static cusolverDnHandle_t & get_cusolver_handle()
+    {
+        static auto deleter = [] (cusolverDnHandle_t * h) {
+            DEBUG("Destroying cuSOLVER context ...");
+            if (cusolverDnDestroy(*h) != CUSOLVER_STATUS_SUCCESS)
+                DEBUG("Failed to release cuSOLVER");
+            delete h;
+        };
+
+        static std::unique_ptr<cusolverDnHandle_t, decltype(deleter) &>
+            handle(nullptr, deleter);
+
+        if (!handle)
+        {
+            DEBUG("Creating cuSOLVER context ...");
+            handle.reset(new cusolverDnHandle_t);
+            if (cusolverDnCreate(handle.get()) != CUSOLVER_STATUS_SUCCESS)
+                throw std::runtime_error("Failed to initialize cuSOLVER");
         }
 
         return *handle;
