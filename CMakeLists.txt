@@ -57,6 +57,7 @@ cmake_minimum_required(VERSION 3.3)
         ${CBLAS_LIBRARY}
         ${CUDA_CUBLAS_LIBRARIES}
         ${CUDA_CUDART_LIBRARY}
+        ${CUDA_cusolver_LIBRARY}
         ${LAPACKE_LIBRARY}
         ${LAPACK_LIBRARIES}
     )
