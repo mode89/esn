@@ -48,6 +48,10 @@ namespace ESN {
     int SGESDD(const char jobz, const int m, const int n, float * a,
         const int lda, float * s, float * u, const int ldu, float * vt,
         const int ldvt);
+    int sgesvd(const char jobu, const char jobvt, const int m, const int n,
+        const pointer & a, const int lda, const pointer & s,
+        const pointer & u, const int ldu, const pointer & vt,
+        const int ldvt);
 
 } // namespace ESN
 

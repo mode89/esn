@@ -1,4 +1,5 @@
 #include <cublas_v2.h>
+#include <cuda_runtime.h>
 #include <cusolverDn.h>
 #include <esn/cuda/debug.h>
 #include <esn/math.h>
@@ -279,6 +280,27 @@ namespace ESN {
     {
         return LAPACKE_sgesdd(LAPACK_COL_MAJOR, jobz, m, n, a, lda, s, u,
             ldu, vt, ldvt);
+    }
+
+    int sgesvd(const char jobu, const char jobvt, const int m, const int n,
+        const pointer & a, const int lda, const pointer & s,
+        const pointer & u, const int ldu, const pointer & vt,
+        const int ldvt)
+    {
+        int lwork = 0;
+        VCS(cusolverDnSgesvd_bufferSize,
+            get_cusolver_handle(), m, n, &lwork);
+        pointer work = make_pointer(sizeof(float) * lwork);
+        int * devInfo = nullptr;
+        VCU(cudaMalloc, &devInfo, sizeof(int));
+        VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt, m, n,
+            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, work.get(),
+            lwork, nullptr, devInfo);
+        int hostInfo = 0;
+        VCU(cudaMemcpy, &hostInfo, devInfo, sizeof(int),
+            cudaMemcpyDeviceToHost);
+        VCU(cudaFree, devInfo);
+        return hostInfo;
     }
 
 } // namespace ESN

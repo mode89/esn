@@ -13,4 +13,9 @@
             DEBUG("Failed " #func "()"); \
     }
 
+#define VCS(func, ...) { \
+        if (func(__VA_ARGS__) != CUSOLVER_STATUS_SUCCESS) \
+            DEBUG("Failed " #func "()"); \
+    }
+
 #endif // __ESN_CUDA_DEBUG_H__
