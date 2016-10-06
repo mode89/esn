@@ -43,7 +43,7 @@ cmake_minimum_required(VERSION 3.3)
 # Target
 
     add_library(esn SHARED
-        source/esn/cblas/math.cpp
+        # source/esn/cblas/math.cpp
         source/esn/cuda/pointer.cpp
         source/esn/cuda/math.cpp
         source/esn/adaptive_filter_rls.cpp
