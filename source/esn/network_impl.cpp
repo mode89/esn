@@ -82,10 +82,19 @@ namespace ESN {
         if (info != 0)
             throw std::runtime_error("Failed to calculate SVD");
 
-        SGEMM('N', 'T', params.neuronCount, params.neuronCount,
-            params.neuronCount, 1.0f, u.data(), params.neuronCount,
-            vt.data(), params.neuronCount, 0.0f, mW.data(),
-            params.neuronCount);
+        pointer ptrAlpha = make_pointer(1.0f);
+        pointer ptrU = make_pointer(u);
+        pointer ptrVT = make_pointer(vt);
+        pointer ptrBeta = make_pointer(0.0f);
+        pointer ptrW = make_pointer(mW);
+        sgemm('N', 'T', params.neuronCount, params.neuronCount,
+            params.neuronCount, ptrAlpha, ptrU, params.neuronCount,
+            ptrVT, params.neuronCount, ptrBeta, ptrW, params.neuronCount);
+        memcpy(mW, ptrW);
+        // SGEMM('N', 'T', params.neuronCount, params.neuronCount,
+        //     params.neuronCount, 1.0f, u.data(), params.neuronCount,
+        //     vt.data(), params.neuronCount, 0.0f, mW.data(),
+        //     params.neuronCount);
 
         Constant(mWInScaling.data(), params.inputCount, 1.0f);
         Constant(mWInBias.data(), params.inputCount, 0.0f);

@@ -60,8 +60,16 @@ namespace ESN {
         // and BLAS representation
         // mP = -1 / mForgettingFactor * mK * mTemp.transpose() +
         //      1 / mForgettingFactor * mP
-        SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
-            mTemp.data(), N, 1 / mForgettingFactor, mP.data(), N);
+        memcpy(ptrAlpha, -1.0f / mForgettingFactor);
+        memcpy(ptrK, mK);
+        memcpy(ptrTemp, mTemp);
+        memcpy(ptrBeta, 1.0f / mForgettingFactor);
+        memcpy(ptrP, mP);
+        sgemm('N', 'T', N, N, 1, ptrAlpha, ptrK, N, ptrTemp, N, ptrBeta,
+            ptrP, N);
+        memcpy(mP, ptrP);
+        // SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
+        //     mTemp.data(), N, 1 / mForgettingFactor, mP.data(), N);
 
         // w = (referenceOutput - actualOutput) * mK + w
         memcpy(ptrAlpha, referenceOutput - actualOutput);
