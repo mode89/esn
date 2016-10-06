@@ -206,6 +206,18 @@ namespace ESN {
             beta, c, ldc);
     }
 
+    void sgemm(const char transa, const char transb, const int m,
+        const int n, const int k, const const_pointer & alpha,
+        const const_pointer & a, const int lda, const const_pointer & b,
+        const int ldb, const const_pointer & beta, const pointer & c,
+        const int ldc)
+    {
+        VCB(cublasSetPointerMode, GetHandle(), CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemm, GetHandle(), to_cublas_operation(transa),
+            to_cublas_operation(transb), m, n, k, alpha.get(), a.get(), lda,
+            b.get(), ldb, beta.get(), c.get(), ldc);
+    }
+
     int SGESDD(const char jobz, const int m, const int n, float * a,
         const int lda, float * s, float * u, const int ldu, float * vt,
         const int ldvt)

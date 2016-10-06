@@ -36,6 +36,11 @@ namespace ESN {
         const int n, const int k, const float alpha, const float * a,
         const int lda, const float * b, const int ldb, const float beta,
         float * c, const int ldc);
+    void sgemm(const char transa, const char transb, const int m,
+        const int n, const int k, const const_pointer & alpha,
+        const const_pointer & a, const int lda, const const_pointer & b,
+        const int ldb, const const_pointer & beta, const pointer & c,
+        const int ldc);
     int SGESDD(const char jobz, const int m, const int n, float * a,
         const int lda, float * s, float * u, const int ldu, float * vt,
         const int ldvt);
