@@ -7,7 +7,11 @@
 
 # Targets
 
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}; -Xcompiler -fPIC")
+    cuda_compile(CUDA_COMPILED_FILES wrap.cu)
+
     add_library(esn-math
+        ${CUDA_COMPILED_FILES}
         math.cpp
         pointer.cpp
     )

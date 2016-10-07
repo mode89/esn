@@ -2,6 +2,7 @@
 #include <cuda_runtime.h>
 #include <cusolverDn.h>
 #include <esn/cuda/debug.h>
+#include <esn/cuda/wrap.h>
 #include <esn/math.h>
 #include <esn/pointer.h>
 #include <memory>
@@ -142,6 +143,11 @@ namespace ESN {
     {
         for (int i = 0; i < size; ++ i)
             out[i] = a[i] + b[i];
+    }
+
+    void srcp(const pointer & v)
+    {
+        wrap_srcp(v.get());
     }
 
     void SCOPY(const int n, const float * x, const int incx, float * y,

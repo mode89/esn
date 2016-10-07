@@ -11,6 +11,7 @@ namespace ESN {
     void ProductEwise(float * out, const float * in, int size);
     void SumEwise(float * out, const float * a, const float * b, int size);
 
+    void srcp(const pointer & v);
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy);
     void SAXPY(const int n, const float alpha, const float * x,
