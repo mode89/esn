@@ -2,6 +2,7 @@
 #define __ESN_ADAPTIVE_FILTER_RLS_H__
 
 #include <esn/export.h>
+#include <esn/pointer.h>
 #include <vector>
 
 namespace ESN {
@@ -25,7 +26,7 @@ namespace ESN {
         const float mForgettingFactor;
         const unsigned mInputCount;
         std::vector<float> mP;
-        std::vector<float> mTemp;
+        pointer mTemp;
         std::vector<float> mK;
     };
 

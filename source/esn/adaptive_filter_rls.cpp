@@ -10,7 +10,7 @@ namespace ESN {
         : mForgettingFactor(forgettingFactor)
         , mInputCount(inputCount)
         , mP(inputCount * inputCount)
-        , mTemp(inputCount)
+        , mTemp(make_pointer(sizeof(float) * inputCount))
         , mK(inputCount)
     {
         // Initialize diagonal matrix
@@ -32,17 +32,13 @@ namespace ESN {
         pointer ptrInput = make_pointer(N * sizeof(float));
         memcpy(ptrInput, input, N * sizeof(float));
         pointer ptrBeta = make_pointer(0.0f);
-        pointer ptrTemp = make_pointer(mTemp);
-        sgemv('T', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta,
-            ptrTemp, 1);
-        memcpy(mTemp, ptrTemp);
+        sgemv('T', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta, mTemp, 1);
         // SGEMV('T', N, N, 1.0f, mP.data(), N, input, 1, 0.0f,
         //     mTemp.data(), 1);
 
         // dot = mTemp * input
-        memcpy(ptrTemp, mTemp);
         pointer ptrDot = make_pointer(sizeof(float));
-        sdot(N, ptrTemp, 1, ptrInput, 1, ptrDot);
+        sdot(N, mTemp, 1, ptrInput, 1, ptrDot);
         float dot = 0.0f;
         memcpy(&dot, ptrDot, sizeof(float));
 
@@ -62,10 +58,9 @@ namespace ESN {
         //      1 / mForgettingFactor * mP
         memcpy(ptrAlpha, -1.0f / mForgettingFactor);
         memcpy(ptrK, mK);
-        memcpy(ptrTemp, mTemp);
         memcpy(ptrBeta, 1.0f / mForgettingFactor);
         memcpy(ptrP, mP);
-        sgemm('N', 'T', N, N, 1, ptrAlpha, ptrK, N, ptrTemp, N, ptrBeta,
+        sgemm('N', 'T', N, N, 1, ptrAlpha, ptrK, N, mTemp, N, ptrBeta,
             ptrP, N);
         memcpy(mP, ptrP);
         // SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
