@@ -27,7 +27,7 @@ namespace ESN {
         const unsigned mInputCount;
         std::vector<float> mP;
         pointer mTemp;
-        std::vector<float> mK;
+        pointer mK;
     };
 
 } // namespace ESN

@@ -11,7 +11,7 @@ namespace ESN {
         , mInputCount(inputCount)
         , mP(inputCount * inputCount)
         , mTemp(make_pointer(sizeof(float) * inputCount))
-        , mK(inputCount)
+        , mK(make_pointer(sizeof(float) * inputCount))
     {
         // Initialize diagonal matrix
         std::fill(mP.begin(), mP.end(), 0.0f);
@@ -46,9 +46,7 @@ namespace ESN {
         memcpy(ptrAlpha, 1.0f / (mForgettingFactor + dot));
         memcpy(ptrP, mP);
         memcpy(ptrBeta, 0.0f);
-        pointer ptrK = make_pointer(mK);
-        sgemv('N', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta, ptrK, 1);
-        memcpy(mK, ptrK);
+        sgemv('N', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta, mK, 1);
         // SGEMV('N', N, N, 1.0f / (mForgettingFactor + dot), mP.data(), N,
         //     input, 1, 0.0f, mK.data(), 1);
 
@@ -57,10 +55,9 @@ namespace ESN {
         // mP = -1 / mForgettingFactor * mK * mTemp.transpose() +
         //      1 / mForgettingFactor * mP
         memcpy(ptrAlpha, -1.0f / mForgettingFactor);
-        memcpy(ptrK, mK);
         memcpy(ptrBeta, 1.0f / mForgettingFactor);
         memcpy(ptrP, mP);
-        sgemm('N', 'T', N, N, 1, ptrAlpha, ptrK, N, mTemp, N, ptrBeta,
+        sgemm('N', 'T', N, N, 1, ptrAlpha, mK, N, mTemp, N, ptrBeta,
             ptrP, N);
         memcpy(mP, ptrP);
         // SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
@@ -68,10 +65,9 @@ namespace ESN {
 
         // w = (referenceOutput - actualOutput) * mK + w
         memcpy(ptrAlpha, referenceOutput - actualOutput);
-        memcpy(ptrK, mK);
         pointer ptrW = make_pointer(N * sizeof(float));
         memcpy(ptrW, w, N * sizeof(float));
-        saxpy(N, ptrAlpha, ptrK, 1, ptrW, 1);
+        saxpy(N, ptrAlpha, mK, 1, ptrW, 1);
         memcpy(w, ptrW, N * sizeof(float));
     }
 
