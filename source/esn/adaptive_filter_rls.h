@@ -23,13 +23,19 @@ namespace ESN {
             const float * input);
 
     private:
-        const float mForgettingFactor;
+        const pointer mForgettingFactor;
         const unsigned mInputCount;
         const const_pointer kZero;
         const const_pointer kOne;
+        const const_pointer kAlpha;
+        const const_pointer kBeta;
+        const pointer mInput;
+        const pointer mW;
         pointer mP;
         pointer mTemp;
+        const pointer mDot;
         pointer mK;
+        const pointer mDelta;
     };
 
 } // namespace ESN
