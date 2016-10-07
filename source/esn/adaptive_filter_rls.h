@@ -25,6 +25,8 @@ namespace ESN {
     private:
         const float mForgettingFactor;
         const unsigned mInputCount;
+        const const_pointer kZero;
+        const const_pointer kOne;
         pointer mP;
         pointer mTemp;
         pointer mK;
