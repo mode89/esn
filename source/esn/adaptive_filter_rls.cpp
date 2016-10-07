@@ -9,14 +9,16 @@ namespace ESN {
         float regularization)
         : mForgettingFactor(forgettingFactor)
         , mInputCount(inputCount)
-        , mP(inputCount * inputCount)
+        , mP(make_pointer(sizeof(float) * inputCount * inputCount))
         , mTemp(make_pointer(sizeof(float) * inputCount))
         , mK(make_pointer(sizeof(float) * inputCount))
     {
         // Initialize diagonal matrix
-        std::fill(mP.begin(), mP.end(), 0.0f);
+        std::vector<float> p(inputCount * inputCount);
+        std::fill(p.begin(), p.end(), 0.0f);
         for (int i = 0; i < inputCount; ++ i)
-            mP[i + i * inputCount] = regularization;
+            p[i + i * inputCount] = regularization;
+        memcpy(mP, p);
     }
 
     void AdaptiveFilterRLS::Train(
@@ -28,11 +30,10 @@ namespace ESN {
         // mTemp = transpose(mP) * input
         int N = mInputCount;
         pointer ptrAlpha = make_pointer(1.0f);
-        pointer ptrP = make_pointer(mP);
         pointer ptrInput = make_pointer(N * sizeof(float));
         memcpy(ptrInput, input, N * sizeof(float));
         pointer ptrBeta = make_pointer(0.0f);
-        sgemv('T', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta, mTemp, 1);
+        sgemv('T', N, N, ptrAlpha, mP, N, ptrInput, 1, ptrBeta, mTemp, 1);
         // SGEMV('T', N, N, 1.0f, mP.data(), N, input, 1, 0.0f,
         //     mTemp.data(), 1);
 
@@ -44,9 +45,8 @@ namespace ESN {
 
         // mK = mP * input / (mForgettingFactor + dot)
         memcpy(ptrAlpha, 1.0f / (mForgettingFactor + dot));
-        memcpy(ptrP, mP);
         memcpy(ptrBeta, 0.0f);
-        sgemv('N', N, N, ptrAlpha, ptrP, N, ptrInput, 1, ptrBeta, mK, 1);
+        sgemv('N', N, N, ptrAlpha, mP, N, ptrInput, 1, ptrBeta, mK, 1);
         // SGEMV('N', N, N, 1.0f / (mForgettingFactor + dot), mP.data(), N,
         //     input, 1, 0.0f, mK.data(), 1);
 
@@ -56,10 +56,7 @@ namespace ESN {
         //      1 / mForgettingFactor * mP
         memcpy(ptrAlpha, -1.0f / mForgettingFactor);
         memcpy(ptrBeta, 1.0f / mForgettingFactor);
-        memcpy(ptrP, mP);
-        sgemm('N', 'T', N, N, 1, ptrAlpha, mK, N, mTemp, N, ptrBeta,
-            ptrP, N);
-        memcpy(mP, ptrP);
+        sgemm('N', 'T', N, N, 1, ptrAlpha, mK, N, mTemp, N, ptrBeta, mP, N);
         // SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
         //     mTemp.data(), N, 1 / mForgettingFactor, mP.data(), N);
 
