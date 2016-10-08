@@ -11,6 +11,8 @@ namespace ESN {
     void ProductEwise(float * out, const float * in, int size);
     void SumEwise(float * out, const float * a, const float * b, int size);
 
+    void srandv(const int n, const const_pointer & a,
+        const const_pointer & b, const pointer & x);
     void srcp(const pointer & v);
     void stanhv(const int n, const pointer & v);
     void SCOPY(const int n, const float * x, const int incx, float * y,

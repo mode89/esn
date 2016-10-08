@@ -170,6 +170,13 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
+    void srandv(const int n, const const_pointer & a,
+        const const_pointer & b, const pointer & x)
+    {
+        VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
+        wrap_srandv_helper(n, a.get(), b.get(), x.get());
+    }
+
     void srcp(const pointer & v)
     {
         wrap_srcp(v.get());

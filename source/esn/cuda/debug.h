@@ -18,4 +18,9 @@
             DEBUG("Failed " #func "()"); \
     }
 
+#define VCR(func, ...) { \
+        if (func(__VA_ARGS__) != CURAND_STATUS_SUCCESS) \
+            DEBUG("Failed " #func "()"); \
+    }
+
 #endif // __ESN_CUDA_DEBUG_H__
