@@ -1,5 +1,6 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
+#include <curand.h>
 #include <cusolverDn.h>
 #include <esn/cuda/debug.h>
 #include <esn/cuda/wrap.h>
@@ -59,6 +60,30 @@ namespace ESN {
             handle.reset(new cusolverDnHandle_t);
             if (cusolverDnCreate(handle.get()) != CUSOLVER_STATUS_SUCCESS)
                 throw std::runtime_error("Failed to initialize cuSOLVER");
+        }
+
+        return *handle;
+    }
+
+    static curandGenerator_t & get_curand_handle()
+    {
+        static auto deleter = [] (curandGenerator_t * h) {
+            DEBUG("Destroying cuRAND context ...");
+            if (curandDestroyGenerator(*h) != CURAND_STATUS_SUCCESS)
+                DEBUG("Failed to release cuRAND");
+            delete h;
+        };
+
+        static std::unique_ptr<curandGenerator_t, decltype(deleter) &>
+            handle(nullptr, deleter);
+
+        if (!handle)
+        {
+            DEBUG("Create cuRAND context ...");
+            handle.reset(new curandGenerator_t);
+            if (curandCreateGenerator(handle.get(),
+                CURAND_RNG_PSEUDO_DEFAULT) != CURAND_STATUS_SUCCESS)
+                throw std::runtime_error("Failed to initialize cuRAND");
         }
 
         return *handle;
