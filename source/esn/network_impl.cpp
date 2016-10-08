@@ -28,7 +28,7 @@ namespace ESN {
         , mWOut(params.outputCount * params.neuronCount)
         , mWFB(params.neuronCount * params.outputCount)
         , mWFBScaling(params.outputCount)
-        , mTemp(params.neuronCount)
+        , mTemp(make_pointer(params.neuronCount * sizeof(float)))
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -208,10 +208,8 @@ namespace ESN {
         pointer ptrW = make_pointer(mW);
         pointer ptrX = make_pointer(mX);
         pointer ptrBeta = make_pointer(0.0f);
-        pointer ptrTemp = make_pointer(mTemp);
         sgemv('N', mParams.neuronCount, mParams.neuronCount, ptrAlpha,
-            ptrW, mParams.neuronCount, ptrX, 1, ptrBeta, ptrTemp, 1);
-        memcpy(mTemp, ptrTemp);
+            ptrW, mParams.neuronCount, ptrX, 1, ptrBeta, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
         //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
         //     mTemp.data(), 1);
@@ -221,10 +219,8 @@ namespace ESN {
         pointer ptrWIn = make_pointer(mWIn);
         pointer ptrIn = make_pointer(mIn);
         memcpy(ptrBeta, 1.0f);
-        memcpy(ptrTemp, mTemp);
         sgemv('N', mParams.neuronCount, mParams.inputCount, ptrAlpha,
-            ptrWIn, mParams.neuronCount, ptrIn, 1, ptrBeta, ptrTemp, 1);
-        memcpy(mTemp, ptrTemp);
+            ptrWIn, mParams.neuronCount, ptrIn, 1, ptrBeta, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
         //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
         //     mTemp.data(), 1);
@@ -246,18 +242,16 @@ namespace ESN {
             pointer ptrWFB = make_pointer(mWFB);
             pointer ptrOut = make_pointer(mOut);
             memcpy(ptrBeta, 1.0f);
-            memcpy(ptrTemp, mTemp);
             sgemv('N', mParams.neuronCount, mParams.outputCount, ptrAlpha,
                 ptrWFB, mParams.neuronCount, ptrOut, 1, ptrBeta,
-                ptrTemp, 1);
-            memcpy(mTemp, ptrTemp);
+                mTemp, 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
             //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
             //     mTemp.data(), 1);
         }
 
         // mTemp[i] = tanh(mTemp[i])
-        TanhEwise(mTemp.data(), mParams.neuronCount);
+        stanhv(mParams.neuronCount, mTemp);
 
         // mX[i] *= mOneMinusLeakingRate[i]
         ProductEwise(mX.data(), mOneMinusLeakingRate.data(),
@@ -266,11 +260,10 @@ namespace ESN {
         // mX = mLeakingRate[i] * mTemp[i] + mX;
         memcpy(ptrAlpha, 1.0f);
         pointer ptrLeakingRate = make_pointer(mLeakingRate);
-        memcpy(ptrTemp, mTemp);
         memcpy(ptrBeta, 1.0f);
         memcpy(ptrX, mX);
         ssbmv('L', mParams.neuronCount, 0, ptrAlpha, ptrLeakingRate, 1,
-            ptrTemp, 1, ptrBeta, ptrX, 1);
+            mTemp, 1, ptrBeta, ptrX, 1);
         memcpy(mX, ptrX);
         // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);

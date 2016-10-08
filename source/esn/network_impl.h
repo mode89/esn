@@ -64,7 +64,7 @@ namespace ESN {
         std::vector<float> mWOut;
         std::vector<float> mWFB;
         std::vector<float> mWFBScaling;
-        std::vector<float> mTemp;
+        const pointer mTemp;
     };
 
 } // namespace ESN
