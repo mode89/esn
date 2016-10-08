@@ -1,3 +1,10 @@
+__global__ void kernel_sfillv(int n, const float * alpha, float * x)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        x[i] = *alpha;
+}
+
 __global__ void kernel_srcp(float * v)
 {
     v[0] = 1.0f / v[0];
@@ -16,6 +23,13 @@ __global__ void kernel_srandv_helper(
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n)
         x[i] = x[i] * (*b - *a) + *a;
+}
+
+void wrap_sfillv(int n, const float * alpha, float * x)
+{
+    const int blockSize = 128;
+    const int gridSize = (n + blockSize - 1) / blockSize;
+    kernel_sfillv<<<gridSize, blockSize>>>(n, alpha, x);
 }
 
 void wrap_srcp(float * v)

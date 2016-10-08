@@ -170,6 +170,11 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
+    void sfillv(const int n, const const_pointer & alpha, const pointer & x)
+    {
+        wrap_sfillv(n, alpha.get(), x.get());
+    }
+
     void srandv(const int n, const const_pointer & a,
         const const_pointer & b, const pointer & x)
     {
