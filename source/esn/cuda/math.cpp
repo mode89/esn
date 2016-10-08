@@ -150,6 +150,11 @@ namespace ESN {
         wrap_srcp(v.get());
     }
 
+    void stanhv(const int n, const pointer & v)
+    {
+        wrap_stanhv(n, v.get());
+    }
+
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy)
     {
