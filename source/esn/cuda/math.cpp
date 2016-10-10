@@ -196,6 +196,20 @@ namespace ESN {
                 x[i] = 0.0f;
     }
 
+    void srandspv(const int n, const const_pointer & a,
+        const const_pointer & b, const const_pointer & sparsity,
+        const pointer & x)
+    {
+        srandv(n, a, b, x);
+
+        pointer zero = make_pointer(0.0f);
+        pointer one = make_pointer(1.0f);
+        pointer spx = make_pointer(n * sizeof(float));
+        srandv(n, zero, one, spx);
+
+        wrap_srandspv_helper(n, sparsity.get(), spx.get(), x.get());
+    }
+
     void srcp(const pointer & v)
     {
         wrap_srcp(v.get());

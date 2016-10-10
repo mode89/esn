@@ -15,6 +15,9 @@ namespace ESN {
         const pointer & x);
     void srandv(const int n, const const_pointer & a,
         const const_pointer & b, const pointer & x);
+    void srandspv(const int n, const const_pointer & a,
+        const const_pointer & b, const const_pointer & sparsity,
+        const pointer & x);
     void srandspv(const int n, const float a, const float b,
         const float sparsity, float * x);
     void srcp(const pointer & v);
