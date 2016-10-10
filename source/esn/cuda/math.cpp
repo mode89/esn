@@ -84,6 +84,7 @@ namespace ESN {
             if (curandCreateGenerator(handle.get(),
                 CURAND_RNG_PSEUDO_DEFAULT) != CURAND_STATUS_SUCCESS)
                 throw std::runtime_error("Failed to initialize cuRAND");
+            VCR(curandSetPseudoRandomGeneratorSeed, *handle, 0);
         }
 
         return *handle;
