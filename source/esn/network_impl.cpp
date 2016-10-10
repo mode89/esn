@@ -18,7 +18,8 @@ namespace ESN {
         , kMinusOne(make_pointer(-1.0f))
         , kZero(make_pointer(0.0f))
         , mIn(params.inputCount)
-        , mWIn(params.neuronCount * params.inputCount)
+        , mWIn(make_pointer(
+            params.neuronCount * params.inputCount * sizeof(float)))
         , mWInScaling(params.inputCount)
         , mWInBias(params.inputCount)
         , mX(params.neuronCount)
@@ -62,8 +63,8 @@ namespace ESN {
                 "NetworkParams::connectivity must be within "
                 "interval (0,1]" );
 
-        RandomUniform(mWIn.data(),
-            params.neuronCount * params.inputCount, -1.0f, 1.0f);
+        srandv(params.neuronCount * params.inputCount,
+            kMinusOne, kOne, mWIn);
 
         // Generate weight matrix as random orthonormal matrix
 
@@ -218,11 +219,10 @@ namespace ESN {
 
         // mTemp = mWIn * mIn + mTemp
         memcpy(ptrAlpha, 1.0f);
-        pointer ptrWIn = make_pointer(mWIn);
         pointer ptrIn = make_pointer(mIn);
         memcpy(ptrBeta, 1.0f);
         sgemv('N', mParams.neuronCount, mParams.inputCount, ptrAlpha,
-            ptrWIn, mParams.neuronCount, ptrIn, 1, ptrBeta, mTemp, 1);
+            mWIn, mParams.neuronCount, ptrIn, 1, ptrBeta, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
         //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
         //     mTemp.data(), 1);
