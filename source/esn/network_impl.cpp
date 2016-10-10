@@ -70,10 +70,8 @@ namespace ESN {
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
-        pointer ptrMinusOne = make_pointer(-1.0f);
-        pointer ptrOne = make_pointer(1.0f);
         pointer ptrSparsity = make_pointer(1.0f - params.connectivity);
-        srandspv(neuronCountSqr, ptrMinusOne, ptrOne, ptrSparsity, mW);
+        srandspv(neuronCountSqr, kMinusOne, kOne, ptrSparsity, mW);
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
@@ -92,11 +90,9 @@ namespace ESN {
             throw std::runtime_error("Failed to calculate SVD");
 
         // mW = U * VT
-        pointer ptrAlpha = make_pointer(1.0f);
-        pointer ptrBeta = make_pointer(0.0f);
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
-            params.neuronCount, ptrAlpha, ptrU, params.neuronCount,
-            ptrVT, params.neuronCount, ptrBeta, mW, params.neuronCount);
+            params.neuronCount, kOne, ptrU, params.neuronCount,
+            ptrVT, params.neuronCount, kZero, mW, params.neuronCount);
         // SGEMM('N', 'N', params.neuronCount, params.neuronCount,
         //     params.neuronCount, 1.0f, u.data(), params.neuronCount,
         //     vt.data(), params.neuronCount, 0.0f, mW.data(),
@@ -204,21 +200,17 @@ namespace ESN {
                 "Step size must be positive value" );
 
         // mTemp = mW * mX
-        pointer ptrAlpha = make_pointer(1.0f);
         pointer ptrX = make_pointer(mX);
-        pointer ptrBeta = make_pointer(0.0f);
-        sgemv('N', mParams.neuronCount, mParams.neuronCount, ptrAlpha,
-            mW, mParams.neuronCount, ptrX, 1, ptrBeta, mTemp, 1);
+        sgemv('N', mParams.neuronCount, mParams.neuronCount, kOne,
+            mW, mParams.neuronCount, ptrX, 1, kZero, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
         //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
         //     mTemp.data(), 1);
 
         // mTemp = mWIn * mIn + mTemp
-        memcpy(ptrAlpha, 1.0f);
         pointer ptrIn = make_pointer(mIn);
-        memcpy(ptrBeta, 1.0f);
-        sgemv('N', mParams.neuronCount, mParams.inputCount, ptrAlpha,
-            mWIn, mParams.neuronCount, ptrIn, 1, ptrBeta, mTemp, 1);
+        sgemv('N', mParams.neuronCount, mParams.inputCount, kOne,
+            mWIn, mParams.neuronCount, ptrIn, 1, kOne, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
         //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
         //     mTemp.data(), 1);
@@ -236,12 +228,10 @@ namespace ESN {
                 mParams.outputCount);
 
             // mTemp = mWFB * mOut + mTemp
-            memcpy(ptrAlpha, 1.0f);
             pointer ptrWFB = make_pointer(mWFB);
             pointer ptrOut = make_pointer(mOut);
-            memcpy(ptrBeta, 1.0f);
-            sgemv('N', mParams.neuronCount, mParams.outputCount, ptrAlpha,
-                ptrWFB, mParams.neuronCount, ptrOut, 1, ptrBeta,
+            sgemv('N', mParams.neuronCount, mParams.outputCount, kOne,
+                ptrWFB, mParams.neuronCount, ptrOut, 1, kOne,
                 mTemp, 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
             //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
@@ -256,24 +246,20 @@ namespace ESN {
             mParams.neuronCount);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        memcpy(ptrAlpha, 1.0f);
         pointer ptrLeakingRate = make_pointer(mLeakingRate);
-        memcpy(ptrBeta, 1.0f);
         memcpy(ptrX, mX);
-        ssbmv('L', mParams.neuronCount, 0, ptrAlpha, ptrLeakingRate, 1,
-            mTemp, 1, ptrBeta, ptrX, 1);
+        ssbmv('L', mParams.neuronCount, 0, kOne, ptrLeakingRate, 1,
+            mTemp, 1, kOne, ptrX, 1);
         memcpy(mX, ptrX);
         // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
-        memcpy(ptrAlpha, 1.0f);
         pointer ptrWOut = make_pointer(mWOut);
         memcpy(ptrX, mX);
-        memcpy(ptrBeta, 0.0f);
         pointer ptrOut = make_pointer(mOut);
-        sgemv('N', mParams.outputCount, mParams.neuronCount, ptrAlpha,
-            ptrWOut, mParams.outputCount, ptrX, 1, ptrBeta, ptrOut, 1);
+        sgemv('N', mParams.outputCount, mParams.neuronCount, kOne,
+            ptrWOut, mParams.outputCount, ptrX, 1, kZero, ptrOut, 1);
         memcpy(mOut, ptrOut);
         // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
         //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
