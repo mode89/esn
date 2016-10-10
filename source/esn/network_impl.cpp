@@ -65,12 +65,12 @@ namespace ESN {
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
-        RandomUniform(mW.data(), neuronCountSqr, -1.0f, 1.0f);
-        std::vector<float> conn(neuronCountSqr);
-        RandomUniform(conn.data(), neuronCountSqr, 0.0f, 1.0f);
-        for (int i = 0; i < neuronCountSqr; ++ i)
-            if (conn[i] > params.connectivity)
-                mW[i] = 0.0f;
+        pointer ptrW = make_pointer(mW);
+        pointer ptrMinusOne = make_pointer(-1.0f);
+        pointer ptrOne = make_pointer(1.0f);
+        pointer ptrSparsity = make_pointer(1.0f - params.connectivity);
+        srandspv(neuronCountSqr, ptrMinusOne, ptrOne, ptrSparsity, ptrW);
+        memcpy(mW, ptrW);
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
@@ -92,7 +92,6 @@ namespace ESN {
         // mW = U * VT
         pointer ptrAlpha = make_pointer(1.0f);
         pointer ptrBeta = make_pointer(0.0f);
-        pointer ptrW = make_pointer(mW);
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
             params.neuronCount, ptrAlpha, ptrU, params.neuronCount,
             ptrVT, params.neuronCount, ptrBeta, ptrW, params.neuronCount);
