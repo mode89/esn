@@ -22,6 +22,7 @@ namespace ESN {
         const float sparsity, float * x);
     void srcp(const pointer & v);
     void stanhv(const int n, const pointer & v);
+    void sprodvv(const int n, const const_pointer & x, const pointer & y);
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy);
     void SAXPY(const int n, const float alpha, const float * x,

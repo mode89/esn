@@ -34,6 +34,13 @@ __global__ void kernel_srandspv_helper(
             x[i] = 0.0f;
 }
 
+__global__ void kernel_sprodvv(int n, const float * x, float * y)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        y[i] *= x[i];
+}
+
 void wrap_sfillv(int n, const float * alpha, float * x)
 {
     const int blockSize = 128;
@@ -66,4 +73,11 @@ void wrap_srandspv_helper(int n, const float * sparsity,
     const int blockSize = 128;
     const int gridSize = (n + blockSize - 1) / blockSize;
     kernel_srandspv_helper<<<gridSize, blockSize>>>(n, sparsity, spx, x);
+}
+
+void wrap_sprodvv(int n, const float * x, float * y)
+{
+    const int blockSize = 128;
+    const int gridSize = (n + blockSize - 1) / blockSize;
+    kernel_sprodvv<<<gridSize, blockSize>>>(n, x, y);
 }
