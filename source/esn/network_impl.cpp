@@ -23,7 +23,8 @@ namespace ESN {
         , mWInScaling(params.inputCount)
         , mWInBias(params.inputCount)
         , mX(params.neuronCount)
-        , mW(params.neuronCount * params.neuronCount)
+        , mW(make_pointer(
+            params.neuronCount * params.neuronCount * sizeof(float)))
         , mLeakingRate(params.neuronCount)
         , mOneMinusLeakingRate(params.neuronCount)
         , mOut(params.outputCount)
@@ -69,23 +70,20 @@ namespace ESN {
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
-        pointer ptrW = make_pointer(mW);
         pointer ptrMinusOne = make_pointer(-1.0f);
         pointer ptrOne = make_pointer(1.0f);
         pointer ptrSparsity = make_pointer(1.0f - params.connectivity);
-        srandspv(neuronCountSqr, ptrMinusOne, ptrOne, ptrSparsity, ptrW);
-        memcpy(mW, ptrW);
+        srandspv(neuronCountSqr, ptrMinusOne, ptrOne, ptrSparsity, mW);
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
-        pointer ptrA = make_pointer(mW);
         pointer ptrS = make_pointer(params.neuronCount * sizeof(float));
         pointer ptrU = make_pointer(
             params.neuronCount * params.neuronCount * sizeof(float));
         pointer ptrVT = make_pointer(
             params.neuronCount * params.neuronCount * sizeof(float));
         int info = sgesvd('A', 'A', params.neuronCount, params.neuronCount,
-            ptrA, params.neuronCount, ptrS, ptrU, params.neuronCount, ptrVT,
+            mW, params.neuronCount, ptrS, ptrU, params.neuronCount, ptrVT,
             params.neuronCount);
         // int info = SGESDD('A', params.neuronCount, params.neuronCount,
         //     mW.data(), params.neuronCount, s.data(), u.data(),
@@ -98,8 +96,7 @@ namespace ESN {
         pointer ptrBeta = make_pointer(0.0f);
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
             params.neuronCount, ptrAlpha, ptrU, params.neuronCount,
-            ptrVT, params.neuronCount, ptrBeta, ptrW, params.neuronCount);
-        memcpy(mW, ptrW);
+            ptrVT, params.neuronCount, ptrBeta, mW, params.neuronCount);
         // SGEMM('N', 'N', params.neuronCount, params.neuronCount,
         //     params.neuronCount, 1.0f, u.data(), params.neuronCount,
         //     vt.data(), params.neuronCount, 0.0f, mW.data(),
@@ -208,11 +205,10 @@ namespace ESN {
 
         // mTemp = mW * mX
         pointer ptrAlpha = make_pointer(1.0f);
-        pointer ptrW = make_pointer(mW);
         pointer ptrX = make_pointer(mX);
         pointer ptrBeta = make_pointer(0.0f);
         sgemv('N', mParams.neuronCount, mParams.neuronCount, ptrAlpha,
-            ptrW, mParams.neuronCount, ptrX, 1, ptrBeta, mTemp, 1);
+            mW, mParams.neuronCount, ptrX, 1, ptrBeta, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
         //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
         //     mTemp.data(), 1);

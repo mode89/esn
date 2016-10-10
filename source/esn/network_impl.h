@@ -58,7 +58,7 @@ namespace ESN {
         std::vector<float> mWInScaling;
         std::vector<float> mWInBias;
         std::vector<float> mX;
-        std::vector<float> mW;
+        const pointer mW;
         std::vector<float> mLeakingRate;
         std::vector<float> mOneMinusLeakingRate;
         std::vector<float> mOut;
