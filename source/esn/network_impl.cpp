@@ -22,7 +22,7 @@ namespace ESN {
             params.neuronCount * params.inputCount * sizeof(float)))
         , mWInScaling(params.inputCount)
         , mWInBias(params.inputCount)
-        , mX(params.neuronCount)
+        , mX(make_pointer(params.neuronCount * sizeof(float)))
         , mW(make_pointer(
             params.neuronCount * params.neuronCount * sizeof(float)))
         , mLeakingRate(params.neuronCount)
@@ -122,7 +122,7 @@ namespace ESN {
             mOneMinusLeakingRate.data(), 1);
 
         Constant(mIn.data(), params.inputCount, 0.0f);
-        RandomUniform(mX.data(), params.neuronCount, -1.0f, 1.0f);
+        srandv(params.neuronCount, kMinusOne, kOne, mX);
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
 
@@ -200,9 +200,8 @@ namespace ESN {
                 "Step size must be positive value" );
 
         // mTemp = mW * mX
-        pointer ptrX = make_pointer(mX);
         sgemv('N', mParams.neuronCount, mParams.neuronCount, kOne,
-            mW, mParams.neuronCount, ptrX, 1, kZero, mTemp, 1);
+            mW, mParams.neuronCount, mX, 1, kZero, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
         //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
         //     mTemp.data(), 1);
@@ -242,24 +241,21 @@ namespace ESN {
         stanhv(mParams.neuronCount, mTemp);
 
         // mX[i] *= mOneMinusLeakingRate[i]
-        ProductEwise(mX.data(), mOneMinusLeakingRate.data(),
-            mParams.neuronCount);
+        pointer ptrOneMinuxLeakingRate = make_pointer(mOneMinusLeakingRate);
+        sprodvv(mParams.neuronCount, ptrOneMinuxLeakingRate, mX);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
         pointer ptrLeakingRate = make_pointer(mLeakingRate);
-        memcpy(ptrX, mX);
         ssbmv('L', mParams.neuronCount, 0, kOne, ptrLeakingRate, 1,
-            mTemp, 1, kOne, ptrX, 1);
-        memcpy(mX, ptrX);
+            mTemp, 1, kOne, mX, 1);
         // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
         pointer ptrWOut = make_pointer(mWOut);
-        memcpy(ptrX, mX);
         pointer ptrOut = make_pointer(mOut);
         sgemv('N', mParams.outputCount, mParams.neuronCount, kOne,
-            ptrWOut, mParams.outputCount, ptrX, 1, kZero, ptrOut, 1);
+            ptrWOut, mParams.outputCount, mX, 1, kZero, ptrOut, 1);
         memcpy(mOut, ptrOut);
         // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
         //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
@@ -293,7 +289,7 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of neurons" );
 
-        SCOPY(mParams.neuronCount, mX.data(), 1, activations.data(), 1);
+        memcpy(activations, mX);
     }
 
     void NetworkImpl::CaptureOutput( std::vector< float > & output )

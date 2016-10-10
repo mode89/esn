@@ -20,7 +20,7 @@ namespace ESN {
             float * w,
             float actualOutput,
             float referenceOutput,
-            const float * input);
+            const pointer & input);
 
     private:
         const pointer mForgettingFactor;
@@ -29,7 +29,6 @@ namespace ESN {
         const const_pointer kOne;
         const const_pointer kAlpha;
         const const_pointer kBeta;
-        const pointer mInput;
         const pointer mW;
         pointer mP;
         pointer mTemp;
