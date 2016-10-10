@@ -50,6 +50,9 @@ namespace ESN {
 
     private:
         NetworkParams mParams;
+        const const_pointer kOne;
+        const const_pointer kMinusOne;
+        const const_pointer kZero;
         std::vector<float> mIn;
         std::vector<float> mWIn;
         std::vector<float> mWInScaling;

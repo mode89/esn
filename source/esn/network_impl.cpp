@@ -14,6 +14,9 @@ namespace ESN {
 
     NetworkImpl::NetworkImpl( const NetworkParams & params )
         : mParams(params)
+        , kOne(make_pointer(1.0f))
+        , kMinusOne(make_pointer(-1.0f))
+        , kZero(make_pointer(0.0f))
         , mIn(params.inputCount)
         , mWIn(params.neuronCount * params.inputCount)
         , mWInScaling(params.inputCount)
