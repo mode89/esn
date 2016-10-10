@@ -142,9 +142,11 @@ namespace ESN {
 
     void RandomUniform(float * v, int size, float a, float b)
     {
-        std::uniform_real_distribution<float> dist(a, b);
-        for (int i = 0; i < size; ++ i)
-            v[i] = dist(sRandomEngine);
+        pointer ptrV = make_pointer(size * sizeof(float));
+        pointer ptrA = make_pointer(a);
+        pointer ptrB = make_pointer(b);
+        srandv(size, ptrA, ptrB, ptrV);
+        memcpy(v, ptrV, size * sizeof(float));
     }
 
     void Constant(float * v, int size, float value)
