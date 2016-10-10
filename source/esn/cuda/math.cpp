@@ -185,6 +185,17 @@ namespace ESN {
         wrap_srandv_helper(n, a.get(), b.get(), x.get());
     }
 
+    void srandspv(const int n, const float a, const float b,
+        const float sparsity, float * x)
+    {
+        RandomUniform(x, n, a, b);
+        std::vector<float> temp(n);
+        RandomUniform(temp.data(), n, 0.0f, 1.0f);
+        for (int i = 0; i < n; ++ i)
+            if (temp[i] < sparsity)
+                x[i] = 0.0f;
+    }
+
     void srcp(const pointer & v)
     {
         wrap_srcp(v.get());
