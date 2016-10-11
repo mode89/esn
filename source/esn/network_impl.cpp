@@ -34,7 +34,7 @@ namespace ESN {
         , mWOut(params.outputCount * params.neuronCount)
         , mWFB(make_pointer(
             params.neuronCount * params.outputCount * sizeof(float)))
-        , mWFBScaling(params.outputCount)
+        , mWFBScaling(make_pointer(params.outputCount * sizeof(float)))
         , mTemp(make_pointer(params.neuronCount * sizeof(float)))
     {
         if ( params.inputCount <= 0 )
@@ -113,7 +113,7 @@ namespace ESN {
         {
             srandv(params.neuronCount * params.outputCount,
                 kMinusOne, kOne, mWFB);
-            Constant(mWFBScaling.data(), params.outputCount, 1.0f);
+            sfillv(params.outputCount, kOne, mWFBScaling);
         }
 
         pointer ptrLeakingRateMin = make_pointer(params.leakingRateMin);
@@ -194,8 +194,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        SCOPY(mParams.outputCount, scalings.data(), 1,
-            mWFBScaling.data(), 1);
+        memcpy(mWFBScaling, scalings);
     }
 
     void NetworkImpl::Step( float step )
@@ -227,11 +226,10 @@ namespace ESN {
             }
 
             // mOut[i] *= mWFBScaling[i]
-            ProductEwise(mOut.data(), mWFBScaling.data(),
-                mParams.outputCount);
+            pointer ptrOut = make_pointer(mOut);
+            sprodvv(mParams.outputCount, mWFBScaling, ptrOut);
 
             // mTemp = mWFB * mOut + mTemp
-            pointer ptrOut = make_pointer(mOut);
             sgemv('N', mParams.neuronCount, mParams.outputCount, kOne,
                 mWFB, mParams.neuronCount, ptrOut, 1, kOne, mTemp, 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
