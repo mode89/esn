@@ -53,7 +53,7 @@ namespace ESN {
         const const_pointer kOne;
         const const_pointer kMinusOne;
         const const_pointer kZero;
-        std::vector<float> mIn;
+        const pointer mIn;
         const pointer mWIn;
         std::vector<float> mWInScaling;
         std::vector<float> mWInBias;

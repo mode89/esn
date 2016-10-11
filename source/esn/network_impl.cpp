@@ -17,7 +17,7 @@ namespace ESN {
         , kOne(make_pointer(1.0f))
         , kMinusOne(make_pointer(-1.0f))
         , kZero(make_pointer(0.0f))
-        , mIn(params.inputCount)
+        , mIn(make_pointer(params.inputCount * sizeof(float)))
         , mWIn(make_pointer(
             params.neuronCount * params.inputCount * sizeof(float)))
         , mWInScaling(params.inputCount)
@@ -121,7 +121,7 @@ namespace ESN {
         SAXPY(params.neuronCount, -1.0f, mLeakingRate.data(), 1,
             mOneMinusLeakingRate.data(), 1);
 
-        Constant(mIn.data(), params.inputCount, 0.0f);
+        sfillv(params.inputCount, kZero, mIn);
         srandv(params.neuronCount, kMinusOne, kOne, mX);
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
@@ -135,8 +135,11 @@ namespace ESN {
         if (inputs.size() != mParams.inputCount)
             throw std::invalid_argument( "Wrong size of the input vector" );
 
-        SumEwise(mIn.data(), inputs.data(), mWInBias.data(), inputs.size());
-        ProductEwise(mIn.data(), mWInScaling.data(), inputs.size());
+        memcpy(mIn, inputs);
+        pointer ptrWInBias = make_pointer(mWInBias);
+        saxpy(mParams.inputCount, kOne, ptrWInBias, 1, mIn, 1);
+        pointer ptrWInScaling = make_pointer(mWInScaling);
+        sprodvv(mParams.inputCount, ptrWInScaling, mIn);
     }
 
     void NetworkImpl::SetInputScalings(
@@ -207,9 +210,8 @@ namespace ESN {
         //     mTemp.data(), 1);
 
         // mTemp = mWIn * mIn + mTemp
-        pointer ptrIn = make_pointer(mIn);
         sgemv('N', mParams.neuronCount, mParams.inputCount, kOne,
-            mWIn, mParams.neuronCount, ptrIn, 1, kOne, mTemp, 1);
+            mWIn, mParams.neuronCount, mIn, 1, kOne, mTemp, 1);
         // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
         //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
         //     mTemp.data(), 1);
@@ -278,7 +280,7 @@ namespace ESN {
                 "Size of the vector must be equal to "
                 "the number of inputs" );
 
-        SCOPY(mParams.inputCount, mIn.data(), 1, input.data(), 1);
+        memcpy(input, mIn);
     }
 
     void NetworkImpl::CaptureActivations(
