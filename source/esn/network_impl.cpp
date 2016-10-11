@@ -20,7 +20,7 @@ namespace ESN {
         , mIn(make_pointer(params.inputCount * sizeof(float)))
         , mWIn(make_pointer(
             params.neuronCount * params.inputCount * sizeof(float)))
-        , mWInScaling(params.inputCount)
+        , mWInScaling(make_pointer(params.inputCount * sizeof(float)))
         , mWInBias(params.inputCount)
         , mX(make_pointer(params.neuronCount * sizeof(float)))
         , mW(make_pointer(
@@ -98,7 +98,7 @@ namespace ESN {
         //     vt.data(), params.neuronCount, 0.0f, mW.data(),
         //     params.neuronCount);
 
-        Constant(mWInScaling.data(), params.inputCount, 1.0f);
+        sfillv(params.inputCount, kOne, mWInScaling);
         Constant(mWInBias.data(), params.inputCount, 0.0f);
 
         Constant(mWOut.data(),
@@ -138,8 +138,7 @@ namespace ESN {
         memcpy(mIn, inputs);
         pointer ptrWInBias = make_pointer(mWInBias);
         saxpy(mParams.inputCount, kOne, ptrWInBias, 1, mIn, 1);
-        pointer ptrWInScaling = make_pointer(mWInScaling);
-        sprodvv(mParams.inputCount, ptrWInScaling, mIn);
+        sprodvv(mParams.inputCount, mWInScaling, mIn);
     }
 
     void NetworkImpl::SetInputScalings(
@@ -149,8 +148,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        SCOPY(mParams.inputCount, scalings.data(), 1,
-            mWInScaling.data(), 1);
+        memcpy(mWInScaling, scalings);
     }
 
     void NetworkImpl::SetInputBias(
