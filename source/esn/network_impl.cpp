@@ -32,7 +32,8 @@ namespace ESN {
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
         , mWOut(params.outputCount * params.neuronCount)
-        , mWFB(params.neuronCount * params.outputCount)
+        , mWFB(make_pointer(
+            params.neuronCount * params.outputCount * sizeof(float)))
         , mWFBScaling(params.outputCount)
         , mTemp(make_pointer(params.neuronCount * sizeof(float)))
     {
@@ -110,8 +111,8 @@ namespace ESN {
 
         if (params.hasOutputFeedback)
         {
-            RandomUniform(mWFB.data(),
-                params.neuronCount * params.outputCount, -1.0f, 1.0f);
+            srandv(params.neuronCount * params.outputCount,
+                kMinusOne, kOne, mWFB);
             Constant(mWFBScaling.data(), params.outputCount, 1.0f);
         }
 
@@ -230,11 +231,9 @@ namespace ESN {
                 mParams.outputCount);
 
             // mTemp = mWFB * mOut + mTemp
-            pointer ptrWFB = make_pointer(mWFB);
             pointer ptrOut = make_pointer(mOut);
             sgemv('N', mParams.neuronCount, mParams.outputCount, kOne,
-                ptrWFB, mParams.neuronCount, ptrOut, 1, kOne,
-                mTemp, 1);
+                mWFB, mParams.neuronCount, ptrOut, 1, kOne, mTemp, 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
             //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
             //     mTemp.data(), 1);
