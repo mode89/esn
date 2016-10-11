@@ -25,8 +25,9 @@ namespace ESN {
         , mX(make_pointer(params.neuronCount * sizeof(float)))
         , mW(make_pointer(
             params.neuronCount * params.neuronCount * sizeof(float)))
-        , mLeakingRate(params.neuronCount)
-        , mOneMinusLeakingRate(params.neuronCount)
+        , mLeakingRate(make_pointer(params.neuronCount * sizeof(float)))
+        , mOneMinusLeakingRate(
+            make_pointer(params.neuronCount * sizeof(float)))
         , mOut(params.outputCount)
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
@@ -114,12 +115,15 @@ namespace ESN {
             Constant(mWFBScaling.data(), params.outputCount, 1.0f);
         }
 
-        RandomUniform(mLeakingRate.data(), params.neuronCount,
-            params.leakingRateMin, params.leakingRateMax);
+        pointer ptrLeakingRateMin = make_pointer(params.leakingRateMin);
+        pointer ptrLeakingRateMax = make_pointer(params.leakingRateMax);
+        srandv(params.neuronCount, ptrLeakingRateMin, ptrLeakingRateMax,
+            mLeakingRate);
+
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
-        Constant(mOneMinusLeakingRate.data(), params.neuronCount, 1.0f);
-        SAXPY(params.neuronCount, -1.0f, mLeakingRate.data(), 1,
-            mOneMinusLeakingRate.data(), 1);
+        sfillv(params.neuronCount, kOne, mOneMinusLeakingRate);
+        saxpy(params.neuronCount, kMinusOne, mLeakingRate, 1,
+            mOneMinusLeakingRate, 1);
 
         sfillv(params.inputCount, kZero, mIn);
         srandv(params.neuronCount, kMinusOne, kOne, mX);
@@ -240,12 +244,10 @@ namespace ESN {
         stanhv(mParams.neuronCount, mTemp);
 
         // mX[i] *= mOneMinusLeakingRate[i]
-        pointer ptrOneMinuxLeakingRate = make_pointer(mOneMinusLeakingRate);
-        sprodvv(mParams.neuronCount, ptrOneMinuxLeakingRate, mX);
+        sprodvv(mParams.neuronCount, mOneMinusLeakingRate, mX);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        pointer ptrLeakingRate = make_pointer(mLeakingRate);
-        ssbmv('L', mParams.neuronCount, 0, kOne, ptrLeakingRate, 1,
+        ssbmv('L', mParams.neuronCount, 0, kOne, mLeakingRate, 1,
             mTemp, 1, kOne, mX, 1);
         // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
