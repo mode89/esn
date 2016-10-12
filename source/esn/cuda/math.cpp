@@ -261,6 +261,18 @@ namespace ESN {
             n, alpha.get(), x.get(), incx, y.get(), incy);
     }
 
+    template <>
+    void axpy(
+        const scalar<float> & alpha,
+        const vector<float> & x,
+        vector<float> & y)
+    {
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSaxpy, get_cublas_handle(),
+            x.size(), alpha.data(), x.data(), x.inc(), y.data(), y.inc());
+    }
+
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {

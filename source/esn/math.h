@@ -1,7 +1,8 @@
 #ifndef __ESN_SOURCE_ESN_MATH_H__
 #define __ESN_SOURCE_ESN_MATH_H__
 
-#include <esn/pointer.h>
+#include <esn/scalar.h>
+#include <esn/vector.h>
 
 namespace ESN {
 
@@ -32,6 +33,11 @@ namespace ESN {
     void saxpy(const int h, const const_pointer<float> & alpha,
         const const_pointer<float> & x, const int incx,
         const pointer<float> & y, const int incy);
+    template <class T>
+    void axpy(
+        const scalar<T> & alpha,
+        const vector<T> & x,
+        vector<T> & y);
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy);
     void sdot(const int n, const const_pointer<float> & x, const int incx,
