@@ -6,26 +6,37 @@
 
 namespace ESN {
 
-    using pointer = std::shared_ptr<float>;
-    using const_pointer = std::shared_ptr<const float>;
+    template <class T>
+    using pointer = std::shared_ptr<T>;
+    template <class T>
+    using const_pointer = std::shared_ptr<const T>;
 
-    pointer make_pointer(std::size_t byteSize);
-    pointer make_pointer(const float &);
-    pointer make_pointer(const std::vector<float> &);
+    template <class T>
+    pointer<T> make_pointer(std::size_t elemCount);
+    template <class T>
+    pointer<T> make_pointer(const T &);
+    template <class T>
+    pointer<T> make_pointer(const std::vector<T> &);
 
     // General copy
-    void memcpy(const pointer & dst, const float * src,
-        std::size_t byteSize);
-    void memcpy(float * dst, const const_pointer & src,
-        std::size_t byteSize);
+    template <class T>
+    void memcpy(const pointer<T> & dst, const T * src,
+        std::size_t elemCount);
+    template <class T>
+    void memcpy(T * dst, const const_pointer<T> & src,
+        std::size_t elemCount);
 
     // Copy between single float and pointer
-    void memcpy(const pointer & dst, const float & src);
-    void memcpy(float & dst, const const_pointer & src);
+    template <class T>
+    void memcpy(const pointer<T> & dst, const T & src);
+    template <class T>
+    void memcpy(T & dst, const const_pointer<T> & src);
 
     // Copy between std::vector and pointer
-    void memcpy(const pointer & dst, const std::vector<float> & src);
-    void memcpy(std::vector<float> & dst, const const_pointer & src);
+    template <class T>
+    void memcpy(const pointer<T> & dst, const std::vector<T> & src);
+    template <class T>
+    void memcpy(std::vector<T> & dst, const const_pointer<T> & src);
 
 } // namespace ESN
 

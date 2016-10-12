@@ -20,21 +20,21 @@ namespace ESN {
             float * w,
             float actualOutput,
             float referenceOutput,
-            const pointer & input);
+            const pointer<float> & input);
 
     private:
-        const pointer mForgettingFactor;
+        const pointer<float> mForgettingFactor;
         const unsigned mInputCount;
-        const const_pointer kZero;
-        const const_pointer kOne;
-        const const_pointer kAlpha;
-        const const_pointer kBeta;
-        const pointer mW;
-        pointer mP;
-        pointer mTemp;
-        const pointer mDot;
-        pointer mK;
-        const pointer mDelta;
+        const const_pointer<float> kZero;
+        const const_pointer<float> kOne;
+        const const_pointer<float> kAlpha;
+        const const_pointer<float> kBeta;
+        const pointer<float> mW;
+        const pointer<float> mP;
+        const pointer<float> mTemp;
+        const pointer<float> mDot;
+        const pointer<float> mK;
+        const pointer<float> mDelta;
     };
 
 } // namespace ESN

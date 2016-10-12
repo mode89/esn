@@ -142,11 +142,11 @@ namespace ESN {
 
     void RandomUniform(float * v, int size, float a, float b)
     {
-        pointer ptrV = make_pointer(size * sizeof(float));
-        pointer ptrA = make_pointer(a);
-        pointer ptrB = make_pointer(b);
+        pointer<float> ptrV = make_pointer<float>(size);
+        pointer<float> ptrA = make_pointer<float>(a);
+        pointer<float> ptrB = make_pointer<float>(b);
         srandv(size, ptrA, ptrB, ptrV);
-        memcpy(v, ptrV, size * sizeof(float));
+        memcpy<float>(v, ptrV, size);
     }
 
     void Constant(float * v, int size, float value)
@@ -173,13 +173,14 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
-    void sfillv(const int n, const const_pointer & alpha, const pointer & x)
+    void sfillv(const int n, const const_pointer<float> & alpha,
+        const pointer<float> & x)
     {
         wrap_sfillv(n, alpha.get(), x.get());
     }
 
-    void srandv(const int n, const const_pointer & a,
-        const const_pointer & b, const pointer & x)
+    void srandv(const int n, const const_pointer<float> & a,
+        const const_pointer<float> & b, const pointer<float> & x)
     {
         VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
         wrap_srandv_helper(n, a.get(), b.get(), x.get());
@@ -196,31 +197,32 @@ namespace ESN {
                 x[i] = 0.0f;
     }
 
-    void srandspv(const int n, const const_pointer & a,
-        const const_pointer & b, const const_pointer & sparsity,
-        const pointer & x)
+    void srandspv(const int n, const const_pointer<float> & a,
+        const const_pointer<float> & b,
+        const const_pointer<float> & sparsity, const pointer<float> & x)
     {
         srandv(n, a, b, x);
 
-        pointer zero = make_pointer(0.0f);
-        pointer one = make_pointer(1.0f);
-        pointer spx = make_pointer(n * sizeof(float));
+        pointer<float> zero = make_pointer<float>(0.0f);
+        pointer<float> one = make_pointer<float>(1.0f);
+        pointer<float> spx = make_pointer<float>(n);
         srandv(n, zero, one, spx);
 
         wrap_srandspv_helper(n, sparsity.get(), spx.get(), x.get());
     }
 
-    void srcp(const pointer & v)
+    void srcp(const pointer<float> & v)
     {
         wrap_srcp(v.get());
     }
 
-    void stanhv(const int n, const pointer & v)
+    void stanhv(const int n, const pointer<float> & v)
     {
         wrap_stanhv(n, v.get());
     }
 
-    void sprodvv(const int n, const const_pointer & x, const pointer & y)
+    void sprodvv(const int n, const const_pointer<float> & x,
+        const pointer<float> & y)
     {
         wrap_sprodvv(n, x.get(), y.get());
     }
@@ -234,13 +236,11 @@ namespace ESN {
     void SAXPY(const int n, const float alpha, const float * x,
         const int incx, float * y, const int incy)
     {
-        pointer deviceAlpha = make_pointer(sizeof(float));
-        memcpy(deviceAlpha, &alpha, sizeof(float));
-
-        pointer deviceX = make_pointer(n * sizeof(float));
+        pointer<float> deviceAlpha = make_pointer<float>(alpha);
+        pointer<float> deviceX = make_pointer<float>(n);
         VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
 
-        pointer deviceY = make_pointer(n * sizeof(float));
+        pointer<float> deviceY = make_pointer<float>(n);
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -251,9 +251,9 @@ namespace ESN {
         VCB(cublasGetVector, n, sizeof(float), deviceY.get(), 1, y, incy);
     }
 
-    void saxpy(const int n, const const_pointer & alpha,
-        const const_pointer & x, const int incx, const pointer & y,
-        const int incy)
+    void saxpy(const int n, const const_pointer<float> & alpha,
+        const const_pointer<float> & x, const int incx,
+        const pointer<float> & y, const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -264,12 +264,12 @@ namespace ESN {
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy)
     {
-        pointer deviceResult = make_pointer(sizeof(float));
+        pointer<float> deviceResult = make_pointer<float>(1);
 
-        pointer deviceX = make_pointer(n * sizeof(float));
+        pointer<float> deviceX = make_pointer<float>(n);
         VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
 
-        pointer deviceY = make_pointer(n * sizeof(float));
+        pointer<float> deviceY = make_pointer<float>(n);
         VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
 
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -278,13 +278,14 @@ namespace ESN {
             deviceY.get(), 1, deviceResult.get());
 
         float result = 0.0f;
-        memcpy(&result, deviceResult, sizeof(float));
+        memcpy<float>(&result, deviceResult, 1);
 
         return result;
     }
 
-    void sdot(const int n, const const_pointer & x, const int incx,
-        const const_pointer & y, const int incy, const pointer & result)
+    void sdot(const int n, const const_pointer<float> & x, const int incx,
+        const const_pointer<float> & y, const int incy,
+        const pointer<float> & result)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -301,9 +302,10 @@ namespace ESN {
     }
 
     void sgemv(const char trans, const int m, const int n,
-        const const_pointer & alpha, const const_pointer & a, const int lda,
-        const const_pointer & x, const int incx, const const_pointer & beta,
-        const pointer & y, const int incy)
+        const const_pointer<float> & alpha, const const_pointer<float> & a,
+        const int lda, const const_pointer<float> & x, const int incx,
+        const const_pointer<float> & beta, const pointer<float> & y,
+        const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -321,9 +323,10 @@ namespace ESN {
     }
 
     void ssbmv(const char uplo, const int n, const int k,
-        const const_pointer & alpha, const const_pointer & a, const int lda,
-        const const_pointer & x, const int incx, const const_pointer & beta,
-        const pointer & y, const int incy)
+        const const_pointer<float> & alpha, const const_pointer<float> & a,
+        const int lda, const const_pointer<float> & x, const int incx,
+        const const_pointer<float> & beta, const pointer<float> & y,
+        const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -343,9 +346,10 @@ namespace ESN {
     }
 
     void sgemm(const char transa, const char transb, const int m,
-        const int n, const int k, const const_pointer & alpha,
-        const const_pointer & a, const int lda, const const_pointer & b,
-        const int ldb, const const_pointer & beta, const pointer & c,
+        const int n, const int k, const const_pointer<float> & alpha,
+        const const_pointer<float> & a, const int lda,
+        const const_pointer<float> & b, const int ldb,
+        const const_pointer<float> & beta, const pointer<float> & c,
         const int ldc)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -364,14 +368,14 @@ namespace ESN {
     }
 
     int sgesvd(const char jobu, const char jobvt, const int m, const int n,
-        const pointer & a, const int lda, const pointer & s,
-        const pointer & u, const int ldu, const pointer & vt,
+        const pointer<float> & a, const int lda, const pointer<float> & s,
+        const pointer<float> & u, const int ldu, const pointer<float> & vt,
         const int ldvt)
     {
         int lwork = 0;
         VCS(cusolverDnSgesvd_bufferSize,
             get_cusolver_handle(), m, n, &lwork);
-        pointer work = make_pointer(sizeof(float) * lwork);
+        pointer<float> work = make_pointer<float>(sizeof(float) * lwork);
         int * devInfo = nullptr;
         VCU(cudaMalloc, &devInfo, sizeof(int));
         VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt, m, n,
