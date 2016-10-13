@@ -76,6 +76,7 @@ namespace ESN {
         const int lda, const const_pointer<float> & x, const int incx,
         const const_pointer<float> & beta, const pointer<float> & y,
         const int incy);
+
     void SGEMM(const char transa, const char transb, const int m,
         const int n, const int k, const float alpha, const float * a,
         const int lda, const float * b, const int ldb, const float beta,
@@ -86,6 +87,16 @@ namespace ESN {
         const const_pointer<float> & b, const int ldb,
         const const_pointer<float> & beta, const pointer<float> & c,
         const int ldc);
+    template <class T>
+    void gemm(
+        const char transa,
+        const char transb,
+        const scalar<T> & alpha,
+        const matrix<T> & a,
+        const matrix<T> & b,
+        const scalar<T> & beta,
+        matrix<T> & c);
+
     int SGESDD(const char jobz, const int m, const int n, float * a,
         const int lda, float * s, float * u, const int ldu, float * vt,
         const int ldvt);

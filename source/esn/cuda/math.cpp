@@ -399,6 +399,26 @@ namespace ESN {
             b.get(), ldb, beta.get(), c.get(), ldc);
     }
 
+    template <>
+    void gemm(
+        const char transa,
+        const char transb,
+        const scalar<float> & alpha,
+        const matrix<float> & a,
+        const matrix<float> & b,
+        const scalar<float> & beta,
+        matrix<float> & c)
+    {
+        int m = (transa == 'N') ? a.rows() : a.cols();
+        int n = (transb == 'N') ? b.cols() : b.rows();
+        int k = (transa == 'N') ? a.cols() : a.rows();
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
+            to_cublas_operation(transb), m, n, k, alpha.data(), a.data(),
+            a.ld(), b.data(), b.ld(), beta.data(), c.data(), c.ld());
+    }
+
     int SGESDD(const char jobz, const int m, const int n, float * a,
         const int lda, float * s, float * u, const int ldu, float * vt,
         const int ldvt)
