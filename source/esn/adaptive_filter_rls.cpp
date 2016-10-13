@@ -37,27 +37,22 @@ namespace ESN {
         int N = mInputCount;
         memcpy<float>(mDelta.ptr(), referenceOutput - actualOutput);
         memcpy<float>(mW.ptr(), w, N);
+        vector<float> vecInput(input, N);
 
         // mTemp = transpose(mP) * input
-        sgemv('T', N, N, kOne.ptr(), mP.ptr(), N, input, 1,
-            kZero.ptr(), mTemp.ptr(), 1);
-        // SGEMV('T', N, N, 1.0f, mP.data(), N, input, 1, 0.0f,
-        //     mTemp.data(), 1);
+        gemv('T', kOne, mP, vecInput, kZero, mTemp);
 
         // mDot = mTemp * input
-        sdot(N, mTemp.ptr(), 1, input, 1, mDot.ptr());
+        dot(mTemp, vecInput, mDot);
 
         // mDot = mForgettingFactor + mDot
-        saxpy(1, kOne.ptr(), mForgettingFactor.ptr(), 1, mDot.ptr(), 1);
+        axpy(kOne, mForgettingFactor, mDot);
 
         // mDot = 1 / mDot
-        srcp(mDot.ptr());
+        rcp(mDot);
 
         // mK = mDot * mP * input
-        sgemv('N', N, N, mDot.ptr(), mP.ptr(), N, input, 1,
-            kZero.ptr(), mK.ptr(), 1);
-        // SGEMV('N', N, N, 1.0f / (mForgettingFactor + dot), mP.data(), N,
-        //     input, 1, 0.0f, mK.data(), 1);
+        gemv('N', mDot, mP, vecInput, kZero, mK);
 
         // mP = 1 / mForgettingFactor * (mP - mK * mTemp.transpose())
         // and BLAS representation
@@ -65,13 +60,12 @@ namespace ESN {
         // where
         // mAlpha = -1.0f / mForgettingFactor
         // mBeta = 1.0f / mForgettingFactor
-        sgemm('N', 'T', N, N, 1, kAlpha.ptr(), mK.ptr(), N, mTemp.ptr(),
-            N, kBeta.ptr(), mP.ptr(), N);
-        // SGEMM('N', 'T', N, N, 1, -1 / mForgettingFactor, mK.data(), N,
-        //     mTemp.data(), N, 1 / mForgettingFactor, mP.data(), N);
+        matrix<float> matK(mK.ptr(), N, 1, N);
+        matrix<float> matTemp(mTemp.ptr(), N, 1, N);
+        gemm('N', 'T', kAlpha, matK, matTemp, kBeta, mP);
 
         // w = (referenceOutput - actualOutput) * mK + w
-        saxpy(N, mDelta.ptr(), mK.ptr(), 1, mW.ptr(), mW.inc());
+        axpy(mDelta, mK, mW);
 
         memcpy<float>(w, mW.ptr(), N);
     }
