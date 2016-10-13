@@ -19,6 +19,19 @@ namespace ESN {
             , m_off(0)
         {}
 
+        matrix(
+            const pointer<T> & ptr,
+            std::size_t rows,
+            std::size_t cols,
+            std::size_t ld,
+            std::size_t off = 0)
+            : m_rows(rows)
+            , m_cols(cols)
+            , m_ld(ld)
+            , m_ptr(ptr)
+            , m_off(off)
+        {}
+
         std::size_t rows() const { return m_rows; }
         std::size_t cols() const { return m_cols; }
         std::size_t ld() const { return m_ld; }
