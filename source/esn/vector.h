@@ -34,11 +34,11 @@ namespace ESN {
         T * data() { return m_ptr.get() + m_off; }
         const T * data() const { return m_ptr.get() + m_off; }
 
-    private:
+    protected:
         std::size_t m_size;
+        std::size_t m_inc;
         const pointer<T> m_ptr;
         std::size_t m_off;
-        std::size_t m_inc;
     };
 
 } // namespace ESN
