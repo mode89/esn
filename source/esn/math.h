@@ -23,7 +23,11 @@ namespace ESN {
         const pointer<float> & x);
     void srandspv(const int n, const float a, const float b,
         const float sparsity, float * x);
+
     void srcp(const pointer<float> & v);
+    template <class T>
+    void rcp(scalar<T> & x);
+
     void stanhv(const int n, const pointer<float> & v);
     void sprodvv(const int n, const const_pointer<float> & x,
         const pointer<float> & y);

@@ -216,6 +216,12 @@ namespace ESN {
         wrap_srcp(v.get());
     }
 
+    template <>
+    void rcp(scalar<float> & x)
+    {
+        wrap_srcp(x.data());
+    }
+
     void stanhv(const int n, const pointer<float> & v)
     {
         wrap_stanhv(n, v.get());
