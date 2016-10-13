@@ -21,7 +21,7 @@ namespace ESN {
         std::size_t rows() const { return m_rows; }
         std::size_t cols() const { return m_cols; }
         std::size_t ld() const { return m_ld; }
-        pointer<T> ptr() { return m_ptr; }
+        const pointer<T> & ptr() { return m_ptr; }
         const_pointer<T> ptr() const { return m_ptr; }
         T * data() { return m_ptr.get(); }
         const T * data() const { return m_ptr.get(); }
