@@ -305,6 +305,18 @@ namespace ESN {
             n, x.get(), incx, y.get(), incy, result.get());
     }
 
+    template <>
+    void dot(
+        const vector<float> & x,
+        const vector<float> & y,
+        scalar<float> & result)
+    {
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSdot, get_cublas_handle(),
+            x.size(), x.data(), x.inc(), y.data(), y.inc(), result.data());
+    }
+
     void SGEMV(const char trans, const int m, const int n,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy)

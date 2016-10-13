@@ -38,11 +38,18 @@ namespace ESN {
         const scalar<T> & alpha,
         const vector<T> & x,
         vector<T> & y);
+
     float SDOT(const int n, const float * x, const int incx,
         const float * y, const int incy);
     void sdot(const int n, const const_pointer<float> & x, const int incx,
         const const_pointer<float> & y, const int incy,
         const pointer<float> & result);
+    template <class T>
+    void dot(
+        const vector<T> & x,
+        const vector<T> & y,
+        scalar<T> & result);
+
     void SGEMV(const char trans, const int m, const int n,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy);
