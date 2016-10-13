@@ -2,6 +2,7 @@
 #define __ESN_SOURCE_ESN_MATH_H__
 
 #include <esn/scalar.h>
+#include <esn/matrix.h>
 #include <esn/vector.h>
 
 namespace ESN {
@@ -58,6 +59,15 @@ namespace ESN {
         const int lda, const const_pointer<float> & x, const int incx,
         const const_pointer<float> & beta, const pointer<float> & y,
         const int incy);
+    template <class T>
+    void gemv(
+        const char trans,
+        const scalar<T> & alpha,
+        const matrix<T> & a,
+        const vector<T> & x,
+        const scalar<T> & beta,
+        vector<T> & y);
+
     void SSBMV(const char uplo, const int n, const int k,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy);

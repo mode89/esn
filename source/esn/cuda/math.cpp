@@ -338,6 +338,22 @@ namespace ESN {
             y.get(), incy);
     }
 
+    template <>
+    void gemv(
+        const char trans,
+        const scalar<float> & alpha,
+        const matrix<float> & a,
+        const vector<float> & x,
+        const scalar<float> & beta,
+        vector<float> & y)
+    {
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSgemv, get_cublas_handle(), to_cublas_operation(trans),
+            a.rows(), a.cols(), alpha.data(), a.data(), a.ld(),
+            x.data(), x.inc(), beta.data(), y.data(), y.inc());
+    }
+
     void SSBMV(const char uplo, const int n, const int k,
         const float alpha, const float * a, const int lda, const float * x,
         const int incx, const float beta, float * y, const int incy)
