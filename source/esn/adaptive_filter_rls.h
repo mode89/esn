@@ -3,7 +3,9 @@
 
 #include <esn/export.h>
 #include <esn/pointer.h>
-#include <vector>
+#include <esn/matrix.h>
+#include <esn/scalar.h>
+#include <esn/vector.h>
 
 namespace ESN {
 
@@ -23,18 +25,18 @@ namespace ESN {
             const pointer<float> & input);
 
     private:
-        const pointer<float> mForgettingFactor;
         const unsigned mInputCount;
-        const const_pointer<float> kZero;
-        const const_pointer<float> kOne;
-        const const_pointer<float> kAlpha;
-        const const_pointer<float> kBeta;
-        const pointer<float> mW;
-        const pointer<float> mP;
-        const pointer<float> mTemp;
-        const pointer<float> mDot;
-        const pointer<float> mK;
-        const pointer<float> mDelta;
+        const scalar<float> mForgettingFactor;
+        const scalar<float> kZero;
+        const scalar<float> kOne;
+        const scalar<float> kAlpha;
+        const scalar<float> kBeta;
+        vector<float> mW;
+        matrix<float> mP;
+        vector<float> mTemp;
+        scalar<float> mDot;
+        vector<float> mK;
+        scalar<float> mDelta;
     };
 
 } // namespace ESN
