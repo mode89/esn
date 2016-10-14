@@ -14,24 +14,24 @@ namespace ESN {
 
     NetworkImpl::NetworkImpl( const NetworkParams & params )
         : mParams(params)
-        , kOne(make_pointer<float>(1.0f))
-        , kMinusOne(make_pointer<float>(-1.0f))
-        , kZero(make_pointer<float>(0.0f))
-        , mIn(make_pointer<float>(params.inputCount))
-        , mWIn(make_pointer<float>(params.neuronCount * params.inputCount))
-        , mWInScaling(make_pointer<float>(params.inputCount))
-        , mWInBias(make_pointer<float>(params.inputCount))
-        , mX(make_pointer<float>(params.neuronCount))
-        , mW(make_pointer<float>(params.neuronCount * params.neuronCount))
-        , mLeakingRate(make_pointer<float>(params.neuronCount))
-        , mOneMinusLeakingRate(make_pointer<float>(params.neuronCount))
+        , kOne(1.0f)
+        , kMinusOne(-1.0f)
+        , kZero(0.0f)
+        , mIn(params.inputCount)
+        , mWIn(params.neuronCount, params.inputCount)
+        , mWInScaling(params.inputCount)
+        , mWInBias(params.inputCount)
+        , mX(params.neuronCount)
+        , mW(params.neuronCount, params.neuronCount)
+        , mLeakingRate(params.neuronCount)
+        , mOneMinusLeakingRate(params.neuronCount)
         , mOut(params.outputCount)
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
         , mWOut(params.outputCount * params.neuronCount)
-        , mWFB(make_pointer<float>(params.neuronCount * params.outputCount))
-        , mWFBScaling(make_pointer<float>(params.outputCount))
-        , mTemp(make_pointer<float>(params.neuronCount))
+        , mWFB(params.neuronCount, params.outputCount)
+        , mWFBScaling(params.outputCount)
+        , mTemp(params.neuronCount)
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -63,14 +63,15 @@ namespace ESN {
                 "interval (0,1]" );
 
         srandv(params.neuronCount * params.inputCount,
-            kMinusOne, kOne, mWIn);
+            kMinusOne.ptr(), kOne.ptr(), mWIn.ptr());
 
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
         pointer<float> ptrSparsity = make_pointer<float>(
             1.0f - params.connectivity);
-        srandspv(neuronCountSqr, kMinusOne, kOne, ptrSparsity, mW);
+        srandspv(neuronCountSqr,
+            kMinusOne.ptr(), kOne.ptr(), ptrSparsity, mW.ptr());
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
@@ -80,8 +81,8 @@ namespace ESN {
         pointer<float> ptrVT = make_pointer<float>(
             params.neuronCount * params.neuronCount);
         int info = sgesvd('A', 'A', params.neuronCount, params.neuronCount,
-            mW, params.neuronCount, ptrS, ptrU, params.neuronCount, ptrVT,
-            params.neuronCount);
+            mW.ptr(), params.neuronCount, ptrS, ptrU, params.neuronCount,
+            ptrVT, params.neuronCount);
         // int info = SGESDD('A', params.neuronCount, params.neuronCount,
         //     mW.data(), params.neuronCount, s.data(), u.data(),
         //     params.neuronCount, vt.data(), params.neuronCount);
@@ -90,15 +91,15 @@ namespace ESN {
 
         // mW = U * VT
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
-            params.neuronCount, kOne, ptrU, params.neuronCount,
-            ptrVT, params.neuronCount, kZero, mW, params.neuronCount);
+            params.neuronCount, kOne.ptr(), ptrU, params.neuronCount, ptrVT,
+            params.neuronCount, kZero.ptr(), mW.ptr(), params.neuronCount);
         // SGEMM('N', 'N', params.neuronCount, params.neuronCount,
         //     params.neuronCount, 1.0f, u.data(), params.neuronCount,
         //     vt.data(), params.neuronCount, 0.0f, mW.data(),
         //     params.neuronCount);
 
-        sfillv(params.inputCount, kOne, mWInScaling);
-        sfillv(params.inputCount, kZero, mWInBias);
+        sfillv(params.inputCount, kOne.ptr(), mWInScaling.ptr());
+        sfillv(params.inputCount, kZero.ptr(), mWInBias.ptr());
 
         Constant(mWOut.data(),
             params.outputCount * params.neuronCount, 0.0f);
@@ -109,8 +110,8 @@ namespace ESN {
         if (params.hasOutputFeedback)
         {
             srandv(params.neuronCount * params.outputCount,
-                kMinusOne, kOne, mWFB);
-            sfillv(params.outputCount, kOne, mWFBScaling);
+                kMinusOne.ptr(), kOne.ptr(), mWFB.ptr());
+            sfillv(params.outputCount, kOne.ptr(), mWFBScaling.ptr());
         }
 
         pointer<float> ptrLeakingRateMin =
@@ -118,15 +119,15 @@ namespace ESN {
         pointer<float> ptrLeakingRateMax =
             make_pointer<float>(params.leakingRateMax);
         srandv(params.neuronCount, ptrLeakingRateMin, ptrLeakingRateMax,
-            mLeakingRate);
+            mLeakingRate.ptr());
 
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
-        sfillv(params.neuronCount, kOne, mOneMinusLeakingRate);
-        saxpy(params.neuronCount, kMinusOne, mLeakingRate, 1,
-            mOneMinusLeakingRate, 1);
+        sfillv(params.neuronCount, kOne.ptr(), mOneMinusLeakingRate.ptr());
+        saxpy(params.neuronCount, kMinusOne.ptr(), mLeakingRate.ptr(), 1,
+            mOneMinusLeakingRate.ptr(), 1);
 
-        sfillv(params.inputCount, kZero, mIn);
-        srandv(params.neuronCount, kMinusOne, kOne, mX);
+        sfillv(params.inputCount, kZero.ptr(), mIn.ptr());
+        srandv(params.neuronCount, kMinusOne.ptr(), kOne.ptr(), mX.ptr());
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
 
@@ -139,9 +140,10 @@ namespace ESN {
         if (inputs.size() != mParams.inputCount)
             throw std::invalid_argument( "Wrong size of the input vector" );
 
-        memcpy(mIn, inputs);
-        saxpy(mParams.inputCount, kOne, mWInBias, 1, mIn, 1);
-        sprodvv(mParams.inputCount, mWInScaling, mIn);
+        memcpy(mIn.ptr(), inputs);
+        saxpy(mParams.inputCount, kOne.ptr(), mWInBias.ptr(), 1,
+            mIn.ptr(), 1);
+        sprodvv(mParams.inputCount, mWInScaling.ptr(), mIn.ptr());
     }
 
     void NetworkImpl::SetInputScalings(
@@ -151,7 +153,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWInScaling, scalings);
+        memcpy(mWInScaling.ptr(), scalings);
     }
 
     void NetworkImpl::SetInputBias(
@@ -161,7 +163,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWInBias, bias);
+        memcpy(mWInBias.ptr(), bias);
     }
 
     void NetworkImpl::SetOutputScale(const std::vector<float> & scale)
@@ -193,7 +195,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWFBScaling, scalings);
+        memcpy(mWFBScaling.ptr(), scalings);
     }
 
     void NetworkImpl::Step( float step )
@@ -203,15 +205,17 @@ namespace ESN {
                 "Step size must be positive value" );
 
         // mTemp = mW * mX
-        sgemv('N', mParams.neuronCount, mParams.neuronCount, kOne,
-            mW, mParams.neuronCount, mX, 1, kZero, mTemp, 1);
+        sgemv('N', mParams.neuronCount, mParams.neuronCount, kOne.ptr(),
+            mW.ptr(), mParams.neuronCount, mX.ptr(), 1, kZero.ptr(),
+            mTemp.ptr(), 1);
         // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
         //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
         //     mTemp.data(), 1);
 
         // mTemp = mWIn * mIn + mTemp
-        sgemv('N', mParams.neuronCount, mParams.inputCount, kOne,
-            mWIn, mParams.neuronCount, mIn, 1, kOne, mTemp, 1);
+        sgemv('N', mParams.neuronCount, mParams.inputCount, kOne.ptr(),
+            mWIn.ptr(), mParams.neuronCount, mIn.ptr(), 1, kOne.ptr(),
+            mTemp.ptr(), 1);
         // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
         //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
         //     mTemp.data(), 1);
@@ -226,33 +230,35 @@ namespace ESN {
 
             // mOut[i] *= mWFBScaling[i]
             pointer<float> ptrOut = make_pointer<float>(mOut);
-            sprodvv(mParams.outputCount, mWFBScaling, ptrOut);
+            sprodvv(mParams.outputCount, mWFBScaling.ptr(), ptrOut);
 
             // mTemp = mWFB * mOut + mTemp
-            sgemv('N', mParams.neuronCount, mParams.outputCount, kOne,
-                mWFB, mParams.neuronCount, ptrOut, 1, kOne, mTemp, 1);
+            sgemv('N', mParams.neuronCount, mParams.outputCount, kOne.ptr(),
+                mWFB.ptr(), mParams.neuronCount, ptrOut, 1, kOne.ptr(),
+                mTemp.ptr(), 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
             //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
             //     mTemp.data(), 1);
         }
 
         // mTemp[i] = tanh(mTemp[i])
-        stanhv(mParams.neuronCount, mTemp);
+        stanhv(mParams.neuronCount, mTemp.ptr());
 
         // mX[i] *= mOneMinusLeakingRate[i]
-        sprodvv(mParams.neuronCount, mOneMinusLeakingRate, mX);
+        sprodvv(mParams.neuronCount, mOneMinusLeakingRate.ptr(), mX.ptr());
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        ssbmv('L', mParams.neuronCount, 0, kOne, mLeakingRate, 1,
-            mTemp, 1, kOne, mX, 1);
+        ssbmv('L', mParams.neuronCount, 0, kOne.ptr(), mLeakingRate.ptr(),
+            1, mTemp.ptr(), 1, kOne.ptr(), mX.ptr(), 1);
         // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
         pointer<float> ptrWOut = make_pointer<float>(mWOut);
         pointer<float> ptrOut = make_pointer<float>(mOut);
-        sgemv('N', mParams.outputCount, mParams.neuronCount, kOne,
-            ptrWOut, mParams.outputCount, mX, 1, kZero, ptrOut, 1);
+        sgemv('N', mParams.outputCount, mParams.neuronCount, kOne.ptr(),
+            ptrWOut, mParams.outputCount, mX.ptr(), 1, kZero.ptr(),
+            ptrOut, 1);
         memcpy<float>(mOut, ptrOut);
         // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
         //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
@@ -275,7 +281,7 @@ namespace ESN {
                 "Size of the vector must be equal to "
                 "the number of inputs" );
 
-        memcpy<float>(input, mIn);
+        memcpy<float>(input, mIn.ptr());
     }
 
     void NetworkImpl::CaptureActivations(
@@ -286,7 +292,7 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of neurons" );
 
-        memcpy<float>(activations, mX);
+        memcpy<float>(activations, mX.ptr());
     }
 
     void NetworkImpl::CaptureOutput( std::vector< float > & output )

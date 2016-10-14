@@ -44,11 +44,11 @@ namespace ESN {
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
                 w.data(), std::atanh(mNetwork->mOut[index]),
-                std::atanh(_value), mNetwork->mX);
+                std::atanh(_value), mNetwork->mX.ptr());
         else
             mAdaptiveFilter[index]->Train(
                 w.data(), mNetwork->mOut[index],
-                _value, mNetwork->mX);
+                _value, mNetwork->mX.ptr());
 
         // Write back the row of weights
         SCOPY(neuronCount, w.data(), 1,

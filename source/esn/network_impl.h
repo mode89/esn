@@ -50,24 +50,24 @@ namespace ESN {
 
     private:
         NetworkParams mParams;
-        const const_pointer<float> kOne;
-        const const_pointer<float> kMinusOne;
-        const const_pointer<float> kZero;
-        const pointer<float> mIn;
-        const pointer<float> mWIn;
-        const pointer<float> mWInScaling;
-        const pointer<float> mWInBias;
-        const pointer<float> mX;
-        const pointer<float> mW;
-        const pointer<float> mLeakingRate;
-        const pointer<float> mOneMinusLeakingRate;
+        const scalar<float> kOne;
+        const scalar<float> kMinusOne;
+        const scalar<float> kZero;
+        vector<float> mIn;
+        matrix<float> mWIn;
+        vector<float> mWInScaling;
+        vector<float> mWInBias;
+        vector<float> mX;
+        matrix<float> mW;
+        vector<float> mLeakingRate;
+        vector<float> mOneMinusLeakingRate;
         std::vector<float> mOut;
         std::vector<float> mOutScale;
         std::vector<float> mOutBias;
         std::vector<float> mWOut;
-        const pointer<float> mWFB;
-        const pointer<float> mWFBScaling;
-        const pointer<float> mTemp;
+        matrix<float> mWFB;
+        vector<float> mWFBScaling;
+        vector<float> mTemp;
     };
 
 } // namespace ESN
