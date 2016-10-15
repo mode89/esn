@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <curand.h>
@@ -7,17 +8,12 @@
 #include <esn/math.h>
 #include <esn/pointer.h>
 #include <memory>
-#include <random>
 
 extern "C" {
     #include <cblas.h>
 }
 
-#include <lapacke.h>
-
 namespace ESN {
-
-    std::default_random_engine sRandomEngine;
 
     static cublasHandle_t & get_cublas_handle()
     {
@@ -140,15 +136,6 @@ namespace ESN {
         }
     }
 
-    void RandomUniform(float * v, int size, float a, float b)
-    {
-        pointer<float> ptrV = make_pointer<float>(size);
-        pointer<float> ptrA = make_pointer<float>(a);
-        pointer<float> ptrB = make_pointer<float>(b);
-        srandv(size, ptrA, ptrB, ptrV);
-        memcpy<float>(v, ptrV, size);
-    }
-
     void Constant(float * v, int size, float value)
     {
         for (int i = 0; i < size; ++ i)
@@ -184,17 +171,6 @@ namespace ESN {
     {
         VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
         wrap_srandv_helper(n, a.get(), b.get(), x.get());
-    }
-
-    void srandspv(const int n, const float a, const float b,
-        const float sparsity, float * x)
-    {
-        RandomUniform(x, n, a, b);
-        std::vector<float> temp(n);
-        RandomUniform(temp.data(), n, 0.0f, 1.0f);
-        for (int i = 0; i < n; ++ i)
-            if (temp[i] < sparsity)
-                x[i] = 0.0f;
     }
 
     void srandspv(const int n, const const_pointer<float> & a,
@@ -239,24 +215,6 @@ namespace ESN {
         cblas_scopy(n, x, incx, y, incy);
     }
 
-    void SAXPY(const int n, const float alpha, const float * x,
-        const int incx, float * y, const int incy)
-    {
-        pointer<float> deviceAlpha = make_pointer<float>(alpha);
-        pointer<float> deviceX = make_pointer<float>(n);
-        VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
-
-        pointer<float> deviceY = make_pointer<float>(n);
-        VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
-
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSaxpy, get_cublas_handle(),
-            n, deviceAlpha.get(), deviceX.get(), 1, deviceY.get(), 1);
-
-        VCB(cublasGetVector, n, sizeof(float), deviceY.get(), 1, y, incy);
-    }
-
     void saxpy(const int n, const const_pointer<float> & alpha,
         const const_pointer<float> & x, const int incx,
         const pointer<float> & y, const int incy)
@@ -279,28 +237,6 @@ namespace ESN {
             x.size(), alpha.data(), x.data(), x.inc(), y.data(), y.inc());
     }
 
-    float SDOT(const int n, const float * x, const int incx,
-        const float * y, const int incy)
-    {
-        pointer<float> deviceResult = make_pointer<float>(1);
-
-        pointer<float> deviceX = make_pointer<float>(n);
-        VCB(cublasSetVector, n, sizeof(float), x, incx, deviceX.get(), 1);
-
-        pointer<float> deviceY = make_pointer<float>(n);
-        VCB(cublasSetVector, n, sizeof(float), y, incx, deviceY.get(), 1);
-
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSdot, get_cublas_handle(), n, deviceX.get(), 1,
-            deviceY.get(), 1, deviceResult.get());
-
-        float result = 0.0f;
-        memcpy<float>(&result, deviceResult, 1);
-
-        return result;
-    }
-
     void sdot(const int n, const const_pointer<float> & x, const int incx,
         const const_pointer<float> & y, const int incy,
         const pointer<float> & result)
@@ -321,14 +257,6 @@ namespace ESN {
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSdot, get_cublas_handle(),
             x.size(), x.data(), x.inc(), y.data(), y.inc(), result.data());
-    }
-
-    void SGEMV(const char trans, const int m, const int n,
-        const float alpha, const float * a, const int lda, const float * x,
-        const int incx, const float beta, float * y, const int incy)
-    {
-        cblas_sgemv(CblasColMajor, ToCblasTranspose(trans), m, n, alpha,
-            a, lda, x, incx, beta, y, incy);
     }
 
     void sgemv(const char trans, const int m, const int n,
@@ -360,14 +288,6 @@ namespace ESN {
             x.data(), x.inc(), beta.data(), y.data(), y.inc());
     }
 
-    void SSBMV(const char uplo, const int n, const int k,
-        const float alpha, const float * a, const int lda, const float * x,
-        const int incx, const float beta, float * y, const int incy)
-    {
-        cblas_ssbmv(CblasColMajor, ToCblasUplo(uplo), n, k, alpha, a, lda,
-            x, incx, beta, y, incy);
-    }
-
     void ssbmv(const char uplo, const int n, const int k,
         const const_pointer<float> & alpha, const const_pointer<float> & a,
         const int lda, const const_pointer<float> & x, const int incx,
@@ -379,16 +299,6 @@ namespace ESN {
         VCB(cublasSsbmv, get_cublas_handle(), to_cublas_fill_mode(uplo),
             n, k, alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
             y.get(), incy);
-    }
-
-    void SGEMM(const char transa, const char transb, const int m,
-        const int n, const int k, const float alpha, const float * a,
-        const int lda, const float * b, const int ldb, const float beta,
-        float * c, const int ldc)
-    {
-        cblas_sgemm(CblasColMajor, ToCblasTranspose(transa),
-            ToCblasTranspose(transb), m, n, k, alpha, a, lda, b, ldb,
-            beta, c, ldc);
     }
 
     void sgemm(const char transa, const char transb, const int m,
@@ -423,14 +333,6 @@ namespace ESN {
         VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
             to_cublas_operation(transb), m, n, k, alpha.data(), a.data(),
             a.ld(), b.data(), b.ld(), beta.data(), c.data(), c.ld());
-    }
-
-    int SGESDD(const char jobz, const int m, const int n, float * a,
-        const int lda, float * s, float * u, const int ldu, float * vt,
-        const int ldvt)
-    {
-        return LAPACKE_sgesdd(LAPACK_COL_MAJOR, jobz, m, n, a, lda, s, u,
-            ldu, vt, ldvt);
     }
 
     int sgesvd(const char jobu, const char jobvt, const int m, const int n,
