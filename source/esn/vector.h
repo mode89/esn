@@ -2,6 +2,7 @@
 #define __ESN_SOURCE_VECTOR_H__
 
 #include <esn/pointer.h>
+#include <vector>
 
 namespace ESN {
 
@@ -26,6 +27,15 @@ namespace ESN {
             , m_off(off)
             , m_inc(inc)
         {}
+
+        vector(const std::vector<T> & v)
+            : m_size(v.size())
+            , m_inc(1)
+            , m_ptr(make_pointer<T>(v.size()))
+            , m_off(0)
+        {
+            memcpy(m_ptr, v);
+        }
 
         std::size_t size() const { return m_size; }
         std::size_t inc() const { return m_inc; }
