@@ -2,6 +2,7 @@
 #define __ESN_SOURCE_MATRIX_H__
 
 #include <esn/pointer.h>
+#include <vector>
 
 namespace ESN {
 
@@ -31,6 +32,19 @@ namespace ESN {
             , m_ptr(ptr)
             , m_off(off)
         {}
+
+        matrix(
+            const std::vector<T> & v,
+            std::size_t rows,
+            std::size_t cols)
+            : m_rows(rows)
+            , m_cols(cols)
+            , m_ld(rows)
+            , m_ptr(make_pointer<T>(rows * cols))
+            , m_off(0)
+        {
+            memcpy(m_ptr, v);
+        }
 
         std::size_t rows() const { return m_rows; }
         std::size_t cols() const { return m_cols; }
