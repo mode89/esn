@@ -179,12 +179,12 @@ namespace ESN {
     {
         srandv(n, a, b, x);
 
-        pointer<float> zero = make_pointer<float>(0.0f);
-        pointer<float> one = make_pointer<float>(1.0f);
-        pointer<float> spx = make_pointer<float>(n);
-        srandv(n, zero, one, spx);
+        scalar<float> zero(0.0f);
+        scalar<float> one(1.0f);
+        vector<float> spx(n);
+        srandv(n, zero.ptr(), one.ptr(), spx.ptr());
 
-        wrap_srandspv_helper(n, sparsity.get(), spx.get(), x.get());
+        wrap_srandspv_helper(n, sparsity.get(), spx.data(), x.get());
     }
 
     void srcp(const pointer<float> & v)
@@ -343,11 +343,11 @@ namespace ESN {
         int lwork = 0;
         VCS(cusolverDnSgesvd_bufferSize,
             get_cusolver_handle(), m, n, &lwork);
-        pointer<float> work = make_pointer<float>(sizeof(float) * lwork);
+        vector<float> work(lwork);
         int * devInfo = nullptr;
         VCU(cudaMalloc, &devInfo, sizeof(int));
         VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt, m, n,
-            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, work.get(),
+            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, work.data(),
             lwork, nullptr, devInfo);
         int hostInfo = 0;
         VCU(cudaMemcpy, &hostInfo, devInfo, sizeof(int),

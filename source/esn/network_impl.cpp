@@ -68,21 +68,18 @@ namespace ESN {
         // Generate weight matrix as random orthonormal matrix
 
         int neuronCountSqr = params.neuronCount * params.neuronCount;
-        pointer<float> ptrSparsity = make_pointer<float>(
-            1.0f - params.connectivity);
+        scalar<float> sparsity(1.0f - params.connectivity);
         srandspv(neuronCountSqr,
-            kMinusOne.ptr(), kOne.ptr(), ptrSparsity, mW.ptr());
+            kMinusOne.ptr(), kOne.ptr(), sparsity.ptr(), mW.ptr());
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
-        pointer<float> ptrS = make_pointer<float>(params.neuronCount);
-        pointer<float> ptrU = make_pointer<float>(
-            params.neuronCount * params.neuronCount);
-        pointer<float> ptrVT = make_pointer<float>(
-            params.neuronCount * params.neuronCount);
+        vector<float> s(params.neuronCount);
+        matrix<float> u(params.neuronCount, params.neuronCount);
+        matrix<float> vt(params.neuronCount, params.neuronCount);
         int info = sgesvd('A', 'A', params.neuronCount, params.neuronCount,
-            mW.ptr(), params.neuronCount, ptrS, ptrU, params.neuronCount,
-            ptrVT, params.neuronCount);
+            mW.ptr(), params.neuronCount, s.ptr(), u.ptr(),
+            params.neuronCount, vt.ptr(), params.neuronCount);
         // int info = SGESDD('A', params.neuronCount, params.neuronCount,
         //     mW.data(), params.neuronCount, s.data(), u.data(),
         //     params.neuronCount, vt.data(), params.neuronCount);
@@ -91,8 +88,9 @@ namespace ESN {
 
         // mW = U * VT
         sgemm('N', 'N', params.neuronCount, params.neuronCount,
-            params.neuronCount, kOne.ptr(), ptrU, params.neuronCount, ptrVT,
-            params.neuronCount, kZero.ptr(), mW.ptr(), params.neuronCount);
+            params.neuronCount, kOne.ptr(), u.ptr(), params.neuronCount,
+            vt.ptr(), params.neuronCount, kZero.ptr(), mW.ptr(),
+            params.neuronCount);
         // SGEMM('N', 'N', params.neuronCount, params.neuronCount,
         //     params.neuronCount, 1.0f, u.data(), params.neuronCount,
         //     vt.data(), params.neuronCount, 0.0f, mW.data(),
@@ -114,12 +112,10 @@ namespace ESN {
             sfillv(params.outputCount, kOne.ptr(), mWFBScaling.ptr());
         }
 
-        pointer<float> ptrLeakingRateMin =
-            make_pointer<float>(params.leakingRateMin);
-        pointer<float> ptrLeakingRateMax =
-            make_pointer<float>(params.leakingRateMax);
-        srandv(params.neuronCount, ptrLeakingRateMin, ptrLeakingRateMax,
-            mLeakingRate.ptr());
+        scalar<float> leakingRateMin(params.leakingRateMin);
+        scalar<float> leakingRateMax(params.leakingRateMax);
+        srandv(params.neuronCount, leakingRateMin.ptr(),
+            leakingRateMax.ptr(), mLeakingRate.ptr());
 
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
         sfillv(params.neuronCount, kOne.ptr(), mOneMinusLeakingRate.ptr());
@@ -229,12 +225,12 @@ namespace ESN {
             }
 
             // mOut[i] *= mWFBScaling[i]
-            pointer<float> ptrOut = make_pointer<float>(mOut);
-            sprodvv(mParams.outputCount, mWFBScaling.ptr(), ptrOut);
+            vector<float> vecOut(mOut);
+            sprodvv(mParams.outputCount, mWFBScaling.ptr(), vecOut.ptr());
 
             // mTemp = mWFB * mOut + mTemp
             sgemv('N', mParams.neuronCount, mParams.outputCount, kOne.ptr(),
-                mWFB.ptr(), mParams.neuronCount, ptrOut, 1, kOne.ptr(),
+                mWFB.ptr(), mParams.neuronCount, vecOut.ptr(), 1, kOne.ptr(),
                 mTemp.ptr(), 1);
             // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
             //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
@@ -254,12 +250,13 @@ namespace ESN {
         //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
 
         // mOut = mWOut * mX
-        pointer<float> ptrWOut = make_pointer<float>(mWOut);
-        pointer<float> ptrOut = make_pointer<float>(mOut);
+        matrix<float> matWOut(mWOut,
+            mParams.outputCount, mParams.neuronCount);
+        vector<float> vecOut(mOut);
         sgemv('N', mParams.outputCount, mParams.neuronCount, kOne.ptr(),
-            ptrWOut, mParams.outputCount, mX.ptr(), 1, kZero.ptr(),
-            ptrOut, 1);
-        memcpy<float>(mOut, ptrOut);
+            matWOut.ptr(), mParams.outputCount, mX.ptr(), 1, kZero.ptr(),
+            vecOut.ptr(), 1);
+        memcpy<float>(mOut, vecOut.ptr());
         // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
         //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
         //     mOut.data(), 1);
