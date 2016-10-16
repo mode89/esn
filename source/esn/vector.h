@@ -73,6 +73,7 @@ namespace ESN {
 
         std::size_t size() const { return m_size; }
         std::size_t inc() const { return m_inc; }
+        std::size_t off() const { return m_off; }
         const pointer<T> & ptr() { return m_ptr; }
         const_pointer<T> ptr() const { return m_ptr; }
         T * data() { return m_ptr.get() + m_off; }
