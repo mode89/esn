@@ -28,14 +28,18 @@ namespace ESN {
             , m_inc(inc)
         {}
 
-        vector(const std::vector<T> & v)
-            : m_size(v.size())
+        vector(const T * v, std::size_t elemCount)
+            : m_size(elemCount)
             , m_inc(1)
-            , m_ptr(make_pointer<T>(v.size()))
+            , m_ptr(make_pointer<T>(elemCount))
             , m_off(0)
         {
-            memcpy(m_ptr, v);
+            memcpy(m_ptr, v, elemCount);
         }
+
+        vector(const std::vector<T> & v)
+            : vector(v.data(), v.size())
+        {}
 
         vector<T> & operator=(vector<T> && other) = default;
 
