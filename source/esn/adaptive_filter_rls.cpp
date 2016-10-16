@@ -25,7 +25,7 @@ namespace ESN {
         std::fill(p.begin(), p.end(), 0.0f);
         for (int i = 0; i < inputCount; ++ i)
             p[i + i * inputCount] = regularization;
-        memcpy<float>(mP.ptr(), p);
+        mP = matrix<float>(p, inputCount, inputCount);
     }
 
     void AdaptiveFilterRLS::Train(
@@ -35,7 +35,7 @@ namespace ESN {
         const pointer<float> & input)
     {
         int N = mInputCount;
-        memcpy<float>(mDelta.ptr(), referenceOutput - actualOutput);
+        mDelta = referenceOutput - actualOutput;
         memcpy<float>(mW.ptr(), w, N);
         vector<float> vecInput(input, N);
 

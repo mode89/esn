@@ -136,7 +136,7 @@ namespace ESN {
         if (inputs.size() != mParams.inputCount)
             throw std::invalid_argument( "Wrong size of the input vector" );
 
-        memcpy(mIn.ptr(), inputs);
+        mIn = inputs;
         saxpy(mParams.inputCount, kOne.ptr(), mWInBias.ptr(), 1,
             mIn.ptr(), 1);
         sprodvv(mParams.inputCount, mWInScaling.ptr(), mIn.ptr());
@@ -149,7 +149,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWInScaling.ptr(), scalings);
+        mWInScaling = scalings;
     }
 
     void NetworkImpl::SetInputBias(
@@ -159,7 +159,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWInBias.ptr(), bias);
+        mWInBias = bias;
     }
 
     void NetworkImpl::SetOutputScale(const std::vector<float> & scale)
@@ -191,7 +191,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the scalings vector" );
 
-        memcpy(mWFBScaling.ptr(), scalings);
+        mWFBScaling = scalings;
     }
 
     void NetworkImpl::Step( float step )
@@ -256,7 +256,7 @@ namespace ESN {
         sgemv('N', mParams.outputCount, mParams.neuronCount, kOne.ptr(),
             matWOut.ptr(), mParams.outputCount, mX.ptr(), 1, kZero.ptr(),
             vecOut.ptr(), 1);
-        memcpy<float>(mOut, vecOut.ptr());
+        mOut = vecOut;
         // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
         //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
         //     mOut.data(), 1);
@@ -278,7 +278,7 @@ namespace ESN {
                 "Size of the vector must be equal to "
                 "the number of inputs" );
 
-        memcpy<float>(input, mIn.ptr());
+        input = mIn;
     }
 
     void NetworkImpl::CaptureActivations(
@@ -289,7 +289,7 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of neurons" );
 
-        memcpy<float>(activations, mX.ptr());
+        activations = mX;
     }
 
     void NetworkImpl::CaptureOutput( std::vector< float > & output )
