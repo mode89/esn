@@ -41,6 +41,21 @@ namespace ESN {
             : vector(v.data(), v.size())
         {}
 
+        vector<T> & operator=(const std::vector<T> & v)
+        {
+            if (v.size() != m_size)
+                throw std::runtime_error("Cannot copy std::vector to "
+                    "vector of different size");
+            if (m_inc != 1)
+                throw std::runtime_error("Cannot copy std::vector to "
+                    "vector with non-unit increment");
+            if (m_off != 0)
+                throw std::runtime_error("Cannot copy std::vector to "
+                    "vector with non-zero offset");
+            memcpy(m_ptr, v);
+            return *this;
+        }
+
         vector<T> & operator=(vector<T> && other) = default;
 
         std::size_t size() const { return m_size; }
