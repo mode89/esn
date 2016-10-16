@@ -37,6 +37,8 @@ namespace ESN {
             memcpy(m_ptr, v);
         }
 
+        vector<T> & operator=(vector<T> && other) = default;
+
         std::size_t size() const { return m_size; }
         std::size_t inc() const { return m_inc; }
         const pointer<T> & ptr() { return m_ptr; }
@@ -47,7 +49,7 @@ namespace ESN {
     protected:
         std::size_t m_size;
         std::size_t m_inc;
-        const pointer<T> m_ptr;
+        pointer<T> m_ptr;
         std::size_t m_off;
     };
 
