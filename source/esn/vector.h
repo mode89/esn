@@ -58,6 +58,19 @@ namespace ESN {
 
         vector<T> & operator=(vector<T> && other) = default;
 
+        operator std::vector<T>() const
+        {
+            if (m_inc != 1)
+                throw std::runtime_error("Cannot convert vector with "
+                    "non-unit increment to std::vector");
+            if (m_off != 0)
+                throw std::runtime_error("Cannot convert vector with "
+                    "non-zero offset to std::vector");
+            std::vector<T> retval(m_size);
+            memcpy<T>(retval, m_ptr);
+            return retval;
+        }
+
         std::size_t size() const { return m_size; }
         std::size_t inc() const { return m_inc; }
         const pointer<T> & ptr() { return m_ptr; }
