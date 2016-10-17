@@ -12,13 +12,13 @@ namespace ESN {
     public:
         vector(std::size_t size)
             : m_size(size)
-            , m_ptr(make_pointer<T>(size))
+            , m_ptr(make_pointer(size * sizeof(T)))
             , m_off(0)
             , m_inc(1)
         {}
 
         vector(
-            const pointer<T> & ptr,
+            const pointer & ptr,
             std::size_t size,
             std::size_t off = 0,
             std::size_t inc = 1)
@@ -28,13 +28,13 @@ namespace ESN {
             , m_inc(inc)
         {}
 
-        vector(const T * v, std::size_t elemCount)
-            : m_size(elemCount)
+        vector(const T * v, std::size_t size)
+            : m_size(size)
             , m_inc(1)
-            , m_ptr(make_pointer<T>(elemCount))
+            , m_ptr(make_pointer(size * sizeof(T)))
             , m_off(0)
         {
-            memcpy(m_ptr, v, elemCount);
+            memcpy(m_ptr, v, size * sizeof(T));
         }
 
         vector(const std::vector<T> & v)
@@ -52,7 +52,7 @@ namespace ESN {
             if (m_off != 0)
                 throw std::runtime_error("Cannot copy std::vector to "
                     "vector with non-zero offset");
-            memcpy(m_ptr, v);
+            memcpy(m_ptr, v.data(), m_size * sizeof(T));
             return *this;
         }
 
@@ -67,22 +67,22 @@ namespace ESN {
                 throw std::runtime_error("Cannot convert vector with "
                     "non-zero offset to std::vector");
             std::vector<T> retval(m_size);
-            memcpy<T>(retval, m_ptr);
+            memcpy(retval.data(), m_ptr, m_size * sizeof(T));
             return retval;
         }
 
         std::size_t size() const { return m_size; }
         std::size_t inc() const { return m_inc; }
         std::size_t off() const { return m_off; }
-        const pointer<T> & ptr() { return m_ptr; }
-        const_pointer<T> ptr() const { return m_ptr; }
+        const pointer & ptr() { return m_ptr; }
+        const_pointer ptr() const { return m_ptr; }
         T * data() { return m_ptr.get() + m_off; }
         const T * data() const { return m_ptr.get() + m_off; }
 
     protected:
         std::size_t m_size;
         std::size_t m_inc;
-        pointer<T> m_ptr;
+        pointer m_ptr;
         std::size_t m_off;
     };
 

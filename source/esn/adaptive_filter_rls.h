@@ -22,7 +22,7 @@ namespace ESN {
             float * w,
             float actualOutput,
             float referenceOutput,
-            const pointer<float> & input);
+            const pointer & input);
 
     private:
         const unsigned mInputCount;

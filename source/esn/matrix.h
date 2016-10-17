@@ -16,12 +16,12 @@ namespace ESN {
             : m_rows(rows)
             , m_cols(cols)
             , m_ld(rows)
-            , m_ptr(make_pointer<T>(rows * cols))
+            , m_ptr(make_pointer(rows * cols * sizeof(T)))
             , m_off(0)
         {}
 
         matrix(
-            const pointer<T> & ptr,
+            const pointer & ptr,
             std::size_t rows,
             std::size_t cols,
             std::size_t ld,
@@ -40,17 +40,17 @@ namespace ESN {
             : m_rows(rows)
             , m_cols(cols)
             , m_ld(rows)
-            , m_ptr(make_pointer<T>(rows * cols))
+            , m_ptr(make_pointer(rows * cols * sizeof(T)))
             , m_off(0)
         {
-            memcpy(m_ptr, v);
+            memcpy(m_ptr, v.data(), rows * cols * sizeof(T));
         }
 
         std::size_t rows() const { return m_rows; }
         std::size_t cols() const { return m_cols; }
         std::size_t ld() const { return m_ld; }
-        const pointer<T> & ptr() { return m_ptr; }
-        const_pointer<T> ptr() const { return m_ptr; }
+        const pointer & ptr() { return m_ptr; }
+        const_pointer ptr() const { return m_ptr; }
         T * data() { return m_ptr.get() + m_off; }
         const T * data() const { return m_ptr.get() + m_off; }
 
@@ -58,7 +58,7 @@ namespace ESN {
         std::size_t m_rows;
         std::size_t m_cols;
         std::size_t m_ld;
-        pointer<T> m_ptr;
+        pointer m_ptr;
         std::size_t m_off;
     };
 

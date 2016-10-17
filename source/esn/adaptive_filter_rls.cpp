@@ -36,11 +36,11 @@ namespace ESN {
         float * w,
         float actualOutput,
         float referenceOutput,
-        const pointer<float> & input)
+        const pointer & input)
     {
         int N = mInputCount;
         mDelta = referenceOutput - actualOutput;
-        memcpy<float>(mW.ptr(), w, N);
+        memcpy(mW.ptr(), w, N * sizeof(float));
         vector<float> vecInput(input, N);
 
         // mTemp = transpose(mP) * input
@@ -71,7 +71,7 @@ namespace ESN {
         // w = (referenceOutput - actualOutput) * mK + w
         axpy(mDelta, mK, mW);
 
-        memcpy<float>(w, mW.ptr(), N);
+        memcpy(w, mW.ptr(), N * sizeof(float));
     }
 
 } // namespace ESN

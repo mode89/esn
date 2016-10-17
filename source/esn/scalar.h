@@ -11,15 +11,17 @@ namespace ESN {
     {
     public:
         scalar(T value)
-            : vector<T>(make_pointer<T>(value), 1)
-        {}
+            : vector<T>(1)
+        {
+            memcpy(vector<T>::ptr(), &value, sizeof(T));
+        }
 
         scalar<T> & operator=(const T & value)
         {
             if (vector<T>::off() != 0)
                 std::runtime_error(
                     "Cannot copy to scalar with non-zero offset");
-            memcpy(vector<T>::ptr(), &value, 1);
+            memcpy(vector<T>::ptr(), &value, sizeof(T));
             return *this;
         }
     };

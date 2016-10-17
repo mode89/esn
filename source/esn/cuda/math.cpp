@@ -164,22 +164,22 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
-    void sfillv(const int n, const const_pointer<float> & alpha,
-        const pointer<float> & x)
+    void sfillv(const int n, const const_pointer & alpha,
+        const pointer & x)
     {
         wrap_sfillv(n, alpha.get(), x.get());
     }
 
-    void srandv(const int n, const const_pointer<float> & a,
-        const const_pointer<float> & b, const pointer<float> & x)
+    void srandv(const int n, const const_pointer & a,
+        const const_pointer & b, const pointer & x)
     {
         VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
         wrap_srandv_helper(n, a.get(), b.get(), x.get());
     }
 
-    void srandspv(const int n, const const_pointer<float> & a,
-        const const_pointer<float> & b,
-        const const_pointer<float> & sparsity, const pointer<float> & x)
+    void srandspv(const int n, const const_pointer & a,
+        const const_pointer & b,
+        const const_pointer & sparsity, const pointer & x)
     {
         srandv(n, a, b, x);
 
@@ -191,7 +191,7 @@ namespace ESN {
         wrap_srandspv_helper(n, sparsity.get(), spx.data(), x.get());
     }
 
-    void srcp(const pointer<float> & v)
+    void srcp(const pointer & v)
     {
         wrap_srcp(v.get());
     }
@@ -202,13 +202,13 @@ namespace ESN {
         wrap_srcp(x.data());
     }
 
-    void stanhv(const int n, const pointer<float> & v)
+    void stanhv(const int n, const pointer & v)
     {
         wrap_stanhv(n, v.get());
     }
 
-    void sprodvv(const int n, const const_pointer<float> & x,
-        const pointer<float> & y)
+    void sprodvv(const int n, const const_pointer & x,
+        const pointer & y)
     {
         wrap_sprodvv(n, x.get(), y.get());
     }
@@ -219,9 +219,9 @@ namespace ESN {
         cblas_scopy(n, x, incx, y, incy);
     }
 
-    void saxpy(const int n, const const_pointer<float> & alpha,
-        const const_pointer<float> & x, const int incx,
-        const pointer<float> & y, const int incy)
+    void saxpy(const int n, const const_pointer & alpha,
+        const const_pointer & x, const int incx,
+        const pointer & y, const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -241,9 +241,9 @@ namespace ESN {
             x.size(), alpha.data(), x.data(), x.inc(), y.data(), y.inc());
     }
 
-    void sdot(const int n, const const_pointer<float> & x, const int incx,
-        const const_pointer<float> & y, const int incy,
-        const pointer<float> & result)
+    void sdot(const int n, const const_pointer & x, const int incx,
+        const const_pointer & y, const int incy,
+        const pointer & result)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
@@ -264,9 +264,9 @@ namespace ESN {
     }
 
     void sgemv(const char trans, const int m, const int n,
-        const const_pointer<float> & alpha, const const_pointer<float> & a,
-        const int lda, const const_pointer<float> & x, const int incx,
-        const const_pointer<float> & beta, const pointer<float> & y,
+        const const_pointer & alpha, const const_pointer & a,
+        const int lda, const const_pointer & x, const int incx,
+        const const_pointer & beta, const pointer & y,
         const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -293,9 +293,9 @@ namespace ESN {
     }
 
     void ssbmv(const char uplo, const int n, const int k,
-        const const_pointer<float> & alpha, const const_pointer<float> & a,
-        const int lda, const const_pointer<float> & x, const int incx,
-        const const_pointer<float> & beta, const pointer<float> & y,
+        const const_pointer & alpha, const const_pointer & a,
+        const int lda, const const_pointer & x, const int incx,
+        const const_pointer & beta, const pointer & y,
         const int incy)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -306,10 +306,10 @@ namespace ESN {
     }
 
     void sgemm(const char transa, const char transb, const int m,
-        const int n, const int k, const const_pointer<float> & alpha,
-        const const_pointer<float> & a, const int lda,
-        const const_pointer<float> & b, const int ldb,
-        const const_pointer<float> & beta, const pointer<float> & c,
+        const int n, const int k, const const_pointer & alpha,
+        const const_pointer & a, const int lda,
+        const const_pointer & b, const int ldb,
+        const const_pointer & beta, const pointer & c,
         const int ldc)
     {
         VCB(cublasSetPointerMode, get_cublas_handle(),
@@ -340,8 +340,8 @@ namespace ESN {
     }
 
     int sgesvd(const char jobu, const char jobvt, const int m, const int n,
-        const pointer<float> & a, const int lda, const pointer<float> & s,
-        const pointer<float> & u, const int ldu, const pointer<float> & vt,
+        const pointer & a, const int lda, const pointer & s,
+        const pointer & u, const int ldu, const pointer & vt,
         const int ldvt)
     {
         int lwork = 0;

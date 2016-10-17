@@ -4,92 +4,25 @@
 
 namespace ESN {
 
-    template <class T>
-    pointer<T> make_pointer(std::size_t elemCount)
+    pointer make_pointer(std::size_t byteSize)
     {
-        T * devicePointer = nullptr;
-        VCU(cudaMalloc, &devicePointer, elemCount * sizeof(T));
-        return std::shared_ptr<T>(devicePointer, [] (T * p) {
-            VCU(cudaFree, p);
-        });
+        void * devicePointer = nullptr;
+        VCU(cudaMalloc, &devicePointer, byteSize);
+        return std::shared_ptr<float>(
+            static_cast<float*>(devicePointer),
+            [] (void * p) { VCU(cudaFree, p); });
     }
 
-    template pointer<float> make_pointer(std::size_t);
-
-    template <class T>
-    pointer<T> make_pointer(const T & value)
+    void memcpy(const pointer & dst, const void * src,
+        std::size_t byteSize)
     {
-        pointer<T> retval = make_pointer<float>(1);
-        memcpy(retval, value);
-        return retval;
+        VCU(cudaMemcpy, dst.get(), src, byteSize, cudaMemcpyHostToDevice);
     }
 
-    template pointer<float> make_pointer(const float &);
-
-    template <class T>
-    pointer<T> make_pointer(const std::vector<T> & value)
+    void memcpy(void * dst, const const_pointer & src,
+        std::size_t byteSize)
     {
-        pointer<T> retval = make_pointer<float>(value.size());
-        memcpy(retval, value);
-        return retval;
+        VCU(cudaMemcpy, dst, src.get(), byteSize, cudaMemcpyDeviceToHost);
     }
-
-    template pointer<float> make_pointer(const std::vector<float> &);
-
-    template <class T>
-    void memcpy(const pointer<T> & dst, const T * src,
-        std::size_t elemCount)
-    {
-        VCU(cudaMemcpy, dst.get(), src, elemCount * sizeof(T),
-            cudaMemcpyHostToDevice);
-    }
-
-    template void memcpy(
-        const pointer<float> &, const float *, std::size_t);
-
-    template <class T>
-    void memcpy(T * dst, const const_pointer<T> & src,
-        std::size_t elemCount)
-    {
-        VCU(cudaMemcpy, dst, src.get(), elemCount * sizeof(T),
-            cudaMemcpyDeviceToHost);
-    }
-
-    template void memcpy(
-        float *, const const_pointer<float> &, std::size_t);
-
-    template <class T>
-    void memcpy(const pointer<T> & dst, const T & src)
-    {
-        memcpy(dst, &src, 1);
-    }
-
-    template void memcpy(const pointer<float> &, const float &);
-
-    template <class T>
-    void memcpy(T & dst, const const_pointer<T> & src)
-    {
-        memcpy(&dst, src, 1);
-    }
-
-    template void memcpy(float &, const const_pointer<float> &);
-
-    template <class T>
-    void memcpy(const pointer<T> & dst, const std::vector<T> & src)
-    {
-        memcpy(dst, src.data(), src.size());
-    }
-
-    template void memcpy(
-        const pointer<float> &, const std::vector<float> &);
-
-    template <class T>
-    void memcpy(std::vector<T> & dst, const const_pointer<T> & src)
-    {
-        memcpy(dst.data(), src, dst.size());
-    }
-
-    template void memcpy(
-        std::vector<float> &, const const_pointer<float> &);
 
 } // namespace ESN
