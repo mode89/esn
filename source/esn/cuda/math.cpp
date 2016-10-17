@@ -17,6 +17,8 @@ extern "C" {
     #include <cblas.h>
 }
 
+#define PTR(val) ((val).ptr().get() + (val).off())
+
 namespace ESN {
 
     static cublasHandle_t & get_cublas_handle()
@@ -175,6 +177,22 @@ namespace ESN {
     {
         VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
         wrap_srandv_helper(n, a.get(), b.get(), x.get());
+    }
+
+    template <>
+    void randv(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        vector<float> & x)
+    {
+        if (x.size() <= 0)
+            throw std::runtime_error(
+                "randv(): 'x' must be not empty");
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "randv(): 'x' must have unitary increment");
+        VCR(curandGenerateUniform, get_curand_handle(), PTR(x), x.size());
+        wrap_srandv_helper(x.size(), PTR(a), PTR(b), PTR(x));
     }
 
     void srandspv(const int n, const const_pointer & a,

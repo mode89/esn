@@ -14,8 +14,15 @@ namespace ESN {
 
     void sfillv(const int n, const const_pointer & alpha,
         const pointer & x);
+
     void srandv(const int n, const const_pointer & a,
         const const_pointer & b, const pointer & x);
+    template <class T>
+    void randv(
+        const scalar<T> & a,
+        const scalar<T> & b,
+        vector<T> & x);
+
     void srandspv(const int n, const const_pointer & a,
         const const_pointer & b,
         const const_pointer & sparsity,
