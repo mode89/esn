@@ -1,3 +1,7 @@
+// Copyright (c) 2016, Andrey Krainyak - All Rights Reserved
+// You may use, distribute and modify this code under the terms of
+// BSD 2-clause license.
+
 #include <cmath>
 #include <cstring>
 #include <esn/exceptions.h>
