@@ -26,6 +26,11 @@ namespace ESN {
         const scalar<T> & a,
         const scalar<T> & b,
         vector<T> & x);
+    template <class T>
+    void randm(
+        const scalar<T> & a,
+        const scalar<T> & b,
+        matrix<T> & x);
 
     void srandspv(const int n, const const_pointer & a,
         const const_pointer & b,

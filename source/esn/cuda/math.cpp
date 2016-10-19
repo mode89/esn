@@ -206,6 +206,19 @@ namespace ESN {
         wrap_srandv_helper(x.size(), PTR(a), PTR(b), PTR(x));
     }
 
+    template <>
+    void randm(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        matrix<float> & x)
+    {
+        if (x.rows() != x.ld())
+            throw std::runtime_error("randm(): x.rows() != x.ld()");
+        int size = x.rows() * x.cols();
+        VCR(curandGenerateUniform, get_curand_handle(), PTR(x), size);
+        wrap_srandv_helper(size, PTR(a), PTR(b), PTR(x));
+    }
+
     void srandspv(const int n, const const_pointer & a,
         const const_pointer & b,
         const const_pointer & sparsity, const pointer & x)
