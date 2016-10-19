@@ -36,6 +36,12 @@ namespace ESN {
         const const_pointer & b,
         const const_pointer & sparsity,
         const pointer & x);
+    template <class T>
+    void randspm(
+        const scalar<T> & a,
+        const scalar<T> & b,
+        const scalar<T> & sparsity,
+        matrix<T> & x);
 
     void srcp(const pointer & v);
     template <class T>

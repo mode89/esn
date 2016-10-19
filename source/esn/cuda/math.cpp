@@ -233,6 +233,27 @@ namespace ESN {
         wrap_srandspv_helper(n, sparsity.get(), PTR(spx), x.get());
     }
 
+    template <>
+    void randspm(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        const scalar<float> & sparsity,
+        matrix<float> & x)
+    {
+        if (x.rows() != x.ld())
+            throw std::runtime_error("randspm(): x.rows() != x.ld()");
+
+        randm(a, b, x);
+
+        scalar<float> zero(0.0f);
+        scalar<float> one(1.0f);
+        matrix<float> spx(x.rows(), x.cols());
+        randm(zero, one, spx);
+
+        wrap_srandspv_helper(x.rows() * x.cols(),
+            PTR(sparsity), PTR(spx), PTR(x));
+    }
+
     void srcp(const pointer & v)
     {
         wrap_srcp(v.get());
