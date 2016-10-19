@@ -128,7 +128,7 @@ namespace ESN {
 
         mIn = inputs;
         axpy(kOne, mWInBias, mIn);
-        sprodvv(mParams.inputCount, mWInScaling.ptr(), mIn.ptr());
+        prodvv(mWInScaling, mIn);
     }
 
     void NetworkImpl::SetInputScalings(
@@ -205,7 +205,7 @@ namespace ESN {
 
             // mOut[i] *= mWFBScaling[i]
             vector<float> vecOut(mOut);
-            sprodvv(mParams.outputCount, mWFBScaling.ptr(), vecOut.ptr());
+            prodvv(mWFBScaling, vecOut);
 
             // mTemp = mWFB * mOut + mTemp
             gemv('N', kOne, mWFB, vecOut, kOne, mTemp);
@@ -215,7 +215,7 @@ namespace ESN {
         stanhv(mParams.neuronCount, mTemp.ptr());
 
         // mX[i] *= mOneMinusLeakingRate[i]
-        sprodvv(mParams.neuronCount, mOneMinusLeakingRate.ptr(), mX.ptr());
+        prodvv(mOneMinusLeakingRate, mX);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
         ssbmv('L', mParams.neuronCount, 0, kOne.ptr(), mLeakingRate.ptr(),
