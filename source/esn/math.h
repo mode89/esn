@@ -37,8 +37,14 @@ namespace ESN {
     void rcp(scalar<T> & x);
 
     void stanhv(const int n, const pointer & v);
+
     void sprodvv(const int n, const const_pointer & x,
         const pointer & y);
+    template <class T>
+    void prodvv(
+        const vector<T> & x,
+        vector<T> & y);
+
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy);
     void saxpy(const int h, const const_pointer & alpha,

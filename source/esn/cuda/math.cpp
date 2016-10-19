@@ -242,6 +242,23 @@ namespace ESN {
         wrap_sprodvv(n, x.get(), y.get());
     }
 
+    template <>
+    void prodvv(
+        const vector<float> & x,
+        vector<float> & y)
+    {
+        if (x.size() != y.size())
+            throw std::runtime_error(
+                "prodvv(): 'x' and 'y' must be the same size");
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "prodvv(): 'x' must has unity increment");
+        if (y.inc() != 1)
+            throw std::runtime_error(
+                "prodvv(): 'y' must has unity increment");
+        wrap_sprodvv(x.size(), PTR(x), PTR(y));
+    }
+
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy)
     {
