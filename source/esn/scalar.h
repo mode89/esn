@@ -24,6 +24,13 @@ namespace ESN {
             memcpy(vector<T>::ptr(), &value, sizeof(T));
             return *this;
         }
+
+        operator T() const
+        {
+            T retval;
+            memcpy(&retval, vector<T>::ptr(), sizeof(T));
+            return retval;
+        }
     };
 
 } // namespace ESN
