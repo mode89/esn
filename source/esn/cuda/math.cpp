@@ -172,6 +172,17 @@ namespace ESN {
         wrap_sfillv(n, alpha.get(), x.get());
     }
 
+    template <>
+    void fillv(
+        const scalar<float> & alpha,
+        vector<float> & x)
+    {
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "fillv(): 'x' must have unity increment");
+        wrap_sfillv(x.size(), PTR(alpha), PTR(x));
+    }
+
     void srandv(const int n, const const_pointer & a,
         const const_pointer & b, const pointer & x)
     {
