@@ -206,6 +206,7 @@ namespace ESN {
             // mOut[i] *= mWFBScaling[i]
             vector<float> vecOut(mOut);
             prodvv(mWFBScaling, vecOut);
+            mOut = vecOut;
 
             // mTemp = mWFB * mOut + mTemp
             gemv('N', kOne, mWFB, vecOut, kOne, mTemp);
