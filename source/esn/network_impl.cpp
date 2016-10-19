@@ -190,20 +190,10 @@ namespace ESN {
                 "Step size must be positive value" );
 
         // mTemp = mW * mX
-        sgemv('N', mParams.neuronCount, mParams.neuronCount, kOne.ptr(),
-            mW.ptr(), mParams.neuronCount, mX.ptr(), 1, kZero.ptr(),
-            mTemp.ptr(), 1);
-        // SGEMV('N', mParams.neuronCount, mParams.neuronCount, 1.0f,
-        //     mW.data(), mParams.neuronCount, mX.data(), 1, 0.0f,
-        //     mTemp.data(), 1);
+        gemv('N', kOne, mW, mX, kZero, mTemp);
 
         // mTemp = mWIn * mIn + mTemp
-        sgemv('N', mParams.neuronCount, mParams.inputCount, kOne.ptr(),
-            mWIn.ptr(), mParams.neuronCount, mIn.ptr(), 1, kOne.ptr(),
-            mTemp.ptr(), 1);
-        // SGEMV('N', mParams.neuronCount, mParams.inputCount, 1.0f,
-        //     mWIn.data(), mParams.neuronCount, mIn.data(), 1, 1.0f,
-        //     mTemp.data(), 1);
+        gemv('N', kOne, mWIn, mIn, kOne, mTemp);
 
         if (mParams.hasOutputFeedback)
         {
@@ -218,12 +208,7 @@ namespace ESN {
             sprodvv(mParams.outputCount, mWFBScaling.ptr(), vecOut.ptr());
 
             // mTemp = mWFB * mOut + mTemp
-            sgemv('N', mParams.neuronCount, mParams.outputCount, kOne.ptr(),
-                mWFB.ptr(), mParams.neuronCount, vecOut.ptr(), 1, kOne.ptr(),
-                mTemp.ptr(), 1);
-            // SGEMV('N', mParams.neuronCount, mParams.outputCount, 1.0f,
-            //     mWFB.data(), mParams.neuronCount, mOut.data(), 1, 1.0f,
-            //     mTemp.data(), 1);
+            gemv('N', kOne, mWFB, vecOut, kOne, mTemp);
         }
 
         // mTemp[i] = tanh(mTemp[i])
@@ -242,13 +227,8 @@ namespace ESN {
         matrix<float> matWOut(mWOut,
             mParams.outputCount, mParams.neuronCount);
         vector<float> vecOut(mOut);
-        sgemv('N', mParams.outputCount, mParams.neuronCount, kOne.ptr(),
-            matWOut.ptr(), mParams.outputCount, mX.ptr(), 1, kZero.ptr(),
-            vecOut.ptr(), 1);
+        gemv('N', kOne, matWOut, mX, kZero, vecOut);
         mOut = vecOut;
-        // SGEMV('N', mParams.outputCount, mParams.neuronCount, 1.0f,
-        //     mWOut.data(), mParams.outputCount, mX.data(), 1, 0.0f,
-        //     mOut.data(), 1);
 
         if (!mParams.linearOutput)
             // mOut[i] = tanh(mOut[i])
