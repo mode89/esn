@@ -95,6 +95,14 @@ namespace ESN {
         const pointer & a, const int lda, const pointer & s,
         const pointer & u, const int ldu, const pointer & vt,
         const int ldvt);
+    template <class T>
+    int gesvd(
+        const char jobu,
+        const char jobvt,
+        matrix<T> & a,
+        vector<T> & s,
+        matrix<T> & u,
+        matrix<T> & vt);
 
 } // namespace ESN
 

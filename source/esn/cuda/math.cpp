@@ -378,4 +378,26 @@ namespace ESN {
         return hostInfo;
     }
 
+    template <>
+    int gesvd(
+        const char jobu,
+        const char jobvt,
+        matrix<float> & a,
+        vector<float> & s,
+        matrix<float> & u,
+        matrix<float> & vt)
+    {
+        int lwork = 0;
+        VCS(cusolverDnSgesvd_bufferSize,
+            get_cusolver_handle(), a.rows(), a.cols(), &lwork);
+        vector<float> work(lwork);
+        scalar<int> devInfo(0);
+        VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt,
+            a.rows(), a.cols(), PTR(a), a.ld(), PTR(s), PTR(u), u.ld(),
+            PTR(vt), vt.ld(), PTR(work), lwork, nullptr,
+            // TODO replace with PTR(devInfo)
+            reinterpret_cast<int*>(devInfo.ptr().get()));
+        return devInfo;
+    }
+
 } // namespace ESN
