@@ -81,13 +81,7 @@ namespace ESN {
         vector<float> s(params.neuronCount);
         matrix<float> u(params.neuronCount, params.neuronCount);
         matrix<float> vt(params.neuronCount, params.neuronCount);
-        int info = sgesvd('A', 'A', params.neuronCount, params.neuronCount,
-            mW.ptr(), params.neuronCount, s.ptr(), u.ptr(),
-            params.neuronCount, vt.ptr(), params.neuronCount);
-        // int info = SGESDD('A', params.neuronCount, params.neuronCount,
-        //     mW.data(), params.neuronCount, s.data(), u.data(),
-        //     params.neuronCount, vt.data(), params.neuronCount);
-        if (info != 0)
+        if (gesvd('A', 'A', mW, s, u, vt) != 0)
             throw std::runtime_error("Failed to calculate SVD");
 
         // mW = U * VT
