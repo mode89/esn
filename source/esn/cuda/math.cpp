@@ -351,6 +351,28 @@ namespace ESN {
             y.get(), incy);
     }
 
+    template <>
+    void sbmv(
+        const char uplo,
+        const int n,
+        const int k,
+        const scalar<float> & alpha,
+        const vector<float> & a,
+        const int lda,
+        const vector<float> & x,
+        const scalar<float> & beta,
+        vector<float> & y)
+    {
+        if (a.inc() != 1)
+            throw std::runtime_error(
+                "sbmv(): 'a' must has unity increment");
+        VCB(cublasSetPointerMode, get_cublas_handle(),
+            CUBLAS_POINTER_MODE_DEVICE);
+        VCB(cublasSsbmv, get_cublas_handle(), to_cublas_fill_mode(uplo),
+            n, k, PTR(alpha), PTR(a), lda, PTR(x), x.inc(), PTR(beta),
+            PTR(y), y.inc());
+    }
+
     void sgemm(const char transa, const char transb, const int m,
         const int n, const int k, const const_pointer & alpha,
         const const_pointer & a, const int lda,

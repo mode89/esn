@@ -84,6 +84,17 @@ namespace ESN {
         const int lda, const const_pointer & x, const int incx,
         const const_pointer & beta, const pointer & y,
         const int incy);
+    template <class T>
+    void sbmv(
+        const char uplo,
+        const int n,
+        const int k,
+        const scalar<T> & alpha,
+        const vector<T> & a,
+        const int lda,
+        const vector<T> & x,
+        const scalar<T> & beta,
+        vector<T> & y);
 
     void sgemm(const char transa, const char transb, const int m,
         const int n, const int k, const const_pointer & alpha,
