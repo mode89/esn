@@ -6,6 +6,7 @@
 
 namespace ESN {
 
+    // TODO implement as void
     using pointer = std::shared_ptr<float>;
     using const_pointer = std::shared_ptr<const float>;
 
