@@ -70,10 +70,8 @@ namespace ESN {
 
         // Generate weight matrix as random orthonormal matrix
 
-        int neuronCountSqr = params.neuronCount * params.neuronCount;
         scalar<float> sparsity(1.0f - params.connectivity);
-        srandspv(neuronCountSqr,
-            kMinusOne.ptr(), kOne.ptr(), sparsity.ptr(), mW.ptr());
+        randspm(kMinusOne, kOne, sparsity, mW);
 
         // Find S, U, VT from equation:
         // mW = U * S * VT
