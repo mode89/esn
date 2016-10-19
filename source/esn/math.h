@@ -37,6 +37,8 @@ namespace ESN {
     void rcp(scalar<T> & x);
 
     void stanhv(const int n, const pointer & v);
+    template <class T>
+    void tanhv(vector<T> & x);
 
     void sprodvv(const int n, const const_pointer & x,
         const pointer & y);
