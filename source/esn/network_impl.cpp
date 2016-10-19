@@ -213,7 +213,7 @@ namespace ESN {
         }
 
         // mTemp[i] = tanh(mTemp[i])
-        stanhv(mParams.neuronCount, mTemp.ptr());
+        tanhv(mTemp);
 
         // mX[i] *= mOneMinusLeakingRate[i]
         prodvv(mOneMinusLeakingRate, mX);
