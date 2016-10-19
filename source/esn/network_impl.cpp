@@ -87,6 +87,9 @@ namespace ESN {
         // mW = U * VT
         gemm('N', 'N', kOne, u, vt, kZero, mW);
 
+        fillv(kOne, mWInScaling);
+        fillv(kZero, mWInBias);
+
         Constant(mWOut.data(),
             params.outputCount * params.neuronCount, 0.0f);
 
@@ -97,7 +100,7 @@ namespace ESN {
         {
             srandv(params.neuronCount * params.outputCount,
                 kMinusOne.ptr(), kOne.ptr(), mWFB.ptr());
-            sfillv(params.outputCount, kOne.ptr(), mWFBScaling.ptr());
+            fillv(kOne, mWFBScaling);
         }
 
         scalar<float> leakingRateMin(params.leakingRateMin);
@@ -106,11 +109,11 @@ namespace ESN {
             leakingRateMax.ptr(), mLeakingRate.ptr());
 
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
-        sfillv(params.neuronCount, kOne.ptr(), mOneMinusLeakingRate.ptr());
+        fillv(kOne, mOneMinusLeakingRate);
         saxpy(params.neuronCount, kMinusOne.ptr(), mLeakingRate.ptr(), 1,
             mOneMinusLeakingRate.ptr(), 1);
 
-        sfillv(params.inputCount, kZero.ptr(), mIn.ptr());
+        fillv(kZero, mIn);
         srandv(params.neuronCount, kMinusOne.ptr(), kOne.ptr(), mX.ptr());
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
