@@ -66,8 +66,7 @@ namespace ESN {
                 "NetworkParams::connectivity must be within "
                 "interval (0,1]" );
 
-        srandv(params.neuronCount * params.inputCount,
-            kMinusOne.ptr(), kOne.ptr(), mWIn.ptr());
+        randm(kMinusOne, kOne, mWIn);
 
         // Generate weight matrix as random orthonormal matrix
 
@@ -98,22 +97,20 @@ namespace ESN {
 
         if (params.hasOutputFeedback)
         {
-            srandv(params.neuronCount * params.outputCount,
-                kMinusOne.ptr(), kOne.ptr(), mWFB.ptr());
+            randm(kMinusOne, kOne, mWFB);
             fillv(kOne, mWFBScaling);
         }
 
         scalar<float> leakingRateMin(params.leakingRateMin);
         scalar<float> leakingRateMax(params.leakingRateMax);
-        srandv(params.neuronCount, leakingRateMin.ptr(),
-            leakingRateMax.ptr(), mLeakingRate.ptr());
+        randv(leakingRateMin, leakingRateMax, mLeakingRate);
 
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
         fillv(kOne, mOneMinusLeakingRate);
         axpy(kMinusOne, mLeakingRate, mOneMinusLeakingRate);
 
         fillv(kZero, mIn);
-        srandv(params.neuronCount, kMinusOne.ptr(), kOne.ptr(), mX.ptr());
+        randv(kMinusOne, kOne, mX);
         Constant(mOut.data(), params.outputCount, 0.0f);
     }
 
