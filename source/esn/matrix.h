@@ -49,6 +49,7 @@ namespace ESN {
         std::size_t rows() const { return m_rows; }
         std::size_t cols() const { return m_cols; }
         std::size_t ld() const { return m_ld; }
+        std::size_t off() const { return m_off; }
         const pointer & ptr() { return m_ptr; }
         const_pointer ptr() const { return m_ptr; }
         T * data() { return m_ptr.get() + m_off; }
