@@ -206,7 +206,7 @@ namespace ESN {
         vector<float> spx(n);
         srandv(n, zero.ptr(), one.ptr(), spx.ptr());
 
-        wrap_srandspv_helper(n, sparsity.get(), spx.data(), x.get());
+        wrap_srandspv_helper(n, sparsity.get(), PTR(spx), x.get());
     }
 
     void srcp(const pointer & v)
@@ -217,7 +217,7 @@ namespace ESN {
     template <>
     void rcp(scalar<float> & x)
     {
-        wrap_srcp(x.data());
+        wrap_srcp(PTR(x));
     }
 
     void stanhv(const int n, const pointer & v)
@@ -256,7 +256,7 @@ namespace ESN {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSaxpy, get_cublas_handle(),
-            x.size(), alpha.data(), x.data(), x.inc(), y.data(), y.inc());
+            x.size(), PTR(alpha), PTR(x), x.inc(), PTR(y), y.inc());
     }
 
     void sdot(const int n, const const_pointer & x, const int incx,
@@ -278,7 +278,7 @@ namespace ESN {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSdot, get_cublas_handle(),
-            x.size(), x.data(), x.inc(), y.data(), y.inc(), result.data());
+            x.size(), PTR(x), x.inc(), PTR(y), y.inc(), PTR(result));
     }
 
     void sgemv(const char trans, const int m, const int n,
@@ -306,8 +306,8 @@ namespace ESN {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSgemv, get_cublas_handle(), to_cublas_operation(trans),
-            a.rows(), a.cols(), alpha.data(), a.data(), a.ld(),
-            x.data(), x.inc(), beta.data(), y.data(), y.inc());
+            a.rows(), a.cols(), PTR(alpha), PTR(a), a.ld(),
+            PTR(x), x.inc(), PTR(beta), PTR(y), y.inc());
     }
 
     void ssbmv(const char uplo, const int n, const int k,
@@ -353,8 +353,8 @@ namespace ESN {
         VCB(cublasSetPointerMode, get_cublas_handle(),
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
-            to_cublas_operation(transb), m, n, k, alpha.data(), a.data(),
-            a.ld(), b.data(), b.ld(), beta.data(), c.data(), c.ld());
+            to_cublas_operation(transb), m, n, k, PTR(alpha), PTR(a),
+            a.ld(), PTR(b), b.ld(), PTR(beta), PTR(c), c.ld());
     }
 
     int sgesvd(const char jobu, const char jobvt, const int m, const int n,
@@ -369,7 +369,7 @@ namespace ESN {
         int * devInfo = nullptr;
         VCU(cudaMalloc, &devInfo, sizeof(int));
         VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt, m, n,
-            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, work.data(),
+            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, PTR(work),
             lwork, nullptr, devInfo);
         int hostInfo = 0;
         VCU(cudaMemcpy, &hostInfo, devInfo, sizeof(int),
