@@ -110,8 +110,7 @@ namespace ESN {
 
         // mOneMinusLeakingRate[i] = 1.0f - mLeakingRate[i]
         fillv(kOne, mOneMinusLeakingRate);
-        saxpy(params.neuronCount, kMinusOne.ptr(), mLeakingRate.ptr(), 1,
-            mOneMinusLeakingRate.ptr(), 1);
+        axpy(kMinusOne, mLeakingRate, mOneMinusLeakingRate);
 
         fillv(kZero, mIn);
         srandv(params.neuronCount, kMinusOne.ptr(), kOne.ptr(), mX.ptr());
@@ -128,8 +127,7 @@ namespace ESN {
             throw std::invalid_argument( "Wrong size of the input vector" );
 
         mIn = inputs;
-        saxpy(mParams.inputCount, kOne.ptr(), mWInBias.ptr(), 1,
-            mIn.ptr(), 1);
+        axpy(kOne, mWInBias, mIn);
         sprodvv(mParams.inputCount, mWInScaling.ptr(), mIn.ptr());
     }
 
