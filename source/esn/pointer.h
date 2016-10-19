@@ -12,6 +12,7 @@ namespace ESN {
 
     pointer make_pointer(std::size_t byteSize);
 
+    // TODO apply offset
     void memcpy(
         const pointer & dst,
         const void * src,
