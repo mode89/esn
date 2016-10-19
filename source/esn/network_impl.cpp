@@ -219,10 +219,8 @@ namespace ESN {
         prodvv(mOneMinusLeakingRate, mX);
 
         // mX = mLeakingRate[i] * mTemp[i] + mX;
-        ssbmv('L', mParams.neuronCount, 0, kOne.ptr(), mLeakingRate.ptr(),
-            1, mTemp.ptr(), 1, kOne.ptr(), mX.ptr(), 1);
-        // SSBMV('L', mParams.neuronCount, 0, 1.0f, mLeakingRate.data(),
-        //     1, mTemp.data(), 1, 1.0f, mX.data(), 1);
+        sbmv('L', mParams.neuronCount, 0, kOne, mLeakingRate, 1, mTemp,
+            kOne, mX);
 
         // mOut = mWOut * mX
         matrix<float> matWOut(mWOut,
