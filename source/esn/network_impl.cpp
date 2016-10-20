@@ -90,8 +90,8 @@ namespace ESN {
         Constant(mWOut.data(),
             params.outputCount * params.neuronCount, 0.0f);
 
-        Constant(mOutScale.data(), params.outputCount, 1.0f);
-        Constant(mOutBias.data(), params.outputCount, 0.0f);
+        fillv(kOne, mOutScale);
+        fillv(kZero, mOutBias);
 
         if (params.hasOutputFeedback)
         {
@@ -152,7 +152,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the output scale vector");
 
-        SCOPY(mParams.outputCount, scale.data(), 1, mOutScale.data(), 1);
+        mOutScale = scale;
     }
 
     void NetworkImpl::SetOutputBias(const std::vector<float> & bias)
@@ -161,7 +161,7 @@ namespace ESN {
             throw std::invalid_argument(
                 "Wrong size of the output bias vector");
 
-        SCOPY(mParams.outputCount, bias.data(), 1, mOutBias.data(), 1);
+        mOutBias = bias;
     }
 
     void NetworkImpl::SetFeedbackScalings(
@@ -263,7 +263,8 @@ namespace ESN {
                 "actual number of outputs" );
 
         for (int i = 0; i < mParams.outputCount; ++ i)
-            output[i] = mOut[i] * mOutScale[i] + mOutBias[i];
+            output[i] = mOut[i] * static_cast<float>(mOutScale[i]) +
+                static_cast<float>(mOutBias[i]);
     }
 
 } // namespace ESN

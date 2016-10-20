@@ -35,8 +35,9 @@ namespace ESN {
         unsigned index, float value, bool force)
     {
         // Calculate output without bias and scaling
-        float _value = (value - mNetwork->mOutBias[index]) /
-            mNetwork->mOutScale[index];
+        float _value = (value -
+            static_cast<float>(mNetwork->mOutBias[index])) /
+                static_cast<float>(mNetwork->mOutScale[index]);
 
         // Extract row of weights corresponding to the output
         const int neuronCount = mNetwork->mParams.neuronCount;

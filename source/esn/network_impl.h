@@ -62,8 +62,8 @@ namespace ESN {
         vector<float> mLeakingRate;
         vector<float> mOneMinusLeakingRate;
         std::vector<float> mOut;
-        std::vector<float> mOutScale;
-        std::vector<float> mOutBias;
+        vector<float> mOutScale;
+        vector<float> mOutBias;
         std::vector<float> mWOut;
         matrix<float> mWFB;
         vector<float> mWFBScaling;
