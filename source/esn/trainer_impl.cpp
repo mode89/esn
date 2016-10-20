@@ -42,22 +42,16 @@ namespace ESN {
         // Extract row of weights corresponding to the output
         const int neuronCount = mNetwork->mParams.neuronCount;
         const int outputCount = mNetwork->mParams.outputCount;
-        std::vector<float> w(neuronCount);
-        SCOPY(neuronCount, &mNetwork->mWOut[index],
-            outputCount, w.data(), 1);
+        vector<float> w = mNetwork->mWOut[index];
 
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
-                w.data(), std::atanh(mNetwork->mOut[index]),
+                w, std::atanh(mNetwork->mOut[index]),
                 std::atanh(_value), mNetwork->mX.ptr());
         else
             mAdaptiveFilter[index]->Train(
-                w.data(), mNetwork->mOut[index],
+                w, mNetwork->mOut[index],
                 _value, mNetwork->mX.ptr());
-
-        // Write back the row of weights
-        SCOPY(neuronCount, w.data(), 1,
-            &mNetwork->mWOut[index], outputCount);
 
         if (force)
             mNetwork->mOut[index] = _value;

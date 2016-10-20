@@ -32,7 +32,7 @@ namespace ESN {
         , mOut(params.outputCount)
         , mOutScale(params.outputCount)
         , mOutBias(params.outputCount)
-        , mWOut(params.outputCount * params.neuronCount)
+        , mWOut(params.outputCount, params.neuronCount)
         , mWFB(params.neuronCount, params.outputCount)
         , mWFBScaling(params.outputCount)
         , mTemp(params.neuronCount)
@@ -87,8 +87,8 @@ namespace ESN {
         fillv(kOne, mWInScaling);
         fillv(kZero, mWInBias);
 
-        Constant(mWOut.data(),
-            params.outputCount * params.neuronCount, 0.0f);
+        vector<float> vecWOut(mWOut.ptr(), mWOut.rows() * mWOut.cols());
+        fillv(kZero, vecWOut);
 
         fillv(kOne, mOutScale);
         fillv(kZero, mOutBias);
@@ -218,10 +218,8 @@ namespace ESN {
             kOne, mX);
 
         // mOut = mWOut * mX
-        matrix<float> matWOut(mWOut,
-            mParams.outputCount, mParams.neuronCount);
         vector<float> vecOut(mOut);
-        gemv('N', kOne, matWOut, mX, kZero, vecOut);
+        gemv('N', kOne, mWOut, mX, kZero, vecOut);
         mOut = vecOut;
 
         if (!mParams.linearOutput)

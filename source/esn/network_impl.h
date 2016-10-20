@@ -64,7 +64,7 @@ namespace ESN {
         std::vector<float> mOut;
         vector<float> mOutScale;
         vector<float> mOutBias;
-        std::vector<float> mWOut;
+        matrix<float> mWOut;
         matrix<float> mWFB;
         vector<float> mWFBScaling;
         vector<float> mTemp;
