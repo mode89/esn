@@ -41,6 +41,13 @@ __global__ void kernel_sprodvv(int n, const float * x, float * y)
         y[i] *= x[i];
 }
 
+__global__ void kernel_sdivvv(int n, float * x, const float * y)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        x[i] /= y[i];
+}
+
 void wrap_sfillv(int n, const float * alpha, float * x)
 {
     const int blockSize = 128;
@@ -80,4 +87,11 @@ void wrap_sprodvv(int n, const float * x, float * y)
     const int blockSize = 128;
     const int gridSize = (n + blockSize - 1) / blockSize;
     kernel_sprodvv<<<gridSize, blockSize>>>(n, x, y);
+}
+
+void wrap_sdivvv(int n, float * x, const float * y)
+{
+    const int blockSize = 128;
+    const int gridSize = (n + blockSize - 1) / blockSize;
+    kernel_sdivvv<<<gridSize, blockSize>>>(n, x, y);
 }

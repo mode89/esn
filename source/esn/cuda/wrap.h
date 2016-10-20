@@ -8,5 +8,6 @@ void wrap_srandv_helper(int n, const float * a, const float * b, float * x);
 void wrap_srandspv_helper(int n, const float * sparsity,
     const float * spx, float * x);
 void wrap_sprodvv(int n, const float * x, float * y);
+void wrap_sdivvv(int n, float * x, const float * y);
 
 #endif // __ESN_CUDA_WRAP_H__

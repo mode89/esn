@@ -58,6 +58,11 @@ namespace ESN {
         const vector<T> & x,
         vector<T> & y);
 
+    template <class T>
+    void divvv(
+        vector<T> & x,
+        const vector<T> & y);
+
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy);
     void saxpy(const int h, const const_pointer & alpha,
