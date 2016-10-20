@@ -2,9 +2,11 @@
 #define __ESN_SOURCE_SCALAR_H__
 
 #include <esn/pointer.h>
-#include <esn/vector.h>
 
 namespace ESN {
+
+    template <class T>
+    class vector;
 
     template <class T>
     class scalar: public vector<T>
