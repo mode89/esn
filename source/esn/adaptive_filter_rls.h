@@ -19,7 +19,7 @@ namespace ESN {
 
         ESN_EXPORT void
         Train(
-            float * w,
+            vector<float> & w,
             float actualOutput,
             float referenceOutput,
             const pointer & input);
@@ -31,7 +31,6 @@ namespace ESN {
         const scalar<float> kOne;
         const scalar<float> kAlpha;
         const scalar<float> kBeta;
-        vector<float> mW;
         matrix<float> mP;
         vector<float> mTemp;
         scalar<float> mDot;
