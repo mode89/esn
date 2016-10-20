@@ -7,6 +7,9 @@
 namespace ESN {
 
     template <class T>
+    class scalar;
+
+    template <class T>
     class vector
     {
     public:
@@ -71,6 +74,11 @@ namespace ESN {
             std::vector<T> retval(m_size);
             memcpy(retval.data(), m_ptr, m_size * sizeof(T));
             return retval;
+        }
+
+        scalar<T> operator[](std::size_t index)
+        {
+            return scalar<T>(m_ptr, index * m_inc + m_off);
         }
 
         std::size_t size() const { return m_size; }
