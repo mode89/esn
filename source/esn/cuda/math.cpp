@@ -490,7 +490,7 @@ namespace ESN {
             PTR(vt), vt.ld(), PTR(work), lwork, nullptr,
             // TODO replace with PTR(devInfo)
             reinterpret_cast<int*>(devInfo.ptr().get()));
-        return devInfo;
+        return static_cast<int>(devInfo);
     }
 
 } // namespace ESN

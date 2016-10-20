@@ -32,7 +32,7 @@ namespace ESN {
             return *this;
         }
 
-        operator T() const
+        explicit operator T() const
         {
             T retval;
             memcpy(&retval, vector<T>::ptr(), sizeof(T));
