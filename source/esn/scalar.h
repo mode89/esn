@@ -16,6 +16,11 @@ namespace ESN {
             memcpy(vector<T>::ptr(), &value, sizeof(T));
         }
 
+        scalar(const pointer & ptr, std::size_t off)
+            : vector<T>(ptr, 1, off)
+        {
+        }
+
         scalar<T> & operator=(const T & value)
         {
             if (vector<T>::off() != 0)
