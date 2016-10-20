@@ -41,6 +41,8 @@ namespace ESN {
             : vector(v.data(), v.size())
         {}
 
+        vector(vector<T> &&) = default;
+
         vector<T> & operator=(const std::vector<T> & v)
         {
             if (v.size() != m_size)
