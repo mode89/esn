@@ -7,6 +7,9 @@
 namespace ESN {
 
     template <class T>
+    class vector;
+
+    template <class T>
     class matrix
     {
     public:
@@ -44,6 +47,11 @@ namespace ESN {
             , m_off(0)
         {
             memcpy(m_ptr, v.data(), rows * cols * sizeof(T));
+        }
+
+        vector<T> operator[](std::size_t i)
+        {
+            return vector<T>(m_ptr, m_cols, i + m_off, m_ld);
         }
 
         std::size_t rows() const { return m_rows; }
