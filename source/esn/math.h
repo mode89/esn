@@ -65,6 +65,11 @@ namespace ESN {
 
     void SCOPY(const int n, const float * x, const int incx, float * y,
         const int incy);
+    template <class T>
+    void copy(
+        const vector<T> & x,
+        vector<T> & y);
+
     void saxpy(const int h, const const_pointer & alpha,
         const const_pointer & x, const int incx,
         const pointer & y, const int incy);

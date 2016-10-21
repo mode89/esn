@@ -325,6 +325,18 @@ namespace ESN {
         cblas_scopy(n, x, incx, y, incy);
     }
 
+    template <>
+    void copy(
+        const vector<float> & x,
+        vector<float> & y)
+    {
+        if (x.size() != y.size())
+            throw std::runtime_error(
+                "copy(): 'x' and 'y' must have the same size");
+        VCB(cublasScopy, get_cublas_handle(), x.size(), PTR(x), x.inc(),
+            PTR(y), y.inc());
+    }
+
     void saxpy(const int n, const const_pointer & alpha,
         const const_pointer & x, const int incx,
         const pointer & y, const int incy)
