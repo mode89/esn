@@ -36,6 +36,7 @@ namespace ESN {
         , mWFB(params.neuronCount, params.outputCount)
         , mWFBScaling(params.outputCount)
         , mTemp(params.neuronCount)
+        , mTempOut(params.outputCount)
     {
         if ( params.inputCount <= 0 )
             throw std::invalid_argument(
@@ -109,7 +110,7 @@ namespace ESN {
 
         fillv(kZero, mIn);
         randv(kMinusOne, kOne, mX);
-        Constant(mOut.data(), params.outputCount, 0.0f);
+        fillv(kZero, mOut);
     }
 
     NetworkImpl::~NetworkImpl()
@@ -195,16 +196,14 @@ namespace ESN {
             if (mParams.linearOutput)
             {
                 // mOut[i] = tanh(mOut[i])
-                TanhEwise(mOut.data(), mParams.outputCount);
+                tanhv(mOut);
             }
 
             // mOut[i] *= mWFBScaling[i]
-            vector<float> vecOut(mOut);
-            prodvv(mWFBScaling, vecOut);
-            mOut = vecOut;
+            prodvv(mWFBScaling, mOut);
 
             // mTemp = mWFB * mOut + mTemp
-            gemv('N', kOne, mWFB, vecOut, kOne, mTemp);
+            gemv('N', kOne, mWFB, mOut, kOne, mTemp);
         }
 
         // mTemp[i] = tanh(mTemp[i])
@@ -218,16 +217,14 @@ namespace ESN {
             kOne, mX);
 
         // mOut = mWOut * mX
-        vector<float> vecOut(mOut);
-        gemv('N', kOne, mWOut, mX, kZero, vecOut);
-        mOut = vecOut;
+        gemv('N', kOne, mWOut, mX, kZero, mOut);
 
         if (!mParams.linearOutput)
             // mOut[i] = tanh(mOut[i])
-            TanhEwise(mOut.data(), mParams.outputCount);
+            tanhv(mOut);
 
         for (int i = 0; i < mParams.outputCount; ++ i)
-            if (!std::isfinite(mOut[i]))
+            if (!std::isfinite(static_cast<float>(mOut[i])))
                 throw OutputIsNotFinite();
     }
 
@@ -260,9 +257,11 @@ namespace ESN {
                 "Size of the vector must be equal "
                 "actual number of outputs" );
 
-        for (int i = 0; i < mParams.outputCount; ++ i)
-            output[i] = mOut[i] * static_cast<float>(mOutScale[i]) +
-                static_cast<float>(mOutBias[i]);
+        // output[i] = mOut[i] * mOutScale[i] + mOutBias[i]
+        copy(mOutBias, mTempOut);
+        sbmv('L', mParams.outputCount, 0, kOne, mOut, 1, mOutScale,
+            kOne, mTempOut);
+        output = mTempOut;
     }
 
 } // namespace ESN

@@ -46,11 +46,11 @@ namespace ESN {
 
         if (!mNetwork->mParams.linearOutput)
             mAdaptiveFilter[index]->Train(
-                w, std::atanh(mNetwork->mOut[index]),
+                w, std::atanh(static_cast<float>(mNetwork->mOut[index])),
                 std::atanh(_value), mNetwork->mX.ptr());
         else
             mAdaptiveFilter[index]->Train(
-                w, mNetwork->mOut[index],
+                w, static_cast<float>(mNetwork->mOut[index]),
                 _value, mNetwork->mX.ptr());
 
         if (force)
