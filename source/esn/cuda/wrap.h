@@ -4,6 +4,7 @@
 void wrap_sfillv(int n, const float * alpha, float * x);
 void wrap_srcp(float *);
 void wrap_stanhv(int n, float * v);
+void wrap_satanhv(int n, float * x);
 void wrap_srandv_helper(int n, const float * a, const float * b, float * x);
 void wrap_srandspv_helper(int n, const float * sparsity,
     const float * spx, float * x);

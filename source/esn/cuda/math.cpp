@@ -279,6 +279,15 @@ namespace ESN {
         wrap_stanhv(x.size(), PTR(x));
     }
 
+    template <>
+    void atanhv(vector<float> & x)
+    {
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "tanhv(): vector must have unity increment");
+        wrap_satanhv(x.size(), PTR(x));
+    }
+
     void sprodvv(const int n, const const_pointer & x,
         const pointer & y)
     {

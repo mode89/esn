@@ -17,6 +17,13 @@ __global__ void kernel_stanhv(int n, float * v)
         v[i] = tanh(v[i]);
 }
 
+__global__ void kernel_satanhv(int n, float * x)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        x[i] = atanh(x[i]);
+}
+
 __global__ void kernel_srandv_helper(
     int n, const float * a, const float * b, float * x)
 {
@@ -65,6 +72,13 @@ void wrap_stanhv(int n, float * v)
     const int blockSize = 128;
     const int gridSize = (n + blockSize - 1) / blockSize;
     kernel_stanhv<<<gridSize, blockSize>>>(n, v);
+}
+
+void wrap_satanhv(int n, float * x)
+{
+    const int blockSize = 128;
+    const int gridSize = (n + blockSize - 1) / blockSize;
+    kernel_satanhv<<<gridSize, blockSize>>>(n, x);
 }
 
 void wrap_srandv_helper(int n, const float * a, const float * b, float * x)

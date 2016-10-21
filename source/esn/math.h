@@ -51,6 +51,9 @@ namespace ESN {
     template <class T>
     void tanhv(vector<T> & x);
 
+    template <class T>
+    void atanhv(vector<T> & x);
+
     void sprodvv(const int n, const const_pointer & x,
         const pointer & y);
     template <class T>
