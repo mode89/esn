@@ -38,6 +38,9 @@ namespace ESN {
 
         explicit operator T() const
         {
+            if (vector<T>::off() != 0)
+                std::runtime_error(
+                    "Cannot copy to scalar with non-zero offset");
             T retval;
             memcpy(&retval, vector<T>::ptr(), sizeof(T));
             return retval;
