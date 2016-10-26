@@ -13,10 +13,6 @@
 #include <esn/pointer.h>
 #include <memory>
 
-extern "C" {
-    #include <cblas.h>
-}
-
 #define PTR(val) ((val).ptr().get() + (val).off())
 
 namespace ESN {
@@ -92,28 +88,6 @@ namespace ESN {
         return *handle;
     }
 
-    static inline CBLAS_TRANSPOSE ToCblasTranspose(char trans)
-    {
-        switch (trans)
-        {
-        case 'N':
-            return CblasNoTrans;
-        case 'T':
-            return CblasTrans;
-        }
-    }
-
-    static inline CBLAS_UPLO ToCblasUplo(char uplo)
-    {
-        switch (uplo)
-        {
-        case 'U':
-            return CblasUpper;
-        case 'L':
-            return CblasLower;
-        }
-    }
-
     static inline cublasOperation_t to_cublas_operation(char op)
     {
         switch (op)
@@ -142,36 +116,6 @@ namespace ESN {
         }
     }
 
-    void Constant(float * v, int size, float value)
-    {
-        for (int i = 0; i < size; ++ i)
-            v[i] = value;
-    }
-
-    void TanhEwise(float * v, int size)
-    {
-        for (int i = 0; i < size; ++ i)
-            v[i] = std::tanh(v[i]);
-    }
-
-    void ProductEwise(float * out, const float * in, int size)
-    {
-        for (int i = 0; i < size; ++ i)
-            out[i] *= in[i];
-    }
-
-    void SumEwise(float * out, const float * a, const float * b, int size)
-    {
-        for (int i = 0; i < size; ++ i)
-            out[i] = a[i] + b[i];
-    }
-
-    void sfillv(const int n, const const_pointer & alpha,
-        const pointer & x)
-    {
-        wrap_sfillv(n, alpha.get(), x.get());
-    }
-
     template <>
     void fillv(
         const scalar<float> & alpha,
@@ -181,13 +125,6 @@ namespace ESN {
             throw std::runtime_error(
                 "fillv(): 'x' must have unity increment");
         wrap_sfillv(x.size(), PTR(alpha), PTR(x));
-    }
-
-    void srandv(const int n, const const_pointer & a,
-        const const_pointer & b, const pointer & x)
-    {
-        VCR(curandGenerateUniform, get_curand_handle(), x.get(), n);
-        wrap_srandv_helper(n, a.get(), b.get(), x.get());
     }
 
     template <>
@@ -219,20 +156,6 @@ namespace ESN {
         wrap_srandv_helper(size, PTR(a), PTR(b), PTR(x));
     }
 
-    void srandspv(const int n, const const_pointer & a,
-        const const_pointer & b,
-        const const_pointer & sparsity, const pointer & x)
-    {
-        srandv(n, a, b, x);
-
-        scalar<float> zero(0.0f);
-        scalar<float> one(1.0f);
-        vector<float> spx(n);
-        srandv(n, zero.ptr(), one.ptr(), spx.ptr());
-
-        wrap_srandspv_helper(n, sparsity.get(), PTR(spx), x.get());
-    }
-
     template <>
     void randspm(
         const scalar<float> & a,
@@ -254,20 +177,10 @@ namespace ESN {
             PTR(sparsity), PTR(spx), PTR(x));
     }
 
-    void srcp(const pointer & v)
-    {
-        wrap_srcp(v.get());
-    }
-
     template <>
     void rcp(scalar<float> & x)
     {
         wrap_srcp(PTR(x));
-    }
-
-    void stanhv(const int n, const pointer & v)
-    {
-        wrap_stanhv(n, v.get());
     }
 
     template <>
@@ -286,12 +199,6 @@ namespace ESN {
             throw std::runtime_error(
                 "tanhv(): vector must have unity increment");
         wrap_satanhv(x.size(), PTR(x));
-    }
-
-    void sprodvv(const int n, const const_pointer & x,
-        const pointer & y)
-    {
-        wrap_sprodvv(n, x.get(), y.get());
     }
 
     template <>
@@ -328,12 +235,6 @@ namespace ESN {
         wrap_sdivvv(x.size(), PTR(x), PTR(y));
     }
 
-    void SCOPY(const int n, const float * x, const int incx, float * y,
-        const int incy)
-    {
-        cblas_scopy(n, x, incx, y, incy);
-    }
-
     template <>
     void copy(
         const vector<float> & x,
@@ -344,16 +245,6 @@ namespace ESN {
                 "copy(): 'x' and 'y' must have the same size");
         VCB(cublasScopy, get_cublas_handle(), x.size(), PTR(x), x.inc(),
             PTR(y), y.inc());
-    }
-
-    void saxpy(const int n, const const_pointer & alpha,
-        const const_pointer & x, const int incx,
-        const pointer & y, const int incy)
-    {
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSaxpy, get_cublas_handle(),
-            n, alpha.get(), x.get(), incx, y.get(), incy);
     }
 
     template <>
@@ -368,16 +259,6 @@ namespace ESN {
             x.size(), PTR(alpha), PTR(x), x.inc(), PTR(y), y.inc());
     }
 
-    void sdot(const int n, const const_pointer & x, const int incx,
-        const const_pointer & y, const int incy,
-        const pointer & result)
-    {
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSdot, get_cublas_handle(),
-            n, x.get(), incx, y.get(), incy, result.get());
-    }
-
     template <>
     void dot(
         const vector<float> & x,
@@ -388,19 +269,6 @@ namespace ESN {
             CUBLAS_POINTER_MODE_DEVICE);
         VCB(cublasSdot, get_cublas_handle(),
             x.size(), PTR(x), x.inc(), PTR(y), y.inc(), PTR(result));
-    }
-
-    void sgemv(const char trans, const int m, const int n,
-        const const_pointer & alpha, const const_pointer & a,
-        const int lda, const const_pointer & x, const int incx,
-        const const_pointer & beta, const pointer & y,
-        const int incy)
-    {
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSgemv, get_cublas_handle(), to_cublas_operation(trans),
-            m, n, alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
-            y.get(), incy);
     }
 
     template <>
@@ -417,19 +285,6 @@ namespace ESN {
         VCB(cublasSgemv, get_cublas_handle(), to_cublas_operation(trans),
             a.rows(), a.cols(), PTR(alpha), PTR(a), a.ld(),
             PTR(x), x.inc(), PTR(beta), PTR(y), y.inc());
-    }
-
-    void ssbmv(const char uplo, const int n, const int k,
-        const const_pointer & alpha, const const_pointer & a,
-        const int lda, const const_pointer & x, const int incx,
-        const const_pointer & beta, const pointer & y,
-        const int incy)
-    {
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSsbmv, get_cublas_handle(), to_cublas_fill_mode(uplo),
-            n, k, alpha.get(), a.get(), lda, x.get(), incx, beta.get(),
-            y.get(), incy);
     }
 
     template <>
@@ -454,20 +309,6 @@ namespace ESN {
             PTR(y), y.inc());
     }
 
-    void sgemm(const char transa, const char transb, const int m,
-        const int n, const int k, const const_pointer & alpha,
-        const const_pointer & a, const int lda,
-        const const_pointer & b, const int ldb,
-        const const_pointer & beta, const pointer & c,
-        const int ldc)
-    {
-        VCB(cublasSetPointerMode, get_cublas_handle(),
-            CUBLAS_POINTER_MODE_DEVICE);
-        VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
-            to_cublas_operation(transb), m, n, k, alpha.get(), a.get(), lda,
-            b.get(), ldb, beta.get(), c.get(), ldc);
-    }
-
     template <>
     void gemm(
         const char transa,
@@ -486,27 +327,6 @@ namespace ESN {
         VCB(cublasSgemm, get_cublas_handle(), to_cublas_operation(transa),
             to_cublas_operation(transb), m, n, k, PTR(alpha), PTR(a),
             a.ld(), PTR(b), b.ld(), PTR(beta), PTR(c), c.ld());
-    }
-
-    int sgesvd(const char jobu, const char jobvt, const int m, const int n,
-        const pointer & a, const int lda, const pointer & s,
-        const pointer & u, const int ldu, const pointer & vt,
-        const int ldvt)
-    {
-        int lwork = 0;
-        VCS(cusolverDnSgesvd_bufferSize,
-            get_cusolver_handle(), m, n, &lwork);
-        vector<float> work(lwork);
-        int * devInfo = nullptr;
-        VCU(cudaMalloc, &devInfo, sizeof(int));
-        VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt, m, n,
-            a.get(), lda, s.get(), u.get(), ldu, vt.get(), ldvt, PTR(work),
-            lwork, nullptr, devInfo);
-        int hostInfo = 0;
-        VCU(cudaMemcpy, &hostInfo, devInfo, sizeof(int),
-            cudaMemcpyDeviceToHost);
-        VCU(cudaFree, devInfo);
-        return hostInfo;
     }
 
     template <>
