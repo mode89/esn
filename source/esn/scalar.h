@@ -12,6 +12,10 @@ namespace ESN {
     class scalar: public vector<T>
     {
     public:
+        scalar()
+            : vector<T>(1)
+        {}
+
         scalar(T value)
             : vector<T>(1)
         {
