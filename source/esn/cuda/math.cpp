@@ -13,7 +13,17 @@
 #include <esn/pointer.h>
 #include <memory>
 
-#define PTR(val) ((val).ptr().get() + (val).off())
+static inline float * cast_ptr(void * ptr)
+{
+    return static_cast<float*>(ptr);
+}
+
+static inline const float * cast_ptr(const void * ptr)
+{
+    return static_cast<const float*>(ptr);
+}
+
+#define PTR(val) (cast_ptr((val).ptr().get()) + (val).off())
 
 namespace ESN {
 
@@ -346,7 +356,6 @@ namespace ESN {
         VCS(cusolverDnSgesvd, get_cusolver_handle(), jobu, jobvt,
             a.rows(), a.cols(), PTR(a), a.ld(), PTR(s), PTR(u), u.ld(),
             PTR(vt), vt.ld(), PTR(work), lwork, nullptr,
-            // TODO replace with PTR(devInfo)
             reinterpret_cast<int*>(devInfo.ptr().get()));
         return static_cast<int>(devInfo);
     }

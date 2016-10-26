@@ -6,9 +6,8 @@
 
 namespace ESN {
 
-    // TODO implement as void
-    using pointer = std::shared_ptr<float>;
-    using const_pointer = std::shared_ptr<const float>;
+    using pointer = std::shared_ptr<void>;
+    using const_pointer = std::shared_ptr<const void>;
 
     pointer make_pointer(std::size_t byteSize);
 
