@@ -15,6 +15,7 @@ namespace ESN {
         , mForgettingFactor(forgettingFactor)
         , kZero(0.0f)
         , kOne(1.0f)
+        , kMinusOne(-1.0f)
         , kAlpha(-1.0f / forgettingFactor)
         , kBeta(1.0f / forgettingFactor)
         , mP(inputCount, inputCount)
@@ -33,13 +34,16 @@ namespace ESN {
 
     void AdaptiveFilterRLS::Train(
         vector<float> & w,
-        float actualOutput,
-        float referenceOutput,
+        const scalar<float> & actualOutput,
+        const scalar<float> & referenceOutput,
         const pointer & input)
     {
         int N = mInputCount;
-        mDelta = referenceOutput - actualOutput;
         vector<float> vecInput(input, N);
+
+        // mDelta = referenceOutput - actualOutput;
+        copy(referenceOutput, mDelta);
+        axpy(kMinusOne, actualOutput, mDelta);
 
         // mTemp = transpose(mP) * input
         gemv('T', kOne, mP, vecInput, kZero, mTemp);

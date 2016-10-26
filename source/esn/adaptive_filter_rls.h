@@ -20,8 +20,8 @@ namespace ESN {
         ESN_EXPORT void
         Train(
             vector<float> & w,
-            float actualOutput,
-            float referenceOutput,
+            const scalar<float> & actualOutput,
+            const scalar<float> & referenceOutput,
             const pointer & input);
 
     private:
@@ -29,6 +29,7 @@ namespace ESN {
         const scalar<float> mForgettingFactor;
         const scalar<float> kZero;
         const scalar<float> kOne;
+        const scalar<float> kMinusOne;
         const scalar<float> kAlpha;
         const scalar<float> kBeta;
         matrix<float> mP;
