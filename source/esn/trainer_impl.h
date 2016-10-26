@@ -25,9 +25,15 @@ namespace ESN {
             bool forceOutput) override;
 
     private:
+        const scalar<float> kMinusOne;
         TrainerParams mParams;
         std::shared_ptr<NetworkImpl> mNetwork;
         std::vector<std::shared_ptr<AdaptiveFilterRLS>> mAdaptiveFilter;
+
+        // Temp values
+        scalar<float> mTempValue;
+        scalar<float> mTempAtanhOut;
+        scalar<float> mTempAtanhValue;
     };
 
 } // namespace ESN

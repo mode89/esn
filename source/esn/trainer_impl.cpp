@@ -21,8 +21,12 @@ namespace ESN {
         const TrainerParams & params,
         const std::shared_ptr<Network> & network)
         : mParams(params)
+        , kMinusOne(-1.0f)
         , mNetwork(std::static_pointer_cast<NetworkImpl>(network))
         , mAdaptiveFilter(mNetwork->mParams.outputCount)
+        , mTempValue(0.0f)
+        , mTempAtanhOut(0.0f)
+        , mTempAtanhValue(0.0f)
     {
         for (int i = 0; i < mNetwork->mParams.outputCount; ++i)
             mAdaptiveFilter[i] = std::make_shared<AdaptiveFilterRLS>(
@@ -35,26 +39,31 @@ namespace ESN {
         unsigned index, float value, bool force)
     {
         // Calculate output without bias and scaling
-        float _value = (value -
-            static_cast<float>(mNetwork->mOutBias[index])) /
-                static_cast<float>(mNetwork->mOutScale[index]);
+        mTempValue = value;
+        axpy(kMinusOne, mNetwork->mOutBias[index], mTempValue);
+        divvv(mTempValue, mNetwork->mOutScale[index]);
 
         // Extract row of weights corresponding to the output
-        const int neuronCount = mNetwork->mParams.neuronCount;
-        const int outputCount = mNetwork->mParams.outputCount;
         vector<float> w = mNetwork->mWOut[index];
 
         if (!mNetwork->mParams.linearOutput)
+        {
+            copy(mNetwork->mOut[index], mTempAtanhOut);
+            atanhv(mTempAtanhOut);
+            copy(mTempValue, mTempAtanhValue);
+            atanhv(mTempAtanhValue);
             mAdaptiveFilter[index]->Train(
-                w, std::atanh(static_cast<float>(mNetwork->mOut[index])),
-                std::atanh(_value), mNetwork->mX.ptr());
+                w, mTempAtanhOut, mTempAtanhValue, mNetwork->mX.ptr());
+        }
         else
             mAdaptiveFilter[index]->Train(
-                w, static_cast<float>(mNetwork->mOut[index]),
-                _value, mNetwork->mX.ptr());
+                w, mNetwork->mOut[index], mTempValue, mNetwork->mX.ptr());
 
         if (force)
-            mNetwork->mOut[index] = _value;
+        {
+            scalar<float> out(mNetwork->mOut[index]);
+            copy(mTempValue, out);
+        }
     }
 
     void TrainerImpl::TrainOnline(
