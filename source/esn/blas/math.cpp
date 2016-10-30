@@ -154,6 +154,19 @@ namespace ESN {
     }
 
     template <>
+    void atanhv(vector<float> & x)
+    {
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "atanhv(): vector must have unity increment");
+
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] = std::atanh(ptrX[i]);
+    }
+
+    template <>
     void prodvv(
         const vector<float> & x,
         vector<float> & y)
