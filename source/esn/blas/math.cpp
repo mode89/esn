@@ -81,6 +81,13 @@ namespace ESN {
     }
 
     template <>
+    void rcp(scalar<float> & x)
+    {
+        float * const ptrX = PTR(x);
+        *ptrX = 1.0f / *ptrX;
+    }
+
+    template <>
     void copy(
         const vector<float> & x,
         vector<float> & y)
