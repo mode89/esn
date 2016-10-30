@@ -290,12 +290,19 @@ namespace ESN {
             PTR(b), b.ld(), *PTR(beta), PTR(c), c.ld());
     }
 
-    int SGESDD(const char jobz, const int m, const int n, float * a,
-        const int lda, float * s, float * u, const int ldu, float * vt,
-        const int ldvt)
+    template <>
+    int gesvd(
+        const char jobu,
+        const char jobvt,
+        matrix<float> & a,
+        vector<float> & s,
+        matrix<float> & u,
+        matrix<float> & vt)
     {
-        return LAPACKE_sgesdd(LAPACK_COL_MAJOR, jobz, m, n, a, lda, s, u,
-            ldu, vt, ldvt);
+        vector<float> superb(std::min(a.rows(), a.cols()) - 1);
+        return LAPACKE_sgesvd(LAPACK_COL_MAJOR, jobu, jobvt,
+            a.rows(), a.cols(), PTR(a), a.ld(), PTR(s), PTR(u), u.ld(),
+            PTR(vt), vt.ld(), PTR(superb));
     }
 
 } // namespace ESN
