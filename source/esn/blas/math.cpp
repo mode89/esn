@@ -49,13 +49,6 @@ namespace ESN {
         }
     }
 
-    void RandomUniform(float * v, int size, float a, float b)
-    {
-        std::uniform_real_distribution<float> dist(a, b);
-        for (int i = 0; i < size; ++ i)
-            v[i] = dist(sRandomEngine);
-    }
-
     void TanhEwise(float * v, int size)
     {
         for (int i = 0; i < size; ++ i)
@@ -82,6 +75,26 @@ namespace ESN {
         const std::size_t n = x.size();
         for (std::size_t i = 0; i < n; ++ i)
             ptrX[i] = valAlpha;
+    }
+
+    template <>
+    void randv(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        vector<float> & x)
+    {
+        if (x.size() <= 0)
+            throw std::runtime_error(
+                "randv(): 'x' must be not empty");
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "randv(): 'x' must have unitary increment");
+
+        std::uniform_real_distribution<float> dist(*PTR(a), *PTR(b));
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] = dist(sRandomEngine);
     }
 
     template <>
