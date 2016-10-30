@@ -238,12 +238,18 @@ namespace ESN {
             PTR(y), y.inc());
     }
 
-    void SGEMV(const char trans, const int m, const int n,
-        const float alpha, const float * a, const int lda, const float * x,
-        const int incx, const float beta, float * y, const int incy)
+    template <>
+    void gemv(
+        const char trans,
+        const scalar<float> & alpha,
+        const matrix<float> & a,
+        const vector<float> & x,
+        const scalar<float> & beta,
+        vector<float> & y)
     {
-        cblas_sgemv(CblasColMajor, ToCblasTranspose(trans), m, n, alpha,
-            a, lda, x, incx, beta, y, incy);
+        cblas_sgemv(CblasColMajor, ToCblasTranspose(trans),
+            a.rows(), a.cols(), *PTR(alpha), PTR(a), a.ld(),
+            PTR(x), x.inc(), *PTR(beta), PTR(y), y.inc());
     }
 
     void SSBMV(const char uplo, const int n, const int k,
