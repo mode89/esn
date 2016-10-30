@@ -49,12 +49,6 @@ namespace ESN {
         }
     }
 
-    void TanhEwise(float * v, int size)
-    {
-        for (int i = 0; i < size; ++ i)
-            v[i] = std::tanh(v[i]);
-    }
-
     void SumEwise(float * out, const float * a, const float * b, int size)
     {
         for (int i = 0; i < size; ++ i)
@@ -144,6 +138,19 @@ namespace ESN {
     {
         float * const ptrX = PTR(x);
         *ptrX = 1.0f / *ptrX;
+    }
+
+    template <>
+    void tanhv(vector<float> & x)
+    {
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "tanhv(): vector must have unity increment");
+
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] = std::tanh(ptrX[i]);
     }
 
     template <>
