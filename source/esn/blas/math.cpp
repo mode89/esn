@@ -56,12 +56,6 @@ namespace ESN {
             v[i] = dist(sRandomEngine);
     }
 
-    void Constant(float * v, int size, float value)
-    {
-        for (int i = 0; i < size; ++ i)
-            v[i] = value;
-    }
-
     void TanhEwise(float * v, int size)
     {
         for (int i = 0; i < size; ++ i)
@@ -72,6 +66,22 @@ namespace ESN {
     {
         for (int i = 0; i < size; ++ i)
             out[i] = a[i] + b[i];
+    }
+
+    template <>
+    void fillv(
+        const scalar<float> & alpha,
+        vector<float> & x)
+    {
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "fillv(): 'x' must have unity increment");
+
+        const float valAlpha = *PTR(alpha);
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] = valAlpha;
     }
 
     template <>
