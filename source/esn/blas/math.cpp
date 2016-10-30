@@ -252,12 +252,24 @@ namespace ESN {
             PTR(x), x.inc(), *PTR(beta), PTR(y), y.inc());
     }
 
-    void SSBMV(const char uplo, const int n, const int k,
-        const float alpha, const float * a, const int lda, const float * x,
-        const int incx, const float beta, float * y, const int incy)
+    template <>
+    void sbmv(
+        const char uplo,
+        const int n,
+        const int k,
+        const scalar<float> & alpha,
+        const vector<float> & a,
+        const int lda,
+        const vector<float> & x,
+        const scalar<float> & beta,
+        vector<float> & y)
     {
-        cblas_ssbmv(CblasColMajor, ToCblasUplo(uplo), n, k, alpha, a, lda,
-            x, incx, beta, y, incy);
+        if (a.inc() != 1)
+            throw std::runtime_error(
+                "sbmv(): 'a' must has unity increment");
+
+        cblas_ssbmv(CblasColMajor, ToCblasUplo(uplo), n, k, *PTR(alpha),
+            PTR(a), lda, PTR(x), x.inc(), *PTR(beta), PTR(y), y.inc());
     }
 
     void SGEMM(const char transa, const char transb, const int m,
