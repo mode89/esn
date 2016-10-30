@@ -96,10 +96,14 @@ namespace ESN {
             PTR(y), y.inc());
     }
 
-    float SDOT(const int n, const float * x, const int incx,
-        const float * y, const int incy)
+    template <>
+    void dot(
+        const vector<float> & x,
+        const vector<float> & y,
+        scalar<float> & result)
     {
-        return cblas_sdot(n, x, incx, y, incy);
+        *PTR(result) = cblas_sdot(x.size(), PTR(x), x.inc(),
+            PTR(y), y.inc());
     }
 
     void SGEMV(const char trans, const int m, const int n,
