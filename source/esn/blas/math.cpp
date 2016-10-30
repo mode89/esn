@@ -98,6 +98,22 @@ namespace ESN {
     }
 
     template <>
+    void randm(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        matrix<float> & x)
+    {
+        if (x.rows() != x.ld())
+            throw std::runtime_error("randm(): x.rows() != x.ld()");
+
+        std::uniform_real_distribution<float> dist(*PTR(a), *PTR(b));
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.rows() * x.cols();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] = dist(sRandomEngine);
+    }
+
+    template <>
     void rcp(scalar<float> & x)
     {
         float * const ptrX = PTR(x);
