@@ -189,6 +189,28 @@ namespace ESN {
     }
 
     template <>
+    void divvv(
+        vector<float> & x,
+        const vector<float> & y)
+    {
+        if (x.size() != y.size())
+            throw std::runtime_error(
+                "divvv(): 'x' and 'y' must have the same size");
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "divvv(): 'x' must have unity increment");
+        if (y.inc() != 1)
+            throw std::runtime_error(
+                "divvv(): 'y' must have unity increment");
+
+        float * const ptrX = PTR(x);
+        const float * const ptrY = PTR(y);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrX[i] /= ptrY[i];
+    }
+
+    template <>
     void copy(
         const vector<float> & x,
         vector<float> & y)
