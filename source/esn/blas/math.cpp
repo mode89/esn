@@ -80,10 +80,12 @@ namespace ESN {
             out[i] = a[i] + b[i];
     }
 
-    void SCOPY(const int n, const float * x, const int incx, float * y,
-        const int incy)
+    template <>
+    void copy(
+        const vector<float> & x,
+        vector<float> & y)
     {
-        cblas_scopy(n, x, incx, y, incy);
+        cblas_scopy(x.size(), PTR(x), x.inc(), PTR(y), y.inc());
     }
 
     template <>
