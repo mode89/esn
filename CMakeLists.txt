@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.3)
     option(ESN_USE_SYSTEM_GTEST "ESN library uses system GTest library" OFF)
     option(ESN_MAKE_PYTHON_BINDING "Build Python binding module" OFF)
     option(ESN_BUILD_TESTS "Build ESN tests" ON)
+    set(ESN_MATH "" CACHE STRING "ESN library math engine")
 
 # CMake configuration
 
@@ -21,7 +22,10 @@ cmake_minimum_required(VERSION 3.3)
 
 # Dependencies
 
-    add_subdirectory(source/esn/cuda)
+    if(ESN_MATH STREQUAL "")
+        message(FATAL_ERROR "ESN library math engine is not specified.")
+    endif()
+    add_subdirectory("source/esn/${ESN_MATH}")
 
 # Includes
 
@@ -37,7 +41,6 @@ cmake_minimum_required(VERSION 3.3)
 # Target
 
     add_library(esn SHARED
-        # source/esn/cblas/math.cpp
         source/esn/adaptive_filter_rls.cpp
         source/esn/network_impl.cpp
         source/esn/trainer_impl.cpp
