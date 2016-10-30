@@ -272,14 +272,22 @@ namespace ESN {
             PTR(a), lda, PTR(x), x.inc(), *PTR(beta), PTR(y), y.inc());
     }
 
-    void SGEMM(const char transa, const char transb, const int m,
-        const int n, const int k, const float alpha, const float * a,
-        const int lda, const float * b, const int ldb, const float beta,
-        float * c, const int ldc)
+    template <>
+    void gemm(
+        const char transa,
+        const char transb,
+        const scalar<float> & alpha,
+        const matrix<float> & a,
+        const matrix<float> & b,
+        const scalar<float> & beta,
+        matrix<float> & c)
     {
+        const int m = (transa == 'N') ? a.rows() : a.cols();
+        const int n = (transb == 'N') ? b.cols() : b.rows();
+        const int k = (transa == 'N') ? a.cols() : a.rows();
         cblas_sgemm(CblasColMajor, ToCblasTranspose(transa),
-            ToCblasTranspose(transb), m, n, k, alpha, a, lda, b, ldb,
-            beta, c, ldc);
+            ToCblasTranspose(transb), m, n, k, *PTR(alpha), PTR(a), a.ld(),
+            PTR(b), b.ld(), *PTR(beta), PTR(c), c.ld());
     }
 
     int SGESDD(const char jobz, const int m, const int n, float * a,
