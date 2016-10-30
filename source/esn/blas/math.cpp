@@ -114,6 +114,32 @@ namespace ESN {
     }
 
     template <>
+    void randspm(
+        const scalar<float> & a,
+        const scalar<float> & b,
+        const scalar<float> & sparsity,
+        matrix<float> & x)
+    {
+        if (x.rows() != x.ld())
+            throw std::runtime_error("randspm(): x.rows() != x.ld()");
+
+        randm(a, b, x);
+
+        scalar<float> zero(0.0f);
+        scalar<float> one(1.0f);
+        matrix<float> spx(x.rows(), x.cols());
+        randm(zero, one, spx);
+
+        const float valSparsity = *PTR(sparsity);
+        const float * const ptrSPX = PTR(spx);
+        float * const ptrX = PTR(x);
+        const std::size_t n = x.rows() * x.cols();
+        for (std::size_t i = 0; i < n; ++ i)
+            if (ptrSPX[i] < valSparsity)
+                ptrX[i] = 0.0f;
+    }
+
+    template <>
     void rcp(scalar<float> & x)
     {
         float * const ptrX = PTR(x);
