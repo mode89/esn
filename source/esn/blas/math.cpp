@@ -11,6 +11,18 @@ extern "C" {
 
 #include <lapacke.h>
 
+static inline float * cast_ptr(void * ptr)
+{
+    return static_cast<float*>(ptr);
+}
+
+static inline const float * cast_ptr(const void * ptr)
+{
+    return static_cast<const float*>(ptr);
+}
+
+#define PTR(val) (cast_ptr((val).ptr().get()) + (val).off())
+
 namespace ESN {
 
     std::default_random_engine sRandomEngine;
@@ -74,10 +86,14 @@ namespace ESN {
         cblas_scopy(n, x, incx, y, incy);
     }
 
-    void SAXPY(const int n, const float alpha, const float * x,
-        const int incx, float * y, const int incy)
+    template <>
+    void axpy(
+        const scalar<float> & alpha,
+        const vector<float> & x,
+        vector<float> & y)
     {
-        cblas_saxpy(n, alpha, x, incx, y, incy);
+        cblas_saxpy(x.size(), *PTR(alpha), PTR(x), x.inc(),
+            PTR(y), y.inc());
     }
 
     float SDOT(const int n, const float * x, const int incx,
