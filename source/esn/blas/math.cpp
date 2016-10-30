@@ -68,12 +68,6 @@ namespace ESN {
             v[i] = std::tanh(v[i]);
     }
 
-    void ProductEwise(float * out, const float * in, int size)
-    {
-        for (int i = 0; i < size; ++ i)
-            out[i] *= in[i];
-    }
-
     void SumEwise(float * out, const float * a, const float * b, int size)
     {
         for (int i = 0; i < size; ++ i)
@@ -85,6 +79,28 @@ namespace ESN {
     {
         float * const ptrX = PTR(x);
         *ptrX = 1.0f / *ptrX;
+    }
+
+    template <>
+    void prodvv(
+        const vector<float> & x,
+        vector<float> & y)
+    {
+        if (x.size() != y.size())
+            throw std::runtime_error(
+                "prodvv(): 'x' and 'y' must be the same size");
+        if (x.inc() != 1)
+            throw std::runtime_error(
+                "prodvv(): 'x' must has unity increment");
+        if (y.inc() != 1)
+            throw std::runtime_error(
+                "prodvv(): 'y' must has unity increment");
+
+        const float * const ptrX = PTR(x);
+        float * const ptrY = PTR(y);
+        const std::size_t n = x.size();
+        for (std::size_t i = 0; i < n; ++ i)
+            ptrY[i] *= ptrX[i];
     }
 
     template <>
