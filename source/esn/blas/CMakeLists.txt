@@ -8,6 +8,7 @@
 
     add_library(esn-math
         math.cpp
+        pointer.cpp
     )
 
 # Flags
