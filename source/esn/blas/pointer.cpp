@@ -5,7 +5,9 @@ namespace ESN {
 
     pointer make_pointer(std::size_t byteSize)
     {
-        return std::make_shared<std::uint8_t>(byteSize);
+        return std::shared_ptr<void>(
+            std::malloc(byteSize),
+            [] (void * p) { std::free(p); });
     }
 
     void memcpy(const pointer & dst, const void * src,
