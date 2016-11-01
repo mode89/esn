@@ -37,7 +37,7 @@ namespace ESN {
         virtual ~Trainer() {}
     };
 
-    std::shared_ptr<Trainer> CreateTrainer(
+    ESN_EXPORT std::shared_ptr<Trainer> CreateTrainer(
         const TrainerParams &,
         const std::shared_ptr<Network> &);
 
