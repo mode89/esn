@@ -1,3 +1,11 @@
+image: Visual Studio 2015
+
+environment:
+    cuda_path: "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v8.0"
+
 install:
     - appveyor DownloadFile "https://developer.nvidia.com/compute/cuda/8.0/prod/network_installers/cuda_8.0.44_windows_network-exe"
     - cuda_8.0.44_windows_network-exe -s compiler_8.0 cublas_8.0 cublas_dev_8.0 cudart_8.0 curand_8.0 curand_dev_8.0 cusolver_8.0 cusolver_dev_8.0
+
+before_build:
+    - cmake -G "Visual Studio 14 2015 Win64" -DESN_BUILD_TESTS=OFF -DESN_MAKE_PYTHON_BINDING=OFF -DESN_MATH=cuda .
