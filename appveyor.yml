@@ -9,3 +9,6 @@ install:
 
 before_build:
     - cmake -G "Visual Studio 14 2015 Win64" -DESN_BUILD_TESTS=OFF -DESN_MAKE_PYTHON_BINDING=OFF -DESN_MATH=cuda .
+
+build_script:
+    - cmake --build . --config Release
