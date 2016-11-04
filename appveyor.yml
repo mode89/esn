@@ -12,3 +12,6 @@ before_build:
 
 build_script:
     - cmake --build . --config Release
+
+after_build:
+    - cmake --build . --config Release --target install
