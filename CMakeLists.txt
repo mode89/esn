@@ -54,6 +54,7 @@ cmake_minimum_required(VERSION 3.3)
 
 # Install
 
+    message(STATUS "Installation prefix: ${CMAKE_INSTALL_PREFIX}")
     install(TARGETS esn DESTINATION lib)
 
 # Subdirectoris
